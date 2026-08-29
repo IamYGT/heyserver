@@ -18,7 +18,7 @@ for required in \
   'bootstrap-install.sh.sig' \
   'detached Ed25519 signature' \
   '--public-key-file ./release-public-key.b64' \
-  '### Checksum-only recovery (exception)'; do
+  '### Checksum-only discovery and recovery boundary'; do
   grep -Fq -- "$required" "$guide" || {
     printf 'manual release guide is missing signed-install contract: %s\n' "$required" >&2
     exit 1
