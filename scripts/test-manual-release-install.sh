@@ -2,6 +2,16 @@
 set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+bootstrap_prefix=()
+if (( EUID != 0 )); then
+  command -v sudo >/dev/null 2>&1 || {
+    echo "manual release install test requires root or sudo; install sudo or rerun with elevated access" >&2
+    exit 1
+  }
+  # bootstrap-install.sh must stay root-only; elevate only its disposable
+  # fixture runs so the surrounding contributor test remains unprivileged.
+  bootstrap_prefix=(sudo --)
+fi
 tmp=$(mktemp -d "${TMPDIR:-/tmp}/hserver-manual-release-test.XXXXXXXX")
 cleanup() {
   local status=$?
@@ -145,11 +155,12 @@ chmod 0755 "$tmp/curl"
 run_bootstrap() {
   local trust_key=$1
   shift
-  HSERVER_BOOTSTRAP_CURL="$tmp/curl" \
-  HSERVER_MANUAL_RELEASE_TEST_FEED="$feed" \
-  HSERVER_MANUAL_RELEASE_TEST_CURL_LOG="$curl_log" \
-  HSERVER_MANUAL_RELEASE_TEST_LIFECYCLE_LOG="$lifecycle_log" \
-  HSERVER_MANUAL_RELEASE_TEST_PRIVILEGED_MARKER="$privileged_marker" \
+  "${bootstrap_prefix[@]}" env \
+    HSERVER_BOOTSTRAP_CURL="$tmp/curl" \
+    HSERVER_MANUAL_RELEASE_TEST_FEED="$feed" \
+    HSERVER_MANUAL_RELEASE_TEST_CURL_LOG="$curl_log" \
+    HSERVER_MANUAL_RELEASE_TEST_LIFECYCLE_LOG="$lifecycle_log" \
+    HSERVER_MANUAL_RELEASE_TEST_PRIVILEGED_MARKER="$privileged_marker" \
     "$repo_root/scripts/bootstrap-install.sh" \
       --manifest-url http://manual-release.example/release-manifest.json \
       --public-key-file "$trust_key" "$@"
