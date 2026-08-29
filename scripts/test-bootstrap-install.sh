@@ -2,6 +2,16 @@
 set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+bootstrap_prefix=()
+if (( EUID != 0 )); then
+  command -v sudo >/dev/null 2>&1 || {
+    echo "bootstrap install test requires root or sudo; install sudo or rerun with elevated access" >&2
+    exit 1
+  }
+  # bootstrap-install.sh must stay root-only; elevate only its disposable
+  # fixture runs so the surrounding contributor test remains unprivileged.
+  bootstrap_prefix=(sudo --)
+fi
 tmp=$(mktemp -d)
 trap 'find "$tmp" -xdev -depth -delete' EXIT INT TERM
 feed="$tmp/feed"
@@ -9,6 +19,8 @@ fixture="$tmp/fixture"
 package_log="$tmp/package.log"
 curl_log="$tmp/curl.log"
 mkdir -p "$feed" "$fixture"
+: >"$package_log"
+: >"$curl_log"
 
 case "$(uname -m)" in
   x86_64) arch=amd64 ;;
@@ -114,10 +126,11 @@ EOF
 chmod 0755 "$tmp/curl"
 
 run_bootstrap() {
-  HSERVER_BOOTSTRAP_CURL="$tmp/curl" \
-  HSERVER_BOOTSTRAP_TEST_FEED="$feed" \
-  HSERVER_BOOTSTRAP_TEST_LOG="$package_log" \
-  HSERVER_BOOTSTRAP_TEST_CURL_LOG="$curl_log" \
+  "${bootstrap_prefix[@]}" env \
+    HSERVER_BOOTSTRAP_CURL="$tmp/curl" \
+    HSERVER_BOOTSTRAP_TEST_FEED="$feed" \
+    HSERVER_BOOTSTRAP_TEST_LOG="$package_log" \
+    HSERVER_BOOTSTRAP_TEST_CURL_LOG="$curl_log" \
     "$repo_root/scripts/bootstrap-install.sh" \
       --manifest-url http://bootstrap.example/release-manifest.json \
       --public-key-file "$public_key_file" \
@@ -138,11 +151,12 @@ legacy_config_sha=$(sha256sum "$legacy_root/etc/hserver-agent.env" | awk '{print
 legacy_token_sha=$(sha256sum "$legacy_root/srv/secrets/legacy-agent.token" | awk '{print $1}')
 
 run_agent_bootstrap() {
-  HSERVER_BOOTSTRAP_CURL="$tmp/curl" \
-  HSERVER_BOOTSTRAP_TEST_FEED="$feed" \
-  HSERVER_BOOTSTRAP_TEST_LOG="$package_log" \
-  HSERVER_BOOTSTRAP_TEST_CURL_LOG="$curl_log" \
-  HSERVER_AGENT_ROOT_PREFIX="$legacy_root" \
+  "${bootstrap_prefix[@]}" env \
+    HSERVER_BOOTSTRAP_CURL="$tmp/curl" \
+    HSERVER_BOOTSTRAP_TEST_FEED="$feed" \
+    HSERVER_BOOTSTRAP_TEST_LOG="$package_log" \
+    HSERVER_BOOTSTRAP_TEST_CURL_LOG="$curl_log" \
+    HSERVER_AGENT_ROOT_PREFIX="$legacy_root" \
     "$repo_root/scripts/bootstrap-install.sh" \
       --manifest-url http://bootstrap.example/release-manifest.json \
       --public-key-file "$public_key_file" \
