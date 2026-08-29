@@ -30,6 +30,7 @@ RUN go mod download
 # Copy Go source
 COPY cmd/    cmd/
 COPY internal/ internal/
+COPY extensions/ extensions/
 
 # Copy frontend dist into Go embed directory
 COPY --from=frontend /app/web/dist/ cmd/hserver/web/dist/
