@@ -51,7 +51,7 @@ terminal operations.
 
 ```bash
 git clone https://github.com/IamYGT/heyserver.git
-cd hserver-panel
+cd heyserver
 ./scripts/init-env.sh
 docker compose up --build
 ```
@@ -381,7 +381,7 @@ rollback drills for both engines.
 
 ```bash
 git clone https://github.com/IamYGT/heyserver.git
-cd hserver-panel
+cd heyserver
 make dev-check
 make dev-setup
 make test
