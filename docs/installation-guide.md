@@ -407,7 +407,7 @@ and verification contract.
 mkdir -p "$HOME/src/hserver-panel"
 cd "$HOME/src/hserver-panel"
 
-# Clone the repository (authentication may be required until public launch)
+# Clone the public repository or your fork
 git clone https://github.com/OWNER/REPOSITORY.git .
 
 # Verify structure
