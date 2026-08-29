@@ -11,7 +11,7 @@ import (
 
 // authenticatedGETPaths exercises read-only handlers to improve integration coverage.
 func TestIntegration_AuthenticatedGETPaths(t *testing.T) {
-	handler := integrationRouter(t)
+	handler := integrationRouterWithBindFixture(t)
 	token := testutil.MakeToken(t, testutil.MakeUser(1, "admin@test.com", models.RoleAdmin))
 	paths := []string{
 		"/api/system/stats",
