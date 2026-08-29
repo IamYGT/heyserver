@@ -9,6 +9,7 @@ RUN npm ci
 
 # Copy the generated public API contract where the Vite build plugin expects it.
 COPY docs/openapi.json /app/docs/openapi.json
+COPY internal/api/routes_manifest.go /app/internal/api/routes_manifest.go
 
 # Copy source and build
 COPY web/ ./
