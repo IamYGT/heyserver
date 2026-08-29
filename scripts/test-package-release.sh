@@ -18,7 +18,17 @@ else
   }
 fi
 tmp=$(mktemp -d)
-trap 'rm -rf "$tmp"' EXIT INT TERM
+cleanup() {
+  status=$?
+  trap - EXIT INT TERM
+  if [ "$(id -u)" -eq 0 ]; then
+    rm -rf -- "$tmp"
+  else
+    sudo -- env rm -rf -- "$tmp" >/dev/null 2>&1 || true
+  fi
+  exit "$status"
+}
+trap cleanup EXIT INT TERM
 
 printf '#!/bin/sh\necho panel\n' >"$tmp/panel"
 printf '#!/bin/sh\necho agent\n' >"$tmp/agent"
@@ -123,6 +133,10 @@ exit 0
 EOF
 chmod +x "$tmp/systemctl"
 
+# Keep the parent directories inspected below owned by the invoking user. The
+# fixture installers may create root-owned children, but non-root assertions
+# must retain metadata/readability until the privileged cleanup runs.
+mkdir -p "$tmp/panel-root/etc/hserver" "$tmp/panel-root/var/lib/hserver"
 run_fixture_install \
   HSERVER_ROOT_PREFIX="$tmp/panel-root" \
   HSERVER_SYSTEMCTL="$tmp/systemctl" \
@@ -147,6 +161,7 @@ HSERVER_AGENT_NODE_ID=archive-test
 HSERVER_AGENT_TOKEN_FILE=/etc/hserver-agent.token
 EOF
 printf '%s\n' test-only-token >"$tmp/agent.token"
+mkdir -p "$tmp/agent-root/etc"
 run_fixture_install \
   HSERVER_AGENT_ROOT_PREFIX="$tmp/agent-root" \
   HSERVER_AGENT_SYSTEMCTL="$tmp/systemctl" \
