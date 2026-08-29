@@ -2,6 +2,21 @@
 set -eu
 
 root_dir=$(CDPATH=; export CDPATH; cd -- "$(dirname -- "$0")/.." && pwd)
+if [ "$(id -u)" -eq 0 ]; then
+  run_fixture_install() {
+    env "$@"
+  }
+else
+  command -v sudo >/dev/null 2>&1 || {
+    echo "package release test requires root or sudo; install sudo or rerun with elevated access" >&2
+    exit 1
+  }
+  # Packaged installers must stay root-only; elevate only their disposable
+  # fixture runs so the surrounding release test remains unprivileged.
+  run_fixture_install() {
+    sudo -- env "$@"
+  }
+fi
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT INT TERM
 
@@ -108,10 +123,11 @@ exit 0
 EOF
 chmod +x "$tmp/systemctl"
 
-HSERVER_ROOT_PREFIX="$tmp/panel-root" \
-HSERVER_SYSTEMCTL="$tmp/systemctl" \
-HSERVER_OS_RELEASE=/etc/os-release \
-HSERVER_SKIP_HEALTHCHECK=1 \
+run_fixture_install \
+  HSERVER_ROOT_PREFIX="$tmp/panel-root" \
+  HSERVER_SYSTEMCTL="$tmp/systemctl" \
+  HSERVER_OS_RELEASE=/etc/os-release \
+  HSERVER_SKIP_HEALTHCHECK=1 \
   "$package_dir/install.sh" install >/dev/null
 cmp -s "$tmp/panel" "$tmp/panel-root/usr/local/bin/hserver-panel"
 cmp -s "$tmp/cli" "$tmp/panel-root/usr/local/bin/hserverctl"
@@ -131,10 +147,11 @@ HSERVER_AGENT_NODE_ID=archive-test
 HSERVER_AGENT_TOKEN_FILE=/etc/hserver-agent.token
 EOF
 printf '%s\n' test-only-token >"$tmp/agent.token"
-HSERVER_AGENT_ROOT_PREFIX="$tmp/agent-root" \
-HSERVER_AGENT_SYSTEMCTL="$tmp/systemctl" \
-HSERVER_OS_RELEASE=/etc/os-release \
-HSERVER_AGENT_SKIP_HEALTHCHECK=1 \
+run_fixture_install \
+  HSERVER_AGENT_ROOT_PREFIX="$tmp/agent-root" \
+  HSERVER_AGENT_SYSTEMCTL="$tmp/systemctl" \
+  HSERVER_OS_RELEASE=/etc/os-release \
+  HSERVER_AGENT_SKIP_HEALTHCHECK=1 \
   "$package_dir/agent-install.sh" install \
     --config "$tmp/agent.env" \
     --token-file "$tmp/agent.token" >/dev/null
