@@ -132,6 +132,21 @@ func TestParseCatalogRejectsMissingCoreAndInvalidAdditionalEntry(t *testing.T) {
 			last := len(catalog.Entries) - 1
 			catalog.Entries[last].Status.APIRoutePrefixes = []string{"/status"}
 		},
+		"invalid additive documentation marker": func(catalog *Catalog) {
+			appendAdditionalEntry(catalog)
+			last := len(catalog.Entries) - 1
+			catalog.Entries[last].DocsRowMarker = "optional-integrations:v1:wrong-marker"
+		},
+		"invalid additive class": func(catalog *Catalog) {
+			appendAdditionalEntry(catalog)
+			last := len(catalog.Entries) - 1
+			catalog.Entries[last].Classes = []string{"unreviewed_class"}
+		},
+		"invalid additive target": func(catalog *Catalog) {
+			appendAdditionalEntry(catalog)
+			last := len(catalog.Entries) - 1
+			catalog.Entries[last].Targets = []string{"remote_provider"}
+		},
 		"missing additive evidence": func(catalog *Catalog) {
 			appendAdditionalEntry(catalog)
 			last := len(catalog.Entries) - 1

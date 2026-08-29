@@ -253,6 +253,17 @@ var canonicalStates = [...]string{"not_configured", "unavailable", "healthy"}
 
 var catalogIDPattern = regexp.MustCompile(`^[a-z0-9]+(?:[._-][a-z0-9]+)*$`)
 
+var catalogClasses = [...]string{
+	"local_capability",
+	"managed_node_capability",
+	"provider_adapter",
+	"client_surface",
+}
+
+var catalogTargets = [...]string{"local_host", "managed_node"}
+
+const catalogMarkerPrefix = "optional-integrations:v1:"
+
 func validateCatalog(catalog Catalog) error {
 	if catalog.Schema != "" && catalog.Schema != "./catalog.schema.json" {
 		return fmt.Errorf("$schema must be ./catalog.schema.json")
@@ -308,8 +319,22 @@ func validateCatalog(catalog Catalog) error {
 		if err := validateStringList(entry.Classes, true, fmt.Sprintf("entries[%d].classes", index)); err != nil {
 			return err
 		}
+		for _, class := range entry.Classes {
+			if !contains(catalogClasses[:], class) {
+				return fmt.Errorf("entries[%d].classes contains invalid class %q", index, class)
+			}
+		}
 		if err := validateStringList(entry.Targets, true, fmt.Sprintf("entries[%d].targets", index)); err != nil {
 			return err
+		}
+		for _, target := range entry.Targets {
+			if !contains(catalogTargets[:], target) {
+				return fmt.Errorf("entries[%d].targets contains invalid target %q", index, target)
+			}
+		}
+		expectedMarker, ok := catalogDocsRowMarker(entry.DisplayName)
+		if !ok || entry.DocsRowMarker != expectedMarker {
+			return fmt.Errorf("entries[%d].docs_row_marker must follow the stable slug convention: %s", index, expectedMarker)
 		}
 		if err := validateConfiguration(entry.Configuration, index); err != nil {
 			return err
@@ -400,7 +425,7 @@ func validateStatus(status Status, index int) error {
 		return err
 	}
 	for _, prefix := range status.APIRoutePrefixes {
-		if !strings.HasPrefix(prefix, "/api") {
+		if prefix != "/api" && !strings.HasPrefix(prefix, "/api/") {
 			return fmt.Errorf("entries[%d].status.api_route_prefixes contains non-API prefix %q", index, prefix)
 		}
 	}
@@ -475,6 +500,30 @@ func contains(values []string, wanted string) bool {
 		}
 	}
 	return false
+}
+
+// catalogDocsRowMarker returns the stable documentation-row marker derived
+// from an entry display name. Non-ASCII runs are separators, matching the
+// catalog's provider-neutral slug convention; false means the display name
+// contains no usable marker token.
+func catalogDocsRowMarker(displayName string) (string, bool) {
+	var normalized strings.Builder
+	pendingSeparator := false
+	for _, character := range strings.ToLower(displayName) {
+		if (character >= 'a' && character <= 'z') || (character >= '0' && character <= '9') {
+			if pendingSeparator {
+				normalized.WriteByte('-')
+			}
+			normalized.WriteRune(character)
+			pendingSeparator = false
+		} else if normalized.Len() > 0 {
+			pendingSeparator = true
+		}
+	}
+	if normalized.Len() == 0 {
+		return catalogMarkerPrefix, false
+	}
+	return catalogMarkerPrefix + normalized.String(), true
 }
 
 func overlap(left, right []string) bool {

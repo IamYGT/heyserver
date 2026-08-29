@@ -21,6 +21,7 @@
     },
     "entries": {
       "type": "array",
+      "description": "At least the fifteen reviewed core entries are required; contributors may add further reviewed entries.",
       "minItems": 15,
       "items": {
         "$ref": "#/$defs/entry"
@@ -31,105 +32,120 @@
             "type": "object",
             "required": ["id"],
             "properties": {"id": {"const": "cloudflare.dns"}}
-          }
+          },
+          "minContains": 1
         },
         {
           "contains": {
             "type": "object",
             "required": ["id"],
             "properties": {"id": {"const": "stalwart.mail"}}
-          }
+          },
+          "minContains": 1
         },
         {
           "contains": {
             "type": "object",
             "required": ["id"],
             "properties": {"id": {"const": "mail.access"}}
-          }
+          },
+          "minContains": 1
         },
         {
           "contains": {
             "type": "object",
             "required": ["id"],
             "properties": {"id": {"const": "backup.gdrive"}}
-          }
+          },
+          "minContains": 1
         },
         {
           "contains": {
             "type": "object",
             "required": ["id"],
             "properties": {"id": {"const": "backup.snapshot.restic"}}
-          }
+          },
+          "minContains": 1
         },
         {
           "contains": {
             "type": "object",
             "required": ["id"],
             "properties": {"id": {"const": "process.pm2"}}
-          }
+          },
+          "minContains": 1
         },
         {
           "contains": {
             "type": "object",
             "required": ["id"],
             "properties": {"id": {"const": "web.nginx"}}
-          }
+          },
+          "minContains": 1
         },
         {
           "contains": {
             "type": "object",
             "required": ["id"],
             "properties": {"id": {"const": "runtime.php_fpm"}}
-          }
+          },
+          "minContains": 1
         },
         {
           "contains": {
             "type": "object",
             "required": ["id"],
             "properties": {"id": {"const": "firewall.ufw"}}
-          }
+          },
+          "minContains": 1
         },
         {
           "contains": {
             "type": "object",
             "required": ["id"],
             "properties": {"id": {"const": "tls.certbot"}}
-          }
+          },
+          "minContains": 1
         },
         {
           "contains": {
             "type": "object",
             "required": ["id"],
             "properties": {"id": {"const": "dns.bind9"}}
-          }
+          },
+          "minContains": 1
         },
         {
           "contains": {
             "type": "object",
             "required": ["id"],
             "properties": {"id": {"const": "database.local"}}
-          }
+          },
+          "minContains": 1
         },
         {
           "contains": {
             "type": "object",
             "required": ["id"],
             "properties": {"id": {"const": "container.docker"}}
-          }
+          },
+          "minContains": 1
         },
         {
           "contains": {
             "type": "object",
             "required": ["id"],
             "properties": {"id": {"const": "storage.smartmontools"}}
-          }
+          },
+          "minContains": 1
         },
         {
           "contains": {
             "type": "object",
             "required": ["id"],
             "properties": {"id": {"const": "notification.delivery"}}
-          }
+          },
+          "minContains": 1
         }
       ]
     }
@@ -265,6 +281,39 @@
             "required": [
               "agent"
             ]
+          }
+        },
+        {
+          "if": {
+            "not": {
+              "anyOf": [
+                {
+                  "properties": {
+                    "classes": {
+                      "contains": {
+                        "const": "managed_node_capability"
+                      }
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "targets": {
+                      "contains": {
+                        "const": "managed_node"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "agent"
+              ]
+            }
           }
         }
       ]

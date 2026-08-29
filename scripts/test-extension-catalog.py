@@ -55,6 +55,13 @@ INTEGRATIONSTATUS_CONSTANTS = "internal/services/integrationstatus/status.go"
 
 _TEST_FILE = re.compile(r"(?:_test\.go|\.test\.(?:ts|tsx|js|jsx)|^test-[^/]+\.(?:sh|py))$")
 _ID_PATTERN = re.compile(r"^[a-z0-9]+(?:[._-][a-z0-9]+)*$")
+_ENTRY_CLASSES = frozenset({
+    "local_capability",
+    "managed_node_capability",
+    "provider_adapter",
+    "client_surface",
+})
+_ENTRY_TARGETS = frozenset({"local_host", "managed_node"})
 _SECRET_ASSIGNMENT = re.compile(
     r"(?i)(?:api[_-]?key|client[_-]?secret|token|password|secret|credential|webhook(?:url)?)"
     r"\s*(?:[\"']?\s*)[:=]\s*[\"']?([^\s,}\"']+)"
@@ -700,6 +707,26 @@ def validate_entries(root: Path, catalog: dict[str, Any]) -> list[dict[str, Any]
 
     for entry in entries:
         entry_id = entry["id"]
+        if entry["requirement"] not in {"optional", "feature_specific"}:
+            raise CatalogError(f"entries[{entry_id}].requirement is invalid")
+        classes = entry["classes"]
+        if not isinstance(classes, list) or not classes or any(not isinstance(value, str) for value in classes):
+            raise CatalogError(f"entries[{entry_id}].classes must be a non-empty string array")
+        unique(classes, f"entries[{entry_id}].classes")
+        invalid_classes = sorted(set(classes) - _ENTRY_CLASSES)
+        if invalid_classes:
+            raise CatalogError(
+                f"entries[{entry_id}].classes contains unsupported value(s): {', '.join(invalid_classes)}"
+            )
+        targets = entry["targets"]
+        if not isinstance(targets, list) or not targets or any(not isinstance(value, str) for value in targets):
+            raise CatalogError(f"entries[{entry_id}].targets must be a non-empty string array")
+        unique(targets, f"entries[{entry_id}].targets")
+        invalid_targets = sorted(set(targets) - _ENTRY_TARGETS)
+        if invalid_targets:
+            raise CatalogError(
+                f"entries[{entry_id}].targets contains unsupported value(s): {', '.join(invalid_targets)}"
+            )
         configuration = entry["configuration"]
         if set(configuration["non_secret_keys"]) & set(configuration["secret_key_names"]):
             raise CatalogError(f"entries[{entry_id}] repeats a key across secret and non-secret boundaries")
