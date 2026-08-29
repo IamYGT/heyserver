@@ -2,8 +2,41 @@
 set -euo pipefail
 
 root_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+restore_prefix=()
+if (( EUID != 0 )); then
+  command -v sudo >/dev/null 2>&1 || {
+    echo "restore database test requires root or sudo; install sudo or rerun with elevated access" >&2
+    exit 1
+  }
+  # restore-db.sh must stay root-only; elevate only its disposable fixture
+  # runs so the surrounding contributor test remains unprivileged.
+  restore_prefix=(sudo --)
+fi
 tmp=$(mktemp -d)
 trap 'find "$tmp" -xdev -depth -delete' EXIT INT TERM
+restore_owner_uid=$(id -u)
+restore_owner_gid=$(id -g)
+
+fixture_backup_script="$tmp/backup-db"
+cat >"$fixture_backup_script" <<'BACKUP'
+#!/usr/bin/env bash
+set -euo pipefail
+
+backup_output=$("${HSERVER_TEST_REAL_BACKUP_SCRIPT:?}")
+backup=${backup_output#Backup complete: }
+[[ "$backup" != "$backup_output" && -f "$backup" && ! -L "$backup" ]] || {
+  echo "fixture backup helper did not produce a regular backup" >&2
+  exit 1
+}
+[[ -d "${HSERVER_DB_BACKUP_DIR:?}" ]] || {
+  echo "fixture backup helper did not produce a backup directory" >&2
+  exit 1
+}
+chown "$HSERVER_TEST_OWNER_UID:$HSERVER_TEST_OWNER_GID" \
+  "$HSERVER_DB_BACKUP_DIR" "$backup"
+printf 'Backup complete: %s\n' "$backup"
+BACKUP
+chmod 0755 "$fixture_backup_script"
 
 mkdir -p "$tmp/data/notification-channel-secrets" "$tmp/state"
 chmod 0700 "$tmp/data/notification-channel-secrets"
@@ -77,13 +110,18 @@ CURL
 chmod +x "$tmp/curl"
 
 run_restore() {
-  HSERVER_DATA_DIR="$tmp/data" \
-  HSERVER_DB_PATH="$db" \
-  HSERVER_DB_RECOVERY_DIR="$tmp/data/restores" \
-  HSERVER_SYSTEMCTL="$tmp/systemctl" \
-  HSERVER_CURL="$tmp/curl" \
-  HSERVER_TEST_SYSTEMCTL_STATE="$tmp/state" \
-  HSERVER_RESTORE_ACTIVE_TIMEOUT=1 \
+  "${restore_prefix[@]}" env \
+    HSERVER_DATA_DIR="$tmp/data" \
+    HSERVER_DB_PATH="$db" \
+    HSERVER_DB_RECOVERY_DIR="$tmp/data/restores" \
+    HSERVER_BACKUP_SCRIPT="$fixture_backup_script" \
+    HSERVER_SYSTEMCTL="$tmp/systemctl" \
+    HSERVER_CURL="$tmp/curl" \
+    HSERVER_TEST_SYSTEMCTL_STATE="$tmp/state" \
+    HSERVER_RESTORE_ACTIVE_TIMEOUT=1 \
+    HSERVER_TEST_REAL_BACKUP_SCRIPT="$root_dir/scripts/backup-db.sh" \
+    HSERVER_TEST_OWNER_UID="$restore_owner_uid" \
+    HSERVER_TEST_OWNER_GID="$restore_owner_gid" \
     "$root_dir/scripts/restore-db.sh" "$@"
 }
 
