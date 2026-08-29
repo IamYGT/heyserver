@@ -2,6 +2,22 @@
 set -eu
 
 root_dir=$(CDPATH=; export CDPATH; cd -- "$(dirname -- "$0")/.." && pwd)
+if [ "$(id -u)" -ne 0 ]; then
+  command -v sudo >/dev/null 2>&1 || {
+    printf '%s\n' "agent install test requires root or sudo; install sudo or rerun with elevated access" >&2
+    exit 1
+  }
+fi
+
+# Keep the test harness unprivileged; elevate only disposable fixture installs.
+run_privileged_env() {
+  if [ "$(id -u)" -eq 0 ]; then
+    env "$@"
+  else
+    sudo -- env "$@"
+  fi
+}
+
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT INT TERM
 
@@ -75,22 +91,26 @@ EOF
 printf '%s\n' 'custom-one-time-test-token' >"$tmp/custom-token"
 
 run_installer() {
-  HSERVER_AGENT_ROOT_PREFIX="$tmp/root" \
-  HSERVER_AGENT_SYSTEMCTL="$tmp/systemctl" \
-  HSERVER_AGENT_SYSTEMCTL_STATE_DIR="$tmp/systemctl-state" \
-  HSERVER_AGENT_TEST_BINARY="$tmp/root/usr/local/bin/hserver-agent" \
-  HSERVER_OS_RELEASE=/etc/os-release \
-  HSERVER_AGENT_SKIP_HEALTHCHECK=1 \
+  run_privileged_env \
+    HSERVER_AGENT_ROOT_PREFIX="$tmp/root" \
+    HSERVER_AGENT_SYSTEMCTL="$tmp/systemctl" \
+    HSERVER_AGENT_SYSTEMCTL_STATE_DIR="$tmp/systemctl-state" \
+    HSERVER_AGENT_TEST_BINARY="$tmp/root/usr/local/bin/hserver-agent" \
+    HSERVER_OS_RELEASE=/etc/os-release \
+    HSERVER_AGENT_SKIP_HEALTHCHECK=1 \
+    TEST_SYSTEMD_STATE="${TEST_SYSTEMD_STATE:-}" \
     "$root_dir/scripts/hserver-agent-install.sh" "$@"
 }
 
 run_custom_installer() {
-  HSERVER_AGENT_ROOT_PREFIX="$tmp/custom-root" \
-  HSERVER_AGENT_SYSTEMCTL="$tmp/systemctl" \
-  HSERVER_AGENT_SYSTEMCTL_STATE_DIR="$tmp/custom-systemctl-state" \
-  HSERVER_AGENT_TEST_BINARY="$tmp/custom-root/usr/local/bin/hserver-agent" \
-  HSERVER_OS_RELEASE=/etc/os-release \
-  HSERVER_AGENT_SKIP_HEALTHCHECK=1 \
+  run_privileged_env \
+    HSERVER_AGENT_ROOT_PREFIX="$tmp/custom-root" \
+    HSERVER_AGENT_SYSTEMCTL="$tmp/systemctl" \
+    HSERVER_AGENT_SYSTEMCTL_STATE_DIR="$tmp/custom-systemctl-state" \
+    HSERVER_AGENT_TEST_BINARY="$tmp/custom-root/usr/local/bin/hserver-agent" \
+    HSERVER_OS_RELEASE=/etc/os-release \
+    HSERVER_AGENT_SKIP_HEALTHCHECK=1 \
+    TEST_SYSTEMD_STATE="${TEST_SYSTEMD_STATE:-}" \
     "$root_dir/scripts/hserver-agent-install.sh" "$@"
 }
 
@@ -218,13 +238,14 @@ cmp -s "$tmp/agent-v1" "$tmp/root/usr/local/bin/hserver-agent"
 [ -f "$tmp/systemctl-state/enabled" ]
 
 rm -f "$tmp/systemctl-state/active" "$tmp/systemctl-state/enabled"
-if HSERVER_AGENT_ROOT_PREFIX="$tmp/root" \
+if run_privileged_env \
+  HSERVER_AGENT_ROOT_PREFIX="$tmp/root" \
   HSERVER_AGENT_SYSTEMCTL="$tmp/systemctl" \
   HSERVER_AGENT_SYSTEMCTL_STATE_DIR="$tmp/systemctl-state" \
   HSERVER_AGENT_TEST_BINARY="$tmp/root/usr/local/bin/hserver-agent" \
   HSERVER_AGENT_HEALTH_TIMEOUT=3 \
   HSERVER_AGENT_SKIP_HEALTHCHECK=0 \
-    "$root_dir/scripts/hserver-agent-install.sh" upgrade --binary "$tmp/agent-broken" >"$tmp/broken-upgrade.log" 2>&1; then
+  "$root_dir/scripts/hserver-agent-install.sh" upgrade --binary "$tmp/agent-broken" >"$tmp/broken-upgrade.log" 2>&1; then
   printf '%s\n' "broken agent upgrade unexpectedly succeeded" >&2
   exit 1
 fi
