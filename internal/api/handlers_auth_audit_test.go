@@ -46,6 +46,7 @@ func TestIntegration_AuditListRejectsInvalidServerScope(t *testing.T) {
 }
 
 func TestIntegration_BackupListAuthenticated(t *testing.T) {
+	withTempBackupService(t)
 	handler := integrationRouter(t)
 	user := testutil.MakeUser(1, "viewer@test.com", models.RoleViewer)
 	req := testutil.NewRequest(t, http.MethodGet, "/api/backups", testutil.MakeToken(t, user))
@@ -57,6 +58,7 @@ func TestIntegration_BackupListAuthenticated(t *testing.T) {
 }
 
 func TestIntegration_CronJobsAuthenticated(t *testing.T) {
+	withFakeCrontab(t)
 	handler := integrationRouter(t)
 	user := testutil.MakeUser(1, "viewer@test.com", models.RoleViewer)
 	req := testutil.NewRequest(t, http.MethodGet, "/api/cron/jobs", testutil.MakeToken(t, user))

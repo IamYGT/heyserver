@@ -31,6 +31,16 @@ func withTempBackupService(t *testing.T) string {
 	return dir
 }
 
+func withFakeCrontab(t *testing.T) {
+	t.Helper()
+	binDir := t.TempDir()
+	crontabPath := filepath.Join(binDir, "crontab")
+	if err := os.WriteFile(crontabPath, []byte("#!/bin/sh\nexit 0\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", binDir)
+}
+
 func waitForBackupJobTerminal(t *testing.T, service *backup.Service, jobID string) {
 	t.Helper()
 	deadline := time.Now().Add(5 * time.Second)
@@ -201,6 +211,8 @@ func TestHandleBackupTargetsFailsClosedWhenConfiguredRootIsUnavailable(t *testin
 }
 
 func TestHandleBackupScheduleList_empty(t *testing.T) {
+	withTempBackupService(t)
+	withFakeCrontab(t)
 	rec := httptest.NewRecorder()
 	handleBackupScheduleList()(rec, httptest.NewRequest(http.MethodGet, "/api/backups/schedules", nil))
 	if rec.Code != http.StatusOK {
@@ -456,6 +468,7 @@ func TestHandleBackupJobList(t *testing.T) {
 }
 
 func TestHandleBackupPurgeInvalid(t *testing.T) {
+	withTempBackupService(t)
 	rec := httptest.NewRecorder()
 	handleBackupPurgeInvalid()(rec, httptest.NewRequest(http.MethodPost, "/api/backups/purge-invalid", nil))
 	if rec.Code != http.StatusOK {
