@@ -1,0 +1,105 @@
+---
+# HServer Panel — Docker Compose
+# Usage:
+#   First run:        ./scripts/init-env.sh
+#   Local evaluation: docker compose up --build
+#
+# NOTE: In production the binary runs natively on the host (not in Docker)
+# because it needs direct access to nginx, php-fpm, systemd, PM2, iptables.
+# This compose file is for local development, testing, and distribution.
+
+services:
+  hserver-panel:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VERSION: ${VERSION:-dev}
+    restart: unless-stopped
+
+    ports:
+      - "${HSERVER_PORT:-3085}:3085"
+
+    environment:
+      HSERVER_PORT: "3085"
+      HSERVER_DB_PATH: /app/data/hserver.db
+      HSERVER_DATA_DIR: /app/data
+      HSERVER_JWT_SECRET: ${HSERVER_JWT_SECRET:?Run ./scripts/init-env.sh before docker compose}
+      HSERVER_ADMIN_EMAIL: ${HSERVER_ADMIN_EMAIL:-admin@localhost}
+      HSERVER_ADMIN_PASS: ${HSERVER_ADMIN_PASS:?Run ./scripts/init-env.sh before docker compose}
+      HSERVER_CRON_SECRET: ${HSERVER_CRON_SECRET:-}
+      HSERVER_UPGRADE_SNAPSHOT_RETENTION_COUNT: ${HSERVER_UPGRADE_SNAPSHOT_RETENTION_COUNT:-3}
+      HSERVER_VHOSTS_ROOT: /app/data/vhosts
+      HSERVER_PHP_CONFIG_ROOT: ${HSERVER_PHP_CONFIG_ROOT:-/etc/php}
+      HSERVER_PHP_BINARY_ROOT: ${HSERVER_PHP_BINARY_ROOT:-/usr/sbin}
+      HSERVER_NGINX_SITES_AVAILABLE: ${HSERVER_NGINX_SITES_AVAILABLE:-/etc/nginx/sites-available}
+      HSERVER_NGINX_SITES_ENABLED: ${HSERVER_NGINX_SITES_ENABLED:-/etc/nginx/sites-enabled}
+      HSERVER_NGINX_SNIPPETS_DIR: ${HSERVER_NGINX_SNIPPETS_DIR:-/etc/nginx/snippets}
+      HSERVER_PGM_BACKUP_DIR: ${HSERVER_PGM_BACKUP_DIR:-/app/data/pgm-backups}
+      HSERVER_PG_RUN_AS: ${HSERVER_PG_RUN_AS:-postgres}
+      HSERVER_PG_BACKUP_USER: ${HSERVER_PG_BACKUP_USER:-postgres}
+      HSERVER_PG_BACKUP_HOST: ${HSERVER_PG_BACKUP_HOST:-}
+      HSERVER_PG_BACKUP_PORT: ${HSERVER_PG_BACKUP_PORT:-}
+      HSERVER_PG_PASSFILE: ${HSERVER_PG_PASSFILE:-}
+      HSERVER_MYSQL_DEFAULTS_FILE: ${HSERVER_MYSQL_DEFAULTS_FILE:-}
+      HSERVER_UPDATE_MANIFEST_URL: ${HSERVER_UPDATE_MANIFEST_URL:-}
+      HSERVER_UPDATE_MANIFEST_PUBLIC_KEYS: ${HSERVER_UPDATE_MANIFEST_PUBLIC_KEYS:-}
+      STALWART_URL: ${STALWART_URL:-}
+      STALWART_API_KEY: ${STALWART_API_KEY:-}
+      STALWART_ADMIN_USER: ${STALWART_ADMIN_USER:-}
+      STALWART_ADMIN_PASS: ${STALWART_ADMIN_PASS:-}
+      HSERVER_STALWART_SERVICE: ${HSERVER_STALWART_SERVICE:-}
+      HSERVER_STALWART_CONFIG_PATH: ${HSERVER_STALWART_CONFIG_PATH:-}
+      HSERVER_STALWART_BIN: ${HSERVER_STALWART_BIN:-}
+      HSERVER_CF_API_TOKEN: ${HSERVER_CF_API_TOKEN:-}
+      HSERVER_CF_API_EMAIL: ${HSERVER_CF_API_EMAIL:-}
+      HSERVER_DOMAIN_DNS_ORIGIN: ${HSERVER_DOMAIN_DNS_ORIGIN:-}
+      HSERVER_DOMAIN_DNS_PROXIED: ${HSERVER_DOMAIN_DNS_PROXIED:-false}
+      HSERVER_MAIL_DNS_HOSTNAME: ${HSERVER_MAIL_DNS_HOSTNAME:-}
+      HSERVER_MAIL_DNS_PUBLIC_IP: ${HSERVER_MAIL_DNS_PUBLIC_IP:-}
+      HSERVER_MAIL_DNS_MX_PRIORITY: ${HSERVER_MAIL_DNS_MX_PRIORITY:-10}
+      HSERVER_MAIL_DNS_SPF: ${HSERVER_MAIL_DNS_SPF:-}
+      HSERVER_MAIL_DNS_DMARC: ${HSERVER_MAIL_DNS_DMARC:-}
+      HSERVER_PM2_USER: ${HSERVER_PM2_USER:-}
+      HSERVER_PM2_HOME: ${HSERVER_PM2_HOME:-}
+      HSERVER_PM2_BIN: ${HSERVER_PM2_BIN:-pm2}
+      HSERVER_PM2_ALLOWED_ROOTS: ${HSERVER_PM2_ALLOWED_ROOTS:-}
+      HSERVER_CERTBOT_BIN: ${HSERVER_CERTBOT_BIN:-certbot}
+      HSERVER_CERTBOT_CONFIG_DIR: ${HSERVER_CERTBOT_CONFIG_DIR:-/etc/letsencrypt}
+      HSERVER_ACME_WEBROOT: ${HSERVER_ACME_WEBROOT:-/var/www/hserver-acme}
+      HSERVER_CERTBOT_CLOUDFLARE_CREDENTIALS: ${HSERVER_CERTBOT_CLOUDFLARE_CREDENTIALS:-}
+      HSERVER_GDRIVE_CLIENT_ID: ${HSERVER_GDRIVE_CLIENT_ID:-}
+      HSERVER_GDRIVE_CLIENT_SECRET: ${HSERVER_GDRIVE_CLIENT_SECRET:-}
+      HSERVER_GDRIVE_REDIRECT_URI: ${HSERVER_GDRIVE_REDIRECT_URI:-}
+      HSERVER_RCLONE_BIN: ${HSERVER_RCLONE_BIN:-rclone}
+      HSERVER_RESTIC_BIN: ${HSERVER_RESTIC_BIN:-restic}
+      HSERVER_RESTIC_PASSWORD: ${HSERVER_RESTIC_PASSWORD:-}
+      HSERVER_S3_ENDPOINT: ${HSERVER_S3_ENDPOINT:-}
+      HSERVER_S3_BUCKET: ${HSERVER_S3_BUCKET:-}
+      HSERVER_S3_REGION: ${HSERVER_S3_REGION:-}
+      HSERVER_S3_ACCESS_KEY_FILE: ${HSERVER_S3_ACCESS_KEY_FILE:-}
+      HSERVER_S3_SECRET_KEY_FILE: ${HSERVER_S3_SECRET_KEY_FILE:-}
+      HSERVER_S3_BUCKET_LOOKUP: ${HSERVER_S3_BUCKET_LOOKUP:-auto}
+
+    volumes:
+      # Persist panel database and config across restarts
+      - hserver-data:/app/data
+
+    # Docker is an evaluation/contributor path. Host-management capabilities
+    # require the native install or a separately enrolled HServer agent.
+
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3085/api/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  hserver-data:

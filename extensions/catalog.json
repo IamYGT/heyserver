@@ -1,0 +1,1668 @@
+{
+  "$schema": "./catalog.schema.json",
+  "schema_version": 1,
+  "documentation": {
+    "table_path": "docs/optional-integrations.md",
+    "table_header": "Integration",
+    "marker_prefix": "optional-integrations:v1:",
+    "marker_convention": "marker_prefix + slug(display_name), where slug lowercases and joins non-alphanumeric runs with a hyphen"
+  },
+  "entries": [
+    {
+      "id": "cloudflare.dns",
+      "display_name": "Cloudflare",
+      "purpose": "Scoped Cloudflare DNS zone, record, proxy, cache, and mail-DNS reconciliation.",
+      "requirement": "optional",
+      "docs_row_marker": "optional-integrations:v1:cloudflare",
+      "classes": [
+        "provider_adapter",
+        "client_surface"
+      ],
+      "targets": [
+        "local_host"
+      ],
+      "configuration": {
+        "non_secret_keys": [
+          "HSERVER_CF_API_EMAIL",
+          "HSERVER_DOMAIN_DNS_ORIGIN",
+          "HSERVER_DOMAIN_DNS_PROXIED",
+          "HSERVER_MAIL_DNS_HOSTNAME",
+          "HSERVER_MAIL_DNS_PUBLIC_IP",
+          "HSERVER_MAIL_DNS_MX_PRIORITY",
+          "HSERVER_MAIL_DNS_SPF",
+          "HSERVER_MAIL_DNS_DMARC"
+        ],
+        "secret_key_names": [
+          "HSERVER_CF_API_TOKEN"
+        ],
+        "secret_file_refs": [],
+        "boundary": "The least-privileged API token remains in protected installation environment; DNS origin and mail-DNS values are installation-owned configuration, and API responses never return credentials."
+      },
+      "status": {
+        "canonical_states": [
+          "not_configured",
+          "unavailable",
+          "healthy"
+        ],
+        "raw_state_mappings": [
+          {
+            "raw": "api_token_missing",
+            "canonical": "not_configured",
+            "meaning": "The installation has no Cloudflare API token."
+          },
+          {
+            "raw": "zone_probe_failed",
+            "canonical": "unavailable",
+            "meaning": "Configured Cloudflare access could not complete a read-only zone probe."
+          },
+          {
+            "raw": "zone_probe_succeeded",
+            "canonical": "healthy",
+            "meaning": "A fresh read-only Cloudflare zone observation succeeded."
+          }
+        ],
+        "api_route_prefixes": [
+          "/api/cloudflare"
+        ]
+      },
+      "evidence": {
+        "web": [
+          {
+            "path": "web/src/pages/Cloudflare.tsx",
+            "claim": "Cloudflare zone and record client surface."
+          }
+        ],
+        "docs": [
+          {
+            "path": "docs/optional-integrations.md",
+            "claim": "Cloudflare is an optional DNS integration with a protected token boundary."
+          },
+          {
+            "path": "docs/dns-management.md",
+            "claim": "DNS management documents the local and provider reconciliation boundary."
+          }
+        ],
+        "tests": [
+          {
+            "path": "internal/services/cloudflare/validation_test.go",
+            "claim": "Cloudflare configuration validation coverage."
+          },
+          {
+            "path": "internal/api/handlers_cloudflare_test.go",
+            "claim": "Cloudflare API handler coverage."
+          },
+          {
+            "path": "web/src/pages/Cloudflare.test.tsx",
+            "claim": "Cloudflare page state and interaction coverage."
+          }
+        ]
+      }
+    },
+    {
+      "id": "stalwart.mail",
+      "display_name": "Stalwart",
+      "purpose": "Stalwart mail-domain, account, alias, queue, service, and health management.",
+      "requirement": "optional",
+      "docs_row_marker": "optional-integrations:v1:stalwart",
+      "classes": [
+        "local_capability",
+        "client_surface"
+      ],
+      "targets": [
+        "local_host"
+      ],
+      "configuration": {
+        "non_secret_keys": [
+          "STALWART_URL",
+          "STALWART_ADMIN_USER",
+          "HSERVER_STALWART_SERVICE",
+          "HSERVER_STALWART_CONFIG_PATH",
+          "HSERVER_STALWART_BIN"
+        ],
+        "secret_key_names": [
+          "STALWART_API_KEY",
+          "STALWART_ADMIN_PASS"
+        ],
+        "secret_file_refs": [],
+        "boundary": "The management URL and local runtime paths are installation-owned; Bearer or Basic credentials remain in protected environment and are never returned by status or mail APIs."
+      },
+      "status": {
+        "canonical_states": [
+          "not_configured",
+          "unavailable",
+          "healthy"
+        ],
+        "raw_state_mappings": [
+          {
+            "raw": "not_configured",
+            "canonical": "not_configured",
+            "meaning": "The API base URL or required local service runtime setting is absent."
+          },
+          {
+            "raw": "unknown",
+            "canonical": "unavailable",
+            "meaning": "The configured Stalwart service state could not be observed."
+          },
+          {
+            "raw": "stopped_or_failed",
+            "canonical": "unavailable",
+            "meaning": "The configured service is stopped or failed and lifecycle actions remain disabled."
+          },
+          {
+            "raw": "running_and_api_probe_ok",
+            "canonical": "healthy",
+            "meaning": "The local service is running and a fresh management API observation succeeded."
+          }
+        ],
+        "api_route_prefixes": [
+          "/api/mail"
+        ]
+      },
+      "evidence": {
+        "web": [
+          {
+            "path": "web/src/pages/Mail.tsx",
+            "claim": "Mail management client surface."
+          }
+        ],
+        "docs": [
+          {
+            "path": "docs/mail-system.md",
+            "claim": "Stalwart management configuration and runtime boundary."
+          },
+          {
+            "path": "docs/optional-integrations.md",
+            "claim": "Stalwart optional integration recovery states."
+          }
+        ],
+        "tests": [
+          {
+            "path": "internal/services/mail/status_test.go",
+            "claim": "Stalwart service status and unconfigured-state coverage."
+          },
+          {
+            "path": "internal/api/handlers_mail_service_unit_test.go",
+            "claim": "Mail service API handler coverage."
+          },
+          {
+            "path": "web/src/pages/Mail.test.tsx",
+            "claim": "Mail page state coverage."
+          }
+        ]
+      }
+    },
+    {
+      "id": "mail.access",
+      "display_name": "Mail access",
+      "purpose": "Validated external webmail links and IMAP/SMTP client guidance from saved settings.",
+      "requirement": "optional",
+      "docs_row_marker": "optional-integrations:v1:mail-access",
+      "classes": [
+        "client_surface"
+      ],
+      "targets": [
+        "local_host"
+      ],
+      "configuration": {
+        "non_secret_keys": [
+          "webmail_url",
+          "mail_admin_url",
+          "mail_server_host",
+          "mail_imap_port",
+          "mail_smtp_starttls_port",
+          "mail_smtp_ssl_port"
+        ],
+        "secret_key_names": [],
+        "secret_file_refs": [],
+        "boundary": "Complete validated webmail, admin, hostname, and port settings are installation-owned preferences; no provider URL or mail credential is invented or stored by this surface."
+      },
+      "status": {
+        "canonical_states": [
+          "not_configured",
+          "unavailable",
+          "healthy"
+        ],
+        "raw_state_mappings": [
+          {
+            "raw": "empty_or_partial_invalid_settings",
+            "canonical": "not_configured",
+            "meaning": "No complete validated mail access endpoint set is saved."
+          },
+          {
+            "raw": "complete_valid_settings_without_reachability_probe",
+            "canonical": "unavailable",
+            "meaning": "The saved endpoints are complete and usable as guidance, but no external provider reachability probe has succeeded."
+          },
+          {
+            "raw": "external_reachability_probe_succeeded",
+            "canonical": "healthy",
+            "meaning": "Reserved for a fresh external webmail and mail-protocol reachability observation; the current settings endpoint does not emit this state."
+          }
+        ],
+        "api_route_prefixes": [
+          "/api/settings"
+        ]
+      },
+      "evidence": {
+        "web": [
+          {
+            "path": "web/src/pages/Webmail.tsx",
+            "claim": "Mail access links and client setup surface preserve hidden and unavailable states."
+          },
+          {
+            "path": "web/src/lib/mailSettings.ts",
+            "claim": "Mail endpoint, hostname, and port validation."
+          }
+        ],
+        "docs": [
+          {
+            "path": "docs/optional-integrations.md",
+            "claim": "Mail access requires complete validated settings and does not substitute defaults."
+          },
+          {
+            "path": "docs/installation-guide.md",
+            "claim": "Installation-owned settings boundary."
+          }
+        ],
+        "tests": [
+          {
+            "path": "web/src/lib/mailSettings.test.ts",
+            "claim": "Mail access validation and completeness coverage."
+          },
+          {
+            "path": "web/src/pages/Webmail.test.tsx",
+            "claim": "Mail access unavailable and configured UI coverage."
+          },
+          {
+            "path": "internal/api/handlers_settings_test.go",
+            "claim": "Settings API coverage."
+          }
+        ]
+      }
+    },
+    {
+      "id": "backup.gdrive",
+      "display_name": "Google Drive through rclone",
+      "purpose": "OAuth-authorized rclone upload, restore, retention, and connection testing for offsite backups.",
+      "requirement": "optional",
+      "docs_row_marker": "optional-integrations:v1:google-drive-through-rclone",
+      "classes": [
+        "provider_adapter",
+        "local_capability",
+        "client_surface"
+      ],
+      "targets": [
+        "local_host"
+      ],
+      "configuration": {
+        "non_secret_keys": [
+          "HSERVER_GDRIVE_CLIENT_ID",
+          "HSERVER_GDRIVE_REDIRECT_URI",
+          "HSERVER_RCLONE_BIN",
+          "gdrive_oauth_app",
+          "gdrive_settings"
+        ],
+        "secret_key_names": [
+          "HSERVER_GDRIVE_CLIENT_SECRET"
+        ],
+        "secret_file_refs": [
+          "gdrive-token.json",
+          "rclone.conf"
+        ],
+        "boundary": "OAuth client secret and refreshed token/rclone files stay in protected installation storage; browser and status responses expose only connection metadata and secret-presence state."
+      },
+      "status": {
+        "canonical_states": [
+          "not_configured",
+          "unavailable",
+          "healthy"
+        ],
+        "raw_state_mappings": [
+          {
+            "raw": "oauth_client_rclone_or_token_missing",
+            "canonical": "not_configured",
+            "meaning": "OAuth client credentials, rclone, or a stored authorization token are not configured."
+          },
+          {
+            "raw": "token_refresh_or_drive_about_probe_failed",
+            "canonical": "unavailable",
+            "meaning": "A configured Drive session failed token refresh or the read-only Drive about probe."
+          },
+          {
+            "raw": "drive_about_probe_succeeded",
+            "canonical": "healthy",
+            "meaning": "rclone and the authorized Drive session completed a fresh Drive about probe."
+          }
+        ],
+        "api_route_prefixes": [
+          "/api/backups/gdrive"
+        ]
+      },
+      "evidence": {
+        "web": [
+          {
+            "path": "web/src/components/backup/GDriveSection.tsx",
+            "claim": "Google Drive status and backup controls."
+          },
+          {
+            "path": "web/src/pages/Backups.tsx",
+            "claim": "Backup page integration surface."
+          }
+        ],
+        "docs": [
+          {
+            "path": "docs/gdrive-oauth-automation.md",
+            "claim": "OAuth and protected rclone configuration boundary."
+          },
+          {
+            "path": "docs/gdrive-v2-checklist.md",
+            "claim": "Google Drive readiness and acceptance boundary."
+          }
+        ],
+        "tests": [
+          {
+            "path": "internal/services/gdrive/service_test.go",
+            "claim": "Google Drive service status and transfer coverage."
+          },
+          {
+            "path": "internal/api/handlers_gdrive_test.go",
+            "claim": "Google Drive API handler coverage."
+          },
+          {
+            "path": "web/src/components/backup/GDriveSection.test.tsx",
+            "claim": "Google Drive UI state coverage."
+          }
+        ]
+      }
+    },
+    {
+      "id": "backup.snapshot.restic",
+      "display_name": "restic snapshots",
+      "purpose": "Client-side encrypted incremental full-server snapshots with Google Drive or S3-compatible destinations.",
+      "requirement": "optional",
+      "docs_row_marker": "optional-integrations:v1:restic-snapshots",
+      "classes": [
+        "provider_adapter",
+        "local_capability",
+        "client_surface"
+      ],
+      "targets": [
+        "local_host"
+      ],
+      "configuration": {
+        "non_secret_keys": [
+          "HSERVER_RESTIC_BIN",
+          "HSERVER_RCLONE_BIN",
+          "HSERVER_S3_ENDPOINT",
+          "HSERVER_S3_BUCKET",
+          "HSERVER_S3_REGION",
+          "HSERVER_S3_BUCKET_LOOKUP",
+          "snapshot_settings"
+        ],
+        "secret_key_names": [
+          "HSERVER_RESTIC_PASSWORD"
+        ],
+        "secret_file_refs": [
+          "HSERVER_S3_ACCESS_KEY_FILE",
+          "HSERVER_S3_SECRET_KEY_FILE"
+        ],
+        "boundary": "The repository password remains in protected environment or an external vault, S3 credentials are referenced through protected mode-0600 files, and restic receives secrets only in its local process environment."
+      },
+      "status": {
+        "canonical_states": [
+          "not_configured",
+          "unavailable",
+          "healthy"
+        ],
+        "raw_state_mappings": [
+          {
+            "raw": "destination_or_password_missing",
+            "canonical": "not_configured",
+            "meaning": "The selected destination or installation-owned repository password is absent."
+          },
+          {
+            "raw": "restic_missing_or_destination_probe_failed",
+            "canonical": "unavailable",
+            "meaning": "restic, rclone, or the selected remote destination failed observation."
+          },
+          {
+            "raw": "restic_and_destination_ready",
+            "canonical": "healthy",
+            "meaning": "The selected destination and encrypted snapshot prerequisites passed a fresh probe."
+          }
+        ],
+        "api_route_prefixes": [
+          "/api/backups/snapshot"
+        ]
+      },
+      "evidence": {
+        "web": [
+          {
+            "path": "web/src/components/backup/SnapshotSection.tsx",
+            "claim": "Snapshot status, destination, and lifecycle controls."
+          },
+          {
+            "path": "web/src/pages/Backups.tsx",
+            "claim": "Snapshot controls are integrated into the backup surface."
+          }
+        ],
+        "docs": [
+          {
+            "path": "docs/s3-snapshots.md",
+            "claim": "Encrypted restic repository and protected S3 credential-file boundary."
+          },
+          {
+            "path": "docs/optional-integrations.md",
+            "claim": "restic recovery states distinguish missing, unavailable, and healthy destinations."
+          }
+        ],
+        "tests": [
+          {
+            "path": "internal/services/snapshot/s3_test.go",
+            "claim": "S3 destination state and protected credential validation."
+          },
+          {
+            "path": "internal/services/snapshot/status_cache_test.go",
+            "claim": "Snapshot status observation cache coverage."
+          },
+          {
+            "path": "internal/api/handlers_snapshot_test.go",
+            "claim": "Snapshot API handler coverage."
+          },
+          {
+            "path": "web/src/components/backup/SnapshotSection.test.tsx",
+            "claim": "Snapshot UI state coverage."
+          }
+        ]
+      }
+    },
+    {
+      "id": "process.pm2",
+      "display_name": "PM2",
+      "purpose": "Explicit unprivileged PM2 process inventory, logs, deploy, and fixed lifecycle actions.",
+      "requirement": "optional",
+      "docs_row_marker": "optional-integrations:v1:pm2",
+      "classes": [
+        "local_capability",
+        "managed_node_capability",
+        "client_surface"
+      ],
+      "targets": [
+        "local_host",
+        "managed_node"
+      ],
+      "configuration": {
+        "non_secret_keys": [
+          "HSERVER_PM2_USER",
+          "HSERVER_PM2_HOME",
+          "HSERVER_PM2_BIN",
+          "HSERVER_PM2_ALLOWED_ROOTS",
+          "HSERVER_AGENT_ALLOW_PM2_READ",
+          "HSERVER_AGENT_ALLOWED_PM2_ACTIONS",
+          "HSERVER_AGENT_PM2_BINARY",
+          "HSERVER_AGENT_PM2_HOME",
+          "HSERVER_AGENT_PM2_USER"
+        ],
+        "secret_key_names": [],
+        "secret_file_refs": [],
+        "boundary": "PM2 commands run only as the installation-selected unprivileged owner and below explicit roots; managed-node enablement is agent-local policy, never granted by a panel request."
+      },
+      "status": {
+        "canonical_states": [
+          "not_configured",
+          "unavailable",
+          "healthy"
+        ],
+        "raw_state_mappings": [
+          {
+            "raw": "owner_or_home_not_configured",
+            "canonical": "not_configured",
+            "meaning": "The explicit PM2 owner, home, binary, or deployment root policy is absent."
+          },
+          {
+            "raw": "pm2_inventory_failed",
+            "canonical": "unavailable",
+            "meaning": "The configured PM2 daemon or bounded inventory could not be observed."
+          },
+          {
+            "raw": "pm2_inventory_succeeded",
+            "canonical": "healthy",
+            "meaning": "A fresh bounded inventory was read through the configured owner and PM2 home."
+          }
+        ],
+        "api_route_prefixes": [
+          "/api/pm2",
+          "/api/nodes/{id}/pm2"
+        ]
+      },
+      "agent": {
+        "tasks": [
+          "TaskPM2List",
+          "TaskPM2Logs",
+          "TaskPM2Action"
+        ],
+        "capabilities": [
+          "CapabilityPM2Read",
+          "CapabilityPM2Action"
+        ],
+        "evidence": {
+          "tasks": [
+            {
+              "path": "internal/agenthub/types.go",
+              "claim": "PM2 task constants are explicitly declared."
+            }
+          ],
+          "capabilities": [
+            {
+              "path": "internal/agenthub/types.go",
+              "claim": "PM2 capability constants are explicitly declared."
+            },
+            {
+              "path": "internal/agenthub/service.go",
+              "claim": "PM2 tasks map to capability gates in the agent hub."
+            }
+          ]
+        }
+      },
+      "evidence": {
+        "web": [
+          {
+            "path": "web/src/pages/PM2.tsx",
+            "claim": "Local PM2 page surface."
+          },
+          {
+            "path": "web/src/components/servers/RemotePM2.tsx",
+            "claim": "Managed-node PM2 capability-aware surface."
+          }
+        ],
+        "docs": [
+          {
+            "path": "docs/optional-integrations.md",
+            "claim": "PM2 configuration and operator recovery boundary."
+          },
+          {
+            "path": "docs/agent-hub-contract.md",
+            "claim": "Fixed PM2 managed task and capability contract."
+          }
+        ],
+        "tests": [
+          {
+            "path": "internal/services/pm2/pm2_test.go",
+            "claim": "Local PM2 configuration and command-boundary coverage."
+          },
+          {
+            "path": "internal/api/handlers_pm2_test.go",
+            "claim": "Local PM2 API coverage."
+          },
+          {
+            "path": "internal/api/handlers_remote_pm2_agent_test.go",
+            "claim": "Managed PM2 agent task execution and capability coverage."
+          },
+          {
+            "path": "web/src/pages/PM2.test.tsx",
+            "claim": "Local PM2 UI coverage."
+          },
+          {
+            "path": "web/src/components/servers/RemotePM2.test.tsx",
+            "claim": "Managed PM2 UI coverage."
+          }
+        ]
+      }
+    },
+    {
+      "id": "web.nginx",
+      "display_name": "nginx",
+      "purpose": "Installation-owned Nginx virtual-host inventory, syntax checks, config edits, archives, and reloads.",
+      "requirement": "feature_specific",
+      "docs_row_marker": "optional-integrations:v1:nginx",
+      "classes": [
+        "local_capability",
+        "managed_node_capability",
+        "client_surface"
+      ],
+      "targets": [
+        "local_host",
+        "managed_node"
+      ],
+      "configuration": {
+        "non_secret_keys": [
+          "HSERVER_NGINX_SITES_AVAILABLE",
+          "HSERVER_NGINX_SITES_ENABLED",
+          "HSERVER_NGINX_SNIPPETS_DIR",
+          "HSERVER_AGENT_ALLOWED_NGINX_ACTIONS",
+          "HSERVER_AGENT_ALLOW_NGINX_CONFIG_READ",
+          "HSERVER_AGENT_ALLOW_NGINX_CONFIG_WRITE",
+          "HSERVER_AGENT_NGINX_SITES_AVAILABLE",
+          "HSERVER_AGENT_NGINX_SITES_ENABLED"
+        ],
+        "secret_key_names": [],
+        "secret_file_refs": [],
+        "boundary": "Nginx paths and action allowlists are installation-owned; config writes use bounded names and checksums, and managed-node authority is enabled only by local agent policy."
+      },
+      "status": {
+        "canonical_states": [
+          "not_configured",
+          "unavailable",
+          "healthy"
+        ],
+        "raw_state_mappings": [
+          {
+            "raw": "binary_or_paths_not_configured",
+            "canonical": "not_configured",
+            "meaning": "The installation-owned Nginx roots or required managed policy are absent."
+          },
+          {
+            "raw": "not_installed_or_observation_failed",
+            "canonical": "unavailable",
+            "meaning": "Nginx is missing, inactive, or its status/config observation failed."
+          },
+          {
+            "raw": "installed_active_and_config_valid",
+            "canonical": "healthy",
+            "meaning": "The binary, service state, and a fresh syntax observation are usable."
+          }
+        ],
+        "api_route_prefixes": [
+          "/api/nginx",
+          "/api/nodes/{id}/nginx"
+        ]
+      },
+      "agent": {
+        "tasks": [
+          "TaskNginxAction",
+          "TaskNginxConfigList",
+          "TaskNginxConfigRead",
+          "TaskNginxConfigWrite"
+        ],
+        "capabilities": [
+          "CapabilityNginxAction",
+          "CapabilityNginxConfigRead",
+          "CapabilityNginxConfigWrite"
+        ],
+        "evidence": {
+          "tasks": [
+            {
+              "path": "internal/agenthub/types.go",
+              "claim": "Nginx task constants are explicitly declared."
+            }
+          ],
+          "capabilities": [
+            {
+              "path": "internal/agenthub/types.go",
+              "claim": "Nginx capability constants are explicitly declared."
+            },
+            {
+              "path": "internal/agenthub/service.go",
+              "claim": "Nginx tasks map to capability gates in the agent hub."
+            }
+          ]
+        }
+      },
+      "evidence": {
+        "web": [
+          {
+            "path": "web/src/pages/Nginx.tsx",
+            "claim": "Local Nginx page surface."
+          },
+          {
+            "path": "web/src/components/servers/RemoteNginx.tsx",
+            "claim": "Managed-node Nginx capability-aware surface."
+          }
+        ],
+        "docs": [
+          {
+            "path": "docs/optional-integrations.md",
+            "claim": "Nginx absence, inactive, and unavailable recovery guidance."
+          },
+          {
+            "path": "docs/extension-boundary.md",
+            "claim": "Local and managed extension class boundaries."
+          }
+        ],
+        "tests": [
+          {
+            "path": "internal/services/nginx/status_test.go",
+            "claim": "Nginx status observation coverage."
+          },
+          {
+            "path": "internal/api/handlers_nginx_test.go",
+            "claim": "Local Nginx API coverage."
+          },
+          {
+            "path": "internal/api/handlers_remote_nginx_agent_test.go",
+            "claim": "Managed Nginx agent coverage."
+          },
+          {
+            "path": "web/src/pages/Nginx.test.tsx",
+            "claim": "Local Nginx UI coverage."
+          },
+          {
+            "path": "web/src/components/servers/RemoteNginx.test.tsx",
+            "claim": "Managed Nginx UI coverage."
+          }
+        ]
+      }
+    },
+    {
+      "id": "runtime.php_fpm",
+      "display_name": "PHP-FPM",
+      "purpose": "PHP-FPM version, pool, configuration, extension, monitoring, and fixed lifecycle management.",
+      "requirement": "feature_specific",
+      "docs_row_marker": "optional-integrations:v1:php-fpm",
+      "classes": [
+        "local_capability",
+        "managed_node_capability",
+        "client_surface"
+      ],
+      "targets": [
+        "local_host",
+        "managed_node"
+      ],
+      "configuration": {
+        "non_secret_keys": [
+          "HSERVER_PHP_CONFIG_ROOT",
+          "HSERVER_PHP_BINARY_ROOT",
+          "HSERVER_AGENT_ALLOWED_PHP_ACTIONS",
+          "HSERVER_AGENT_ALLOW_PHP_CONFIG_READ",
+          "HSERVER_AGENT_ALLOW_PHP_CONFIG_WRITE",
+          "HSERVER_AGENT_PHP_CONFIG_ROOT",
+          "HSERVER_AGENT_PHP_BINARY_ROOT"
+        ],
+        "secret_key_names": [],
+        "secret_file_refs": [],
+        "boundary": "PHP-FPM roots and actions stay installation-owned; pool writes are checksum-guarded and managed-node controls require local agent policy rather than caller-supplied paths or binaries."
+      },
+      "status": {
+        "canonical_states": [
+          "not_configured",
+          "unavailable",
+          "healthy"
+        ],
+        "raw_state_mappings": [
+          {
+            "raw": "config_root_not_configured",
+            "canonical": "not_configured",
+            "meaning": "The required installation-owned PHP-FPM configuration root or managed read policy is absent."
+          },
+          {
+            "raw": "inventory_or_pool_probe_failed",
+            "canonical": "unavailable",
+            "meaning": "Version, pool, binary, or runtime observation failed."
+          },
+          {
+            "raw": "version_pool_and_runtime_probe_succeeded",
+            "canonical": "healthy",
+            "meaning": "A fresh bounded version and pool observation succeeded."
+          }
+        ],
+        "api_route_prefixes": [
+          "/api/php",
+          "/api/nodes/{id}/php"
+        ]
+      },
+      "agent": {
+        "tasks": [
+          "TaskPHPInventory",
+          "TaskPHPConfigRead",
+          "TaskPHPConfigWrite",
+          "TaskPHPAction"
+        ],
+        "capabilities": [
+          "CapabilityPHPRead",
+          "CapabilityPHPWrite",
+          "CapabilityPHPAction"
+        ],
+        "evidence": {
+          "tasks": [
+            {
+              "path": "internal/agenthub/types.go",
+              "claim": "PHP-FPM task constants are explicitly declared."
+            }
+          ],
+          "capabilities": [
+            {
+              "path": "internal/agenthub/types.go",
+              "claim": "PHP-FPM capability constants are explicitly declared."
+            },
+            {
+              "path": "internal/agenthub/service.go",
+              "claim": "PHP-FPM tasks map to capability gates in the agent hub."
+            }
+          ]
+        }
+      },
+      "evidence": {
+        "web": [
+          {
+            "path": "web/src/pages/PHP.tsx",
+            "claim": "Local PHP-FPM page surface."
+          },
+          {
+            "path": "web/src/components/servers/RemotePHP.tsx",
+            "claim": "Managed-node PHP-FPM capability-aware surface."
+          }
+        ],
+        "docs": [
+          {
+            "path": "docs/optional-integrations.md",
+            "claim": "PHP-FPM installation and unavailable-state recovery guidance."
+          },
+          {
+            "path": "docs/agent-hub-contract.md",
+            "claim": "Fixed managed PHP-FPM task and capability boundary."
+          }
+        ],
+        "tests": [
+          {
+            "path": "internal/services/php/lifecycle_test.go",
+            "claim": "PHP-FPM lifecycle coverage."
+          },
+          {
+            "path": "internal/api/handlers_php_action_test.go",
+            "claim": "Local PHP-FPM action API coverage."
+          },
+          {
+            "path": "internal/api/handlers_remote_php_agent_test.go",
+            "claim": "Managed PHP-FPM agent coverage."
+          },
+          {
+            "path": "web/src/pages/PHP.test.tsx",
+            "claim": "Local PHP-FPM UI coverage."
+          },
+          {
+            "path": "web/src/components/servers/RemotePHP.test.tsx",
+            "claim": "Managed PHP-FPM UI coverage."
+          }
+        ]
+      }
+    },
+    {
+      "id": "firewall.ufw",
+      "display_name": "UFW",
+      "purpose": "Local UFW policy inventory and fixed firewall lifecycle actions with observation-only iptables fallback.",
+      "requirement": "feature_specific",
+      "docs_row_marker": "optional-integrations:v1:ufw",
+      "classes": [
+        "local_capability",
+        "managed_node_capability",
+        "client_surface"
+      ],
+      "targets": [
+        "local_host",
+        "managed_node"
+      ],
+      "configuration": {
+        "non_secret_keys": [
+          "HSERVER_AGENT_ALLOW_FIREWALL_READ",
+          "HSERVER_AGENT_ALLOW_FIREWALL_WRITE",
+          "HSERVER_AGENT_IPTABLES_BINARY",
+          "HSERVER_AGENT_FIREWALL_SAVE_BINARY",
+          "HSERVER_AGENT_FIREWALL_LOCK_PATH",
+          "HSERVER_AGENT_FIREWALL_PERSISTENCE_SERVICE",
+          "HSERVER_AGENT_FIREWALL_PERSISTENCE_PATH",
+          "HSERVER_AGENT_FIREWALL_PROTECTED_SOURCES",
+          "HSERVER_AGENT_FIREWALL_PROTECTED_PORTS"
+        ],
+        "secret_key_names": [],
+        "secret_file_refs": [],
+        "boundary": "UFW mutations are local or agent-policy-scoped; iptables fallback is read-only observation, and managed write access is explicitly enabled on the agent."
+      },
+      "status": {
+        "canonical_states": [
+          "not_configured",
+          "unavailable",
+          "healthy"
+        ],
+        "raw_state_mappings": [
+          {
+            "raw": "ufw_missing",
+            "canonical": "not_configured",
+            "meaning": "The UFW client is not installed, so UFW mutation readiness is not configured."
+          },
+          {
+            "raw": "ufw_status_unavailable",
+            "canonical": "unavailable",
+            "meaning": "UFW or its observation path failed; any iptables fallback remains observation-only."
+          },
+          {
+            "raw": "ufw_status_observed",
+            "canonical": "healthy",
+            "meaning": "A fresh UFW status and rule observation succeeded."
+          }
+        ],
+        "api_route_prefixes": [
+          "/api/firewall",
+          "/api/nodes/{id}/firewall"
+        ]
+      },
+      "agent": {
+        "tasks": [
+          "TaskFirewallInventory",
+          "TaskFirewallAdd",
+          "TaskFirewallDelete"
+        ],
+        "capabilities": [
+          "CapabilityFirewallRead",
+          "CapabilityFirewallWrite"
+        ],
+        "evidence": {
+          "tasks": [
+            {
+              "path": "internal/agenthub/types.go",
+              "claim": "Firewall task constants are explicitly declared."
+            }
+          ],
+          "capabilities": [
+            {
+              "path": "internal/agenthub/types.go",
+              "claim": "Firewall capability constants are explicitly declared."
+            },
+            {
+              "path": "internal/agenthub/service.go",
+              "claim": "Firewall tasks map to capability gates in the agent hub."
+            }
+          ]
+        }
+      },
+      "evidence": {
+        "web": [
+          {
+            "path": "web/src/pages/Firewall.tsx",
+            "claim": "Local UFW page surface."
+          },
+          {
+            "path": "web/src/components/servers/RemoteFirewall.tsx",
+            "claim": "Managed-node firewall capability-aware surface."
+          }
+        ],
+        "docs": [
+          {
+            "path": "docs/optional-integrations.md",
+            "claim": "UFW missing, unavailable, and fallback recovery guidance."
+          },
+          {
+            "path": "docs/agent-hub-contract.md",
+            "claim": "Fixed managed firewall task and capability boundary."
+          }
+        ],
+        "tests": [
+          {
+            "path": "internal/services/firewall/firewall_test.go",
+            "claim": "UFW and observation-only fallback classification coverage."
+          },
+          {
+            "path": "internal/api/handlers_firewall_test.go",
+            "claim": "Local firewall API coverage."
+          },
+          {
+            "path": "internal/api/handlers_remote_firewall_agent_test.go",
+            "claim": "Managed firewall agent coverage."
+          },
+          {
+            "path": "web/src/pages/Firewall.test.tsx",
+            "claim": "Local firewall UI coverage."
+          },
+          {
+            "path": "web/src/components/servers/RemoteFirewall.test.tsx",
+            "claim": "Managed firewall UI coverage."
+          }
+        ]
+      }
+    },
+    {
+      "id": "tls.certbot",
+      "display_name": "Certbot",
+      "purpose": "Let's Encrypt certificate inventory, authenticator readiness, issuance, renewal, and chain checks.",
+      "requirement": "feature_specific",
+      "docs_row_marker": "optional-integrations:v1:certbot",
+      "classes": [
+        "local_capability",
+        "managed_node_capability",
+        "client_surface"
+      ],
+      "targets": [
+        "local_host",
+        "managed_node"
+      ],
+      "configuration": {
+        "non_secret_keys": [
+          "HSERVER_CERTBOT_BIN",
+          "HSERVER_CERTBOT_CONFIG_DIR",
+          "HSERVER_ACME_WEBROOT",
+          "HSERVER_AGENT_ALLOW_SSL_READ",
+          "HSERVER_AGENT_ALLOW_SSL_ACTIONS",
+          "HSERVER_AGENT_CERTBOT_CONFIG_DIR",
+          "HSERVER_AGENT_CERTBOT_WORK_DIR",
+          "HSERVER_AGENT_CERTBOT_LOGS_DIR",
+          "HSERVER_AGENT_CERTBOT_BINARY",
+          "HSERVER_AGENT_OPENSSL_BINARY",
+          "HSERVER_AGENT_CA_BUNDLE"
+        ],
+        "secret_key_names": [],
+        "secret_file_refs": [
+          "HSERVER_CERTBOT_CLOUDFLARE_CREDENTIALS"
+        ],
+        "boundary": "Certbot paths are installation-owned and authenticator credentials are referenced only through a protected mode-0600 file; managed SSL actions are enabled by agent-local policy and use fixed certificate names."
+      },
+      "status": {
+        "canonical_states": [
+          "not_configured",
+          "unavailable",
+          "healthy"
+        ],
+        "raw_state_mappings": [
+          {
+            "raw": "certbot_missing",
+            "canonical": "not_configured",
+            "meaning": "No configured Certbot client is available for new issuance."
+          },
+          {
+            "raw": "plugin_inventory_or_credentials_unavailable",
+            "canonical": "unavailable",
+            "meaning": "Certbot exists but plugin, credential-file, or status observation failed."
+          },
+          {
+            "raw": "certbot_version_and_plugin_probe_succeeded",
+            "canonical": "healthy",
+            "meaning": "A fresh Certbot version and authenticator inventory succeeded."
+          }
+        ],
+        "api_route_prefixes": [
+          "/api/ssl",
+          "/api/nodes/{id}/certificates"
+        ]
+      },
+      "agent": {
+        "tasks": [
+          "TaskSSLInventory",
+          "TaskSSLAction"
+        ],
+        "capabilities": [
+          "CapabilitySSLRead",
+          "CapabilitySSLAction"
+        ],
+        "evidence": {
+          "tasks": [
+            {
+              "path": "internal/agenthub/types.go",
+              "claim": "SSL task constants are explicitly declared."
+            }
+          ],
+          "capabilities": [
+            {
+              "path": "internal/agenthub/types.go",
+              "claim": "SSL capability constants are explicitly declared."
+            },
+            {
+              "path": "internal/agenthub/service.go",
+              "claim": "SSL tasks map to capability gates in the agent hub."
+            }
+          ]
+        }
+      },
+      "evidence": {
+        "web": [
+          {
+            "path": "web/src/pages/SSL.tsx",
+            "claim": "Local certificate and Certbot page surface."
+          },
+          {
+            "path": "web/src/components/servers/RemoteSSL.tsx",
+            "claim": "Managed-node certificate capability-aware surface."
+          }
+        ],
+        "docs": [
+          {
+            "path": "docs/optional-integrations.md",
+            "claim": "Certbot plugin and protected DNS-01 credential recovery guidance."
+          },
+          {
+            "path": "docs/installation-guide.md",
+            "claim": "Certbot configuration and agent-local enablement boundary."
+          }
+        ],
+        "tests": [
+          {
+            "path": "internal/services/ssl/ssl_test.go",
+            "claim": "Certbot readiness and state classification coverage."
+          },
+          {
+            "path": "internal/api/handlers_ssl_test.go",
+            "claim": "Local SSL API coverage."
+          },
+          {
+            "path": "internal/api/handlers_remote_ssl_agent_test.go",
+            "claim": "Managed SSL agent coverage."
+          },
+          {
+            "path": "web/src/pages/SSL.test.tsx",
+            "claim": "Local SSL UI coverage."
+          },
+          {
+            "path": "web/src/components/servers/RemoteSSL.test.tsx",
+            "claim": "Managed SSL UI coverage."
+          }
+        ]
+      }
+    },
+    {
+      "id": "dns.bind9",
+      "display_name": "BIND 9",
+      "purpose": "Local authoritative DNS zone, record, SOA, validation, lookup, export, and reload controls.",
+      "requirement": "feature_specific",
+      "docs_row_marker": "optional-integrations:v1:bind-9",
+      "classes": [
+        "local_capability",
+        "client_surface"
+      ],
+      "targets": [
+        "local_host"
+      ],
+      "configuration": {
+        "non_secret_keys": [],
+        "secret_key_names": [],
+        "secret_file_refs": [],
+        "boundary": "BIND binaries, configuration, zone files, validation tools, and reload client are observed on the local host; HServer stores no provider credential and has no managed-node substitute."
+      },
+      "status": {
+        "canonical_states": [
+          "not_configured",
+          "unavailable",
+          "healthy"
+        ],
+        "raw_state_mappings": [
+          {
+            "raw": "named_or_zone_setup_missing",
+            "canonical": "not_configured",
+            "meaning": "BIND or its local management configuration is not installed or configured."
+          },
+          {
+            "raw": "named_stopped_or_validation_failed",
+            "canonical": "unavailable",
+            "meaning": "The service, validation tools, or reload path failed observation."
+          },
+          {
+            "raw": "named_active_and_zone_validation_ok",
+            "canonical": "healthy",
+            "meaning": "A fresh BIND service and zone validation observation succeeded."
+          }
+        ],
+        "api_route_prefixes": [
+          "/api/dns"
+        ]
+      },
+      "evidence": {
+        "web": [
+          {
+            "path": "web/src/pages/DNS.tsx",
+            "claim": "Local BIND DNS page surface."
+          }
+        ],
+        "docs": [
+          {
+            "path": "docs/dns-management.md",
+            "claim": "BIND local authoritative DNS management boundary."
+          },
+          {
+            "path": "docs/optional-integrations.md",
+            "claim": "BIND setup, stopped, and unavailable recovery guidance."
+          }
+        ],
+        "tests": [
+          {
+            "path": "internal/services/bind/bind_test.go",
+            "claim": "BIND readiness and state coverage."
+          },
+          {
+            "path": "internal/api/handlers_bind_test.go",
+            "claim": "BIND API coverage."
+          },
+          {
+            "path": "web/src/pages/DNS.test.tsx",
+            "claim": "BIND DNS UI coverage."
+          }
+        ]
+      }
+    },
+    {
+      "id": "database.local",
+      "display_name": "PostgreSQL and MariaDB",
+      "purpose": "Local PostgreSQL and MariaDB inventory, sessions, table inspection, and fixed backup controls.",
+      "requirement": "feature_specific",
+      "docs_row_marker": "optional-integrations:v1:postgresql-and-mariadb",
+      "classes": [
+        "local_capability",
+        "managed_node_capability",
+        "client_surface"
+      ],
+      "targets": [
+        "local_host",
+        "managed_node"
+      ],
+      "configuration": {
+        "non_secret_keys": [
+          "HSERVER_AGENT_ALLOW_DATABASE_READ",
+          "HSERVER_AGENT_ALLOWED_DATABASE_RESTARTS",
+          "HSERVER_AGENT_MARIADB_BINARY",
+          "HSERVER_AGENT_MARIADB_ADMIN_BINARY",
+          "HSERVER_AGENT_PG_LSCLUSTERS_BINARY",
+          "HSERVER_AGENT_PSQL_BINARY",
+          "HSERVER_AGENT_PG_ISREADY_BINARY"
+        ],
+        "secret_key_names": [],
+        "secret_file_refs": [],
+        "boundary": "Local database observation uses installation-owned clients and OS/socket identities; managed inventory and restart are explicit agent-local capabilities and credentials are never exported."
+      },
+      "status": {
+        "canonical_states": [
+          "not_configured",
+          "unavailable",
+          "healthy"
+        ],
+        "raw_state_mappings": [
+          {
+            "raw": "client_or_identity_not_configured",
+            "canonical": "not_configured",
+            "meaning": "A required local client or managed read policy is absent."
+          },
+          {
+            "raw": "client_missing_stopped_or_auth_failed",
+            "canonical": "unavailable",
+            "meaning": "The source client, service, socket, or installation-owned authentication policy failed observation."
+          },
+          {
+            "raw": "postgresql_or_mariadb_inventory_observed",
+            "canonical": "healthy",
+            "meaning": "At least one configured database source passed a fresh bounded inventory probe."
+          }
+        ],
+        "api_route_prefixes": [
+          "/api/databases",
+          "/api/nodes/{id}/databases"
+        ]
+      },
+      "agent": {
+        "tasks": [
+          "TaskDatabaseInventory",
+          "TaskDatabaseAction"
+        ],
+        "capabilities": [
+          "CapabilityDatabaseRead",
+          "CapabilityDatabaseAction"
+        ],
+        "evidence": {
+          "tasks": [
+            {
+              "path": "internal/agenthub/types.go",
+              "claim": "Database task constants are explicitly declared."
+            }
+          ],
+          "capabilities": [
+            {
+              "path": "internal/agenthub/types.go",
+              "claim": "Database capability constants are explicitly declared."
+            },
+            {
+              "path": "internal/agenthub/service.go",
+              "claim": "Database tasks map to capability gates in the agent hub."
+            }
+          ]
+        }
+      },
+      "evidence": {
+        "web": [
+          {
+            "path": "web/src/pages/Database.tsx",
+            "claim": "Local database page surface."
+          },
+          {
+            "path": "web/src/components/servers/RemoteDatabases.tsx",
+            "claim": "Managed-node database capability-aware surface."
+          }
+        ],
+        "docs": [
+          {
+            "path": "docs/optional-integrations.md",
+            "claim": "Database client, service, authentication, and inventory recovery guidance."
+          },
+          {
+            "path": "docs/agent-hub-contract.md",
+            "claim": "Fixed managed database task and capability boundary."
+          }
+        ],
+        "tests": [
+          {
+            "path": "internal/services/database/database_test.go",
+            "claim": "Database source classification and inventory coverage."
+          },
+          {
+            "path": "internal/api/handlers_database_test.go",
+            "claim": "Local database API coverage."
+          },
+          {
+            "path": "internal/api/handlers_remote_database_agent_test.go",
+            "claim": "Managed database agent coverage."
+          },
+          {
+            "path": "web/src/pages/Database.test.tsx",
+            "claim": "Local database UI coverage."
+          },
+          {
+            "path": "web/src/components/servers/RemoteDatabases.test.tsx",
+            "claim": "Managed database UI coverage."
+          }
+        ]
+      }
+    },
+    {
+      "id": "container.docker",
+      "display_name": "Docker",
+      "purpose": "Bounded local Docker image/container inventory, logs, and fixed start, restart, stop, pull, and delete actions.",
+      "requirement": "feature_specific",
+      "docs_row_marker": "optional-integrations:v1:docker",
+      "classes": [
+        "local_capability",
+        "managed_node_capability",
+        "client_surface"
+      ],
+      "targets": [
+        "local_host",
+        "managed_node"
+      ],
+      "configuration": {
+        "non_secret_keys": [
+          "HSERVER_AGENT_ALLOW_CONTAINER_READ",
+          "HSERVER_AGENT_ALLOWED_CONTAINER_ACTIONS"
+        ],
+        "secret_key_names": [],
+        "secret_file_refs": [],
+        "boundary": "The local Docker socket and CLI are installation-owned; managed container reads/actions require separate agent-local flags and fixed action vocabularies, never a caller-selected socket or command."
+      },
+      "status": {
+        "canonical_states": [
+          "not_configured",
+          "unavailable",
+          "healthy"
+        ],
+        "raw_state_mappings": [
+          {
+            "raw": "docker_not_installed",
+            "canonical": "not_configured",
+            "meaning": "No Docker CLI is present for the local or selected managed target."
+          },
+          {
+            "raw": "docker_daemon_unavailable",
+            "canonical": "unavailable",
+            "meaning": "The Docker CLI exists but the daemon or socket cannot be observed."
+          },
+          {
+            "raw": "docker_info_and_inventory_succeeded",
+            "canonical": "healthy",
+            "meaning": "A fresh Docker daemon and bounded inventory probe succeeded."
+          }
+        ],
+        "api_route_prefixes": [
+          "/api/docker",
+          "/api/nodes/{id}/containers"
+        ]
+      },
+      "agent": {
+        "tasks": [
+          "TaskContainerList",
+          "TaskContainerAction"
+        ],
+        "capabilities": [
+          "CapabilityContainerRead",
+          "CapabilityContainerAction"
+        ],
+        "evidence": {
+          "tasks": [
+            {
+              "path": "internal/agenthub/types.go",
+              "claim": "Container task constants are explicitly declared."
+            }
+          ],
+          "capabilities": [
+            {
+              "path": "internal/agenthub/types.go",
+              "claim": "Container capability constants are explicitly declared."
+            },
+            {
+              "path": "internal/agenthub/service.go",
+              "claim": "Container tasks map to capability gates in the agent hub."
+            }
+          ]
+        }
+      },
+      "evidence": {
+        "web": [
+          {
+            "path": "web/src/pages/Docker.tsx",
+            "claim": "Local Docker page surface."
+          }
+        ],
+        "docs": [
+          {
+            "path": "docs/optional-integrations.md",
+            "claim": "Docker not installed, stopped, and unavailable recovery guidance."
+          },
+          {
+            "path": "docs/docker-compose-deployments.md",
+            "claim": "Docker deployment and local socket boundary."
+          }
+        ],
+        "tests": [
+          {
+            "path": "internal/services/dockerctl/service_test.go",
+            "claim": "Docker CLI, daemon, and bounded inventory coverage."
+          },
+          {
+            "path": "internal/api/handlers_docker_test.go",
+            "claim": "Local Docker API coverage."
+          },
+          {
+            "path": "internal/api/handlers_remote_containers_agent_test.go",
+            "claim": "Managed container agent coverage."
+          },
+          {
+            "path": "web/src/pages/Docker.test.tsx",
+            "claim": "Local Docker UI coverage."
+          }
+        ]
+      }
+    },
+    {
+      "id": "storage.smartmontools",
+      "display_name": "smartmontools",
+      "purpose": "Physical root-disk SMART health observation without guessing across virtual, RAID, or multi-disk roots.",
+      "requirement": "optional",
+      "docs_row_marker": "optional-integrations:v1:smartmontools",
+      "classes": [
+        "local_capability",
+        "client_surface"
+      ],
+      "targets": [
+        "local_host"
+      ],
+      "configuration": {
+        "non_secret_keys": [],
+        "secret_key_names": [],
+        "secret_file_refs": [],
+        "boundary": "The selected physical block device is derived from observed root filesystem ancestry and smartmontools visibility; no disk is selected or marked healthy when the root is virtual, non-block, or ambiguous."
+      },
+      "status": {
+        "canonical_states": [
+          "not_configured",
+          "unavailable",
+          "healthy"
+        ],
+        "raw_state_mappings": [
+          {
+            "raw": "smartmontools_missing_or_no_single_physical_root",
+            "canonical": "not_configured",
+            "meaning": "A usable physical root disk and SMART client are not configured or cannot be selected safely."
+          },
+          {
+            "raw": "smart_observation_failed_or_unknown",
+            "canonical": "unavailable",
+            "meaning": "The selected device could not produce a trustworthy SMART observation."
+          },
+          {
+            "raw": "smartctl_passed",
+            "canonical": "healthy",
+            "meaning": "smartctl produced a fresh PASSED health result for the observed physical root disk."
+          }
+        ],
+        "api_route_prefixes": [
+          "/api/disk"
+        ]
+      },
+      "evidence": {
+        "web": [
+          {
+            "path": "web/src/pages/DiskManagement.tsx",
+            "claim": "Disk and SMART management surface."
+          }
+        ],
+        "docs": [
+          {
+            "path": "docs/optional-integrations.md",
+            "claim": "SMART virtual, multi-disk, and unavailable-state recovery guidance."
+          },
+          {
+            "path": "docs/troubleshooting.md",
+            "claim": "Disk observation troubleshooting boundary."
+          }
+        ],
+        "tests": [
+          {
+            "path": "internal/services/disk/disk_test.go",
+            "claim": "Disk and SMART observation coverage."
+          },
+          {
+            "path": "internal/api/handlers_disk_unit_test.go",
+            "claim": "Disk API unit coverage."
+          },
+          {
+            "path": "web/src/pages/DiskManagement.smart.test.tsx",
+            "claim": "SMART UI state coverage."
+          }
+        ]
+      }
+    },
+    {
+      "id": "notification.delivery",
+      "display_name": "Notification delivery",
+      "purpose": "Write-only email, Telegram, Discord, and Slack alert channels with durable delivery receipts, test delivery, and rule history.",
+      "requirement": "optional",
+      "docs_row_marker": "optional-integrations:v1:notification-delivery",
+      "classes": [
+        "provider_adapter",
+        "local_capability",
+        "client_surface"
+      ],
+      "targets": [
+        "local_host"
+      ],
+      "configuration": {
+        "non_secret_keys": [
+          "HSERVER_DATA_DIR",
+          "HSERVER_NOTIFICATION_SECRET_DIR"
+        ],
+        "secret_key_names": [
+          "password",
+          "botToken",
+          "webhookUrl"
+        ],
+        "secret_file_refs": [
+          "HSERVER_NOTIFICATION_SECRET_DIR"
+        ],
+        "boundary": "Channel credentials are write-only values in installation-owned mode-0700/mode-0600 files; SQLite keeps only a file reference plus a monotonically increasing config revision that fences the latest delivery receipt, while API responses expose non-secret fields and secret_configured."
+      },
+      "status": {
+        "canonical_states": [
+          "not_configured",
+          "unavailable",
+          "healthy"
+        ],
+        "raw_state_mappings": [
+          {
+            "raw": "no_channels_configured",
+            "canonical": "not_configured",
+            "meaning": "No notification channel has been configured."
+          },
+          {
+            "raw": "protected_store_unavailable",
+            "canonical": "unavailable",
+            "meaning": "The protected channel store cannot be observed, so channel inventory and delivery state remain unavailable."
+          },
+          {
+            "raw": "config_unavailable",
+            "canonical": "unavailable",
+            "meaning": "A channel's protected configuration cannot be read or normalized."
+          },
+          {
+            "raw": "configured_disabled",
+            "canonical": "unavailable",
+            "meaning": "A configured channel is disabled and cannot deliver alert notifications."
+          },
+          {
+            "raw": "probe_unverified",
+            "canonical": "unavailable",
+            "meaning": "No persisted delivery receipt matches the channel's current config revision, or no receipt exists."
+          },
+          {
+            "raw": "delivery_failed",
+            "canonical": "unavailable",
+            "meaning": "The latest bounded delivery attempt failed after the provider call."
+          },
+          {
+            "raw": "delivery_stale",
+            "canonical": "unavailable",
+            "meaning": "The latest successful delivery receipt is older than the seven-day freshness window."
+          },
+          {
+            "raw": "delivery_confirmed",
+            "canonical": "healthy",
+            "meaning": "A persisted successful delivery receipt matches the channel's current config revision and is no more than seven days old."
+          }
+        ],
+        "api_route_prefixes": [
+          "/api/notify"
+        ]
+      },
+      "evidence": {
+        "web": [
+          {
+            "path": "web/src/pages/Notifications.tsx",
+            "claim": "Notification channels, test delivery, and rule client surface."
+          }
+        ],
+        "docs": [
+          {
+            "path": "docs/optional-integrations.md",
+            "claim": "Notification setup and protected-store recovery guidance."
+          },
+          {
+            "path": "docs/installation-guide.md",
+            "claim": "Write-only channel credential storage boundary."
+          }
+        ],
+        "tests": [
+          {
+            "path": "internal/services/notify/channel_config_test.go",
+            "claim": "Write-only channel config normalization and redaction coverage."
+          },
+          {
+            "path": "internal/api/handlers_notify_test.go",
+            "claim": "Notification API coverage."
+          },
+          {
+            "path": "web/src/pages/Notifications.test.tsx",
+            "claim": "Notification UI coverage."
+          }
+        ]
+      }
+    }
+  ]
+}

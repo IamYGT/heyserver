@@ -1,0 +1,17 @@
+[Unit]
+Description=HServer Panel - Server Management GUI
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/hserver-panel
+Restart=always
+RestartSec=5
+EnvironmentFile=/etc/hserver/hserver.env
+WorkingDirectory=/var/lib/hserver
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

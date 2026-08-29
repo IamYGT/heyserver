@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "node-build",
+  "name": "Node.js locked build",
+  "description": "Install locked dependencies and build the application before the installation-owned process manager takes over.",
+  "branch": "main",
+  "deploymentKind": "script",
+  "composeFile": "",
+  "deployScript": "npm ci\nnpm run build\n"
+}

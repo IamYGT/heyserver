@@ -1,0 +1,832 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*.*.*']
+  pull_request:
+    branches: [main]
+
+env:
+  GO_VERSION: '1.26'
+  NODE_VERSION: '24'
+  BINARY_NAME: hserver-panel
+
+jobs:
+  # ─── Go: Lint ──────────────────────────────────────────────────────────────
+  go-lint:
+    name: Go Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: latest
+          args: --timeout=5m
+
+  # ─── Go: Security Scan ─────────────────────────────────────────────────────
+  go-security:
+    name: Go Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@latest
+
+      - name: Run govulncheck
+        run: govulncheck ./...
+
+  # ─── Frontend: TypeScript + Lint ───────────────────────────────────────────
+  frontend-lint:
+    name: Frontend Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: web
+
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+        working-directory: web
+
+      - name: ESLint
+        run: npm run lint
+        working-directory: web
+
+      - name: Frontend API route contract tests
+        run: npm run test:api-routes
+        working-directory: web
+
+  # ─── Go: Test + Coverage ───────────────────────────────────────────────────
+  go-test:
+    name: Go Tests & Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install native test dependencies
+        run: sudo apt-get update && sudo apt-get install -y gcc
+
+      - name: Run tests with coverage
+        run: |
+          PKGS=$(go list ./... | grep -vE 'testcmd|flatted/golang|/terminal$|/testutil$')
+          CGO_ENABLED=1 go test \
+            -coverprofile=coverage.out \
+            -covermode=atomic \
+            $PKGS
+
+      - name: Verify lifecycle and release scripts
+        run: make test-shell
+
+      - name: Verify Debian 12 release gate contract
+        run: ./scripts/test-debian12-release-gate.sh
+
+      - name: Enforce minimum coverage (25%)
+        run: |
+          TOTAL=$(go tool cover -func=coverage.out | awk '/^total:/ {gsub(/%/,"",$3); print $3}')
+          echo "Total coverage: ${TOTAL}%"
+          awk -v cov="$TOTAL" 'BEGIN { if (cov+0 < 25) { print "Coverage below 25%: " cov "%"; exit 1 } }'
+
+      - name: Generate HTML coverage report
+        run: go tool cover -html=coverage.out -o coverage.html
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-coverage-report
+          path: |
+            coverage.out
+            coverage.html
+          retention-days: 14
+
+  # ─── Database: Real isolated backup, restore, and failed-restore rollback ──
+  database-restore-acceptance:
+    name: Database Restore (${{ matrix.engine }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - engine: PostgreSQL
+            package: postgresql
+            script: ./scripts/test-postgresql-restore-drill.sh
+          - engine: MariaDB
+            package: mariadb-server
+            script: ./scripts/test-mariadb-restore-drill.sh
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Install isolated database drill dependencies
+        env:
+          DATABASE_PACKAGE: ${{ matrix.package }}
+        run: sudo apt-get update && sudo apt-get install -y gcc "$DATABASE_PACKAGE"
+
+      - name: Exercise real backup, restore, and automatic rollback
+        env:
+          RESTORE_DRILL_SCRIPT: ${{ matrix.script }}
+        run: "$RESTORE_DRILL_SCRIPT"
+
+  # ─── Frontend: Unit Tests ──────────────────────────────────────────────────
+  frontend-test:
+    name: Frontend Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: web
+
+      - name: Run Vitest
+        run: npm run test:coverage
+        working-directory: web
+
+  # ─── Frontend: Build ───────────────────────────────────────────────────────
+  frontend-build:
+    name: Frontend Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: web
+
+      - name: Build frontend
+        run: npm run build
+        working-directory: web
+
+      - name: Upload frontend dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: web/dist/
+          retention-days: 1
+
+  # ─── Distribution: Public Docker quick evaluation ────────────────────────
+  docker-evaluation:
+    name: Docker Quick Evaluation
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build, start, restart, and verify persisted evaluation state
+        run: make test-docker
+
+  # ─── Go: Build Binary ──────────────────────────────────────────────────────
+  go-build:
+    name: Go Build
+    runs-on: ubuntu-latest
+    needs: [frontend-build, frontend-test, go-test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Install C compiler (for CGO/sqlite3)
+        run: sudo apt-get install -y gcc
+
+      - name: Download frontend dist
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: web/dist/
+
+      - name: Determine version
+        id: version
+        run: |
+          VERSION=$(git describe --tags --always --dirty 2>/dev/null || echo "dev")
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "build_date=$(git show -s --format=%cI HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Build binary
+        env:
+          BUILD_VERSION: ${{ steps.version.outputs.version }}
+          HSERVER_FRONTEND_DIST: web/dist
+        run: |
+          CGO_ENABLED=1 scripts/go-build-with-frontend.sh \
+            -ldflags "-s -w \
+              -X github.com/IamYGT/heyserver/internal/config.Version=${BUILD_VERSION} \
+              -X github.com/IamYGT/heyserver/internal/config.BuildCommit=${{ steps.version.outputs.commit }} \
+              -X github.com/IamYGT/heyserver/internal/config.BuildDate=${{ steps.version.outputs.build_date }} \
+              -X github.com/IamYGT/heyserver/internal/config.ProjectURL=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
+            -o bin/${{ env.BINARY_NAME }} \
+            ./cmd/hserver
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hserver-panel-linux-amd64
+          path: bin/${{ env.BINARY_NAME }}
+          retention-days: 7
+
+  # ─── Release: Build architecture packages on every change ─────────────────
+  public-source-acceptance:
+    name: Public Source Snapshot (${{ matrix.arch }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install clean-source build dependencies
+        run: sudo apt-get update && sudo apt-get install -y binutils gcc
+
+      - name: Export, build, and package the committed public source tree
+        run: make test-public-source ARCH=${{ matrix.arch }}
+
+  # ─── Distribution: Build and package the Git-free public snapshot ─────
+  release-build:
+    name: Release Package (${{ matrix.arch }})
+    runs-on: ubuntu-latest
+    needs: [frontend-build, go-test]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            cc: gcc
+            compiler_package: gcc
+          - arch: arm64
+            cc: aarch64-linux-gnu-gcc
+            compiler_package: gcc-aarch64-linux-gnu
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Install C compiler (for CGO/sqlite3)
+        env:
+          COMPILER_PACKAGE: ${{ matrix.compiler_package }}
+        run: sudo apt-get update && sudo apt-get install -y binutils "$COMPILER_PACKAGE"
+
+      - name: Determine release version
+        id: version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            BUILD_VERSION="$GITHUB_REF_NAME"
+          else
+            BUILD_VERSION="ci-$(git rev-parse --short=12 HEAD)"
+          fi
+          echo "version=${BUILD_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "build_date=$(git show -s --format=%cI HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Require a stable version for tagged releases
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          BUILD_VERSION: ${{ steps.version.outputs.version }}
+        run: ./scripts/validate-release-version.sh "$BUILD_VERSION"
+
+      - name: Require a matching changelog entry for tagged releases
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          BUILD_VERSION: ${{ steps.version.outputs.version }}
+        run: ./scripts/validate-release-changelog.sh "$BUILD_VERSION"
+
+      - name: Download frontend dist
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: web/dist/
+
+      - name: Build release binaries
+        env:
+          BUILD_VERSION: ${{ steps.version.outputs.version }}
+          GOARCH: ${{ matrix.arch }}
+          CC: ${{ matrix.cc }}
+          HSERVER_FRONTEND_DIST: web/dist
+        run: |
+          CGO_ENABLED=1 GOOS=linux scripts/go-build-with-frontend.sh \
+            -ldflags "-s -w \
+              -X github.com/IamYGT/heyserver/internal/config.Version=${BUILD_VERSION} \
+              -X github.com/IamYGT/heyserver/internal/config.BuildCommit=${{ steps.version.outputs.commit }} \
+              -X github.com/IamYGT/heyserver/internal/config.BuildDate=${{ steps.version.outputs.build_date }} \
+              -X github.com/IamYGT/heyserver/internal/config.ProjectURL=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
+            -o "bin/hserver-panel-linux-${GOARCH}" \
+            ./cmd/hserver
+          CGO_ENABLED=0 GOOS=linux scripts/go-build-with-frontend.sh \
+            -ldflags "-s -w -X main.agentVersion=${BUILD_VERSION}" \
+            -o "bin/hserver-agent-linux-${GOARCH}" \
+            ./cmd/hserver-agent
+          CGO_ENABLED=0 GOOS=linux scripts/go-build-with-frontend.sh \
+            -ldflags "-s -w \
+              -X github.com/IamYGT/heyserver/internal/config.Version=${BUILD_VERSION} \
+              -X github.com/IamYGT/heyserver/internal/config.BuildCommit=${{ steps.version.outputs.commit }} \
+              -X github.com/IamYGT/heyserver/internal/config.BuildDate=${{ steps.version.outputs.build_date }} \
+              -X github.com/IamYGT/heyserver/internal/config.ProjectURL=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
+            -o "bin/hserverctl-linux-${GOARCH}" \
+            ./cmd/hserverctl
+
+      - name: Create checksummed release archive
+        env:
+          BUILD_VERSION: ${{ steps.version.outputs.version }}
+          GOARCH: ${{ matrix.arch }}
+        run: |
+          ./scripts/package-release.sh \
+            "$BUILD_VERSION" "$GOARCH" \
+            "bin/hserver-panel-linux-${GOARCH}" \
+            "bin/hserver-agent-linux-${GOARCH}" \
+            "bin/hserverctl-linux-${GOARCH}" \
+            dist
+
+      - name: Verify release archive architecture and contents
+        env:
+          BUILD_VERSION: ${{ steps.version.outputs.version }}
+          GOARCH: ${{ matrix.arch }}
+        run: |
+          ./scripts/verify-release-archive.sh \
+            "$BUILD_VERSION" \
+            "$GOARCH" \
+            "dist/hserver-panel-${BUILD_VERSION}-linux-${GOARCH}.tar.gz" \
+            "dist/hserver-panel-${BUILD_VERSION}-linux-${GOARCH}.tar.gz.sha256"
+
+      - name: Upload release package
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ matrix.arch }}
+          path: |
+            dist/*.tar.gz
+            dist/*.tar.gz.sha256
+          retention-days: 7
+
+  # ─── Release: Native install, upgrade, rollback, and uninstall ─────────────
+  native-acceptance:
+    name: Native Lifecycle (${{ matrix.arch }})
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [release-build]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+            debian_platform: linux/amd64
+            debian_arch: amd64
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+            debian_platform: linux/arm64
+            debian_arch: arm64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Install native lifecycle dependencies
+        run: sudo apt-get update && sudo apt-get install -y binutils gcc sqlite3 util-linux
+
+      - name: Download native release package
+        uses: actions/download-artifact@v4
+        with:
+          name: release-${{ matrix.arch }}
+          path: dist
+
+      - name: Download current frontend dist
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: web/dist/
+
+      - name: Build native upgrade acceptance release
+        id: upgrade
+        env:
+          CURRENT_VERSION: ${{ github.ref_name }}
+          GOARCH: ${{ matrix.arch }}
+          HSERVER_FRONTEND_DIST: web/dist
+        run: |
+          NEXT_VERSION=$(python3 -c 'import re,sys; m=re.fullmatch(r"v?(\d+)\.(\d+)\.(\d+)", sys.argv[1]); assert m, "tag is not stable"; print(f"v{m[1]}.{m[2]}.{int(m[3])+1}")' "$CURRENT_VERSION")
+          echo "version=$NEXT_VERSION" >> "$GITHUB_OUTPUT"
+          BUILD_COMMIT=${GITHUB_SHA}
+          BUILD_DATE=$(git show -s --format=%cI "$GITHUB_SHA")
+          CGO_ENABLED=1 GOOS=linux scripts/go-build-with-frontend.sh \
+            -ldflags "-s -w \
+              -X github.com/IamYGT/heyserver/internal/config.Version=${NEXT_VERSION} \
+              -X github.com/IamYGT/heyserver/internal/config.BuildCommit=${BUILD_COMMIT} \
+              -X github.com/IamYGT/heyserver/internal/config.BuildDate=${BUILD_DATE} \
+              -X github.com/IamYGT/heyserver/internal/config.ProjectURL=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
+            -o "bin/hserver-panel-native-upgrade-${GOARCH}" \
+            ./cmd/hserver
+          CGO_ENABLED=0 GOOS=linux scripts/go-build-with-frontend.sh \
+            -ldflags "-s -w -X main.agentVersion=${NEXT_VERSION}" \
+            -o "bin/hserver-agent-native-upgrade-${GOARCH}" \
+            ./cmd/hserver-agent
+          CGO_ENABLED=0 GOOS=linux scripts/go-build-with-frontend.sh \
+            -ldflags "-s -w \
+              -X github.com/IamYGT/heyserver/internal/config.Version=${NEXT_VERSION} \
+              -X github.com/IamYGT/heyserver/internal/config.BuildCommit=${BUILD_COMMIT} \
+              -X github.com/IamYGT/heyserver/internal/config.BuildDate=${BUILD_DATE} \
+              -X github.com/IamYGT/heyserver/internal/config.ProjectURL=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
+            -o "bin/hserverctl-native-upgrade-${GOARCH}" \
+            ./cmd/hserverctl
+          ./scripts/package-release.sh \
+            "$NEXT_VERSION" "$GOARCH" \
+            "bin/hserver-panel-native-upgrade-${GOARCH}" \
+            "bin/hserver-agent-native-upgrade-${GOARCH}" \
+            "bin/hserverctl-native-upgrade-${GOARCH}" \
+            native-upgrade
+          ./scripts/verify-release-archive.sh \
+            "$NEXT_VERSION" "$GOARCH" \
+            "native-upgrade/hserver-panel-${NEXT_VERSION}-linux-${GOARCH}.tar.gz" \
+            "native-upgrade/hserver-panel-${NEXT_VERSION}-linux-${GOARCH}.tar.gz.sha256"
+
+      - name: Exercise native release lifecycle
+        env:
+          BUILD_VERSION: ${{ github.ref_name }}
+          GOARCH: ${{ matrix.arch }}
+        run: |
+          sudo env \
+            CI=true \
+            HSERVER_ACCEPT_DISPOSABLE_HOST=1 \
+            ./scripts/test-native-release-lifecycle.sh \
+              "$BUILD_VERSION" \
+              "$GOARCH" \
+              "dist/hserver-panel-${BUILD_VERSION}-linux-${GOARCH}.tar.gz" \
+              "dist/hserver-panel-${BUILD_VERSION}-linux-${GOARCH}.tar.gz.sha256" \
+              "${{ steps.upgrade.outputs.version }}" \
+              "native-upgrade/hserver-panel-${{ steps.upgrade.outputs.version }}-linux-${GOARCH}.tar.gz" \
+              "native-upgrade/hserver-panel-${{ steps.upgrade.outputs.version }}-linux-${GOARCH}.tar.gz.sha256"
+
+      - name: Exercise Debian 12 native OS and prerequisite gate
+        run: |
+          docker run --rm \
+            --platform "${{ matrix.debian_platform }}" \
+            --volume "$GITHUB_WORKSPACE:/workspace:ro" \
+            --workdir /workspace \
+            debian:12 \
+            sh -euxc '
+              expected_arch="${{ matrix.debian_arch }}"
+              actual_arch=$(dpkg --print-architecture)
+              test "$actual_arch" = "$expected_arch"
+              apt-get update
+              DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+                bash ca-certificates curl openssl tar coreutils sqlite3 systemd
+              HSERVER_NATIVE_OS_DETECTION_REAL=1 ./scripts/test-native-os-detection.sh
+            '
+
+  # ─── Release: Real hub-to-systemd managed-agent lifecycle ──────────────────
+  managed-agent-acceptance:
+    name: Managed Agent Lifecycle (${{ matrix.arch }})
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [release-build]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Install managed-agent acceptance dependencies
+        run: sudo apt-get update && sudo apt-get install -y binutils util-linux
+
+      - name: Download native release package
+        uses: actions/download-artifact@v4
+        with:
+          name: release-${{ matrix.arch }}
+          path: dist
+
+      - name: Build the next managed-agent version
+        id: next
+        env:
+          CURRENT_VERSION: ${{ github.ref_name }}
+          GOARCH: ${{ matrix.arch }}
+        run: |
+          NEXT_VERSION=$(python3 -c 'import re,sys; m=re.fullmatch(r"v?(\d+)\.(\d+)\.(\d+)", sys.argv[1]); assert m, "tag is not stable"; print(f"v{m[1]}.{m[2]}.{int(m[3])+1}")' "$CURRENT_VERSION")
+          echo "version=$NEXT_VERSION" >> "$GITHUB_OUTPUT"
+          CGO_ENABLED=0 GOOS=linux go build \
+            -ldflags "-s -w -X main.agentVersion=${NEXT_VERSION}" \
+            -o "bin/hserver-agent-acceptance-${GOARCH}" \
+            ./cmd/hserver-agent
+
+      - name: Exercise signed managed-agent lifecycle
+        env:
+          BUILD_VERSION: ${{ github.ref_name }}
+          NEXT_VERSION: ${{ steps.next.outputs.version }}
+          GOARCH: ${{ matrix.arch }}
+        run: |
+          sudo env \
+            CI=true \
+            HSERVER_ACCEPT_DISPOSABLE_HOST=1 \
+            ./scripts/test-native-managed-agent-lifecycle.sh \
+              "$BUILD_VERSION" \
+              "$GOARCH" \
+              "dist/hserver-panel-${BUILD_VERSION}-linux-${GOARCH}.tar.gz" \
+              "dist/hserver-panel-${BUILD_VERSION}-linux-${GOARCH}.tar.gz.sha256" \
+              "$NEXT_VERSION" \
+              "bin/hserver-agent-acceptance-${GOARCH}"
+
+  # ─── Release: Outbound-only managed-agent network boundary ────────────────
+  network-isolation-acceptance:
+    name: Managed Agent Network Isolation (${{ matrix.arch }})
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [frontend-build]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Install isolated network acceptance dependencies
+        run: sudo apt-get update && sudo apt-get install -y gcc iproute2 iputils-ping
+
+      - name: Download current frontend dist
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: web/dist/
+
+      - name: Build native hub and agent binaries
+        env:
+          GOARCH: ${{ matrix.arch }}
+          HSERVER_FRONTEND_DIST: web/dist
+        run: |
+          CGO_ENABLED=1 scripts/go-build-with-frontend.sh \
+            -o "bin/hserver-panel-network-${GOARCH}" \
+            ./cmd/hserver
+          CGO_ENABLED=0 scripts/go-build-with-frontend.sh \
+            -o "bin/hserver-agent-network-${GOARCH}" \
+            ./cmd/hserver-agent
+
+      - name: Prove outbound-only capability-scoped management
+        env:
+          GOARCH: ${{ matrix.arch }}
+        run: |
+          sudo env \
+            CI=true \
+            HSERVER_ACCEPT_NETWORK_NAMESPACE=1 \
+            ./scripts/test-managed-agent-network-isolation.sh \
+              "bin/hserver-panel-network-${GOARCH}" \
+              "bin/hserver-agent-network-${GOARCH}"
+
+  # ─── Release: Fail closed unless the tag descends from protected main ─────
+  release-provenance:
+    name: Release Provenance
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: read
+    steps:
+      - name: Resolve the protected main trust anchor
+        id: protected-main
+        uses: actions/github-script@v7
+        with:
+          script: |
+            if (context.eventName !== 'push' || !context.ref.startsWith('refs/tags/v')) {
+              core.setFailed('Release provenance must run for a pushed version tag.');
+              return;
+            }
+            if (context.payload.repository?.default_branch !== 'main') {
+              core.setFailed('The repository default branch is not main.');
+              return;
+            }
+            const branch = await github.rest.repos.getBranch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              branch: 'main',
+            });
+            if (branch.data.protected !== true) {
+              core.setFailed('Release trust anchor main is not protected.');
+              return;
+            }
+            core.setOutput('main_sha', branch.data.commit.sha);
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify the tag commit is in protected main history
+        env:
+          PROTECTED_MAIN_SHA: ${{ steps.protected-main.outputs.main_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$PROTECTED_MAIN_SHA" =~ ^[0-9a-f]{40}$ ]] || {
+            echo "Protected main did not resolve to a full commit SHA." >&2
+            exit 1
+          }
+          git fetch --no-tags origin \
+            "+refs/heads/main:refs/remotes/origin/release-main"
+          fetched_main=$(git rev-parse 'refs/remotes/origin/release-main^{commit}')
+          [[ "$fetched_main" == "$PROTECTED_MAIN_SHA" ]] || {
+            echo "Protected main moved while release provenance was evaluated; retry the release." >&2
+            exit 1
+          }
+          tag_commit=$(git rev-parse "${GITHUB_SHA}^{commit}")
+          git merge-base --is-ancestor "$tag_commit" "$PROTECTED_MAIN_SHA" || {
+            echo "Release tag commit is not in protected main history." >&2
+            exit 1
+          }
+
+  # ─── Release: Publish all architecture packages once ──────────────────────
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - release-provenance
+      - go-lint
+      - go-security
+      - frontend-lint
+      - frontend-test
+      - go-test
+      - database-restore-acceptance
+      - docker-evaluation
+      - go-build
+      - public-source-acceptance
+      - release-build
+      - native-acceptance
+      - managed-agent-acceptance
+      - network-isolation-acceptance
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download architecture packages
+        uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          path: release
+          merge-multiple: true
+
+      - name: Generate provider-neutral release manifest
+        env:
+          RELEASE_BASE_URL: ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ github.ref_name }}
+          HSERVER_RELEASE_NOTES_URL: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}
+        run: |
+          ./scripts/generate-release-manifest.sh \
+            "$GITHUB_REF_NAME" \
+            "$RELEASE_BASE_URL" \
+            release \
+            release/release-manifest.json
+
+      - name: Sign release manifest and bootstrap with the canonical signer
+        env:
+          HSERVER_RELEASE_SIGNING_KEY: ${{ secrets.HSERVER_RELEASE_SIGNING_KEY }}
+        run: |
+          if [[ -z "$HSERVER_RELEASE_SIGNING_KEY" ]]; then
+            echo "HSERVER_RELEASE_SIGNING_KEY is required for tagged releases" >&2
+            exit 1
+          fi
+          umask 077
+          key_file=$(mktemp "${RUNNER_TEMP}/hserver-release-signing-key.XXXXXXXX")
+          trap 'rm -f "$key_file"' EXIT
+          printf '%s\n' "$HSERVER_RELEASE_SIGNING_KEY" > "$key_file"
+          ./scripts/sign-release-manifest.sh \
+            release/release-manifest.json \
+            "$key_file" \
+            release/release-manifest.json.sig
+          ./scripts/generate-release-signing-key.sh \
+            --public-from-private \
+            "$key_file" \
+            release/release-public-key.b64
+          ./scripts/release-trust.py trust/release-signers.json \
+            --require-active \
+            --assert-active-key release/release-public-key.b64 >/dev/null
+          (cd release && sha256sum release-public-key.b64 > release-public-key.b64.sha256)
+          install -m 0755 scripts/bootstrap-install.sh release/bootstrap-install.sh
+          (cd release && sha256sum bootstrap-install.sh > bootstrap-install.sh.sha256)
+          ./scripts/sign-release-asset.sh \
+            release/bootstrap-install.sh \
+            "$key_file" \
+            release/bootstrap-install.sh.sig
+
+      - name: Stage public install wrapper
+        run: ./scripts/stage-public-install.sh release trust/release-signers.json
+
+      - name: Verify complete public release asset set
+        run: ./scripts/verify-public-release-assets.sh release trust/release-signers.json
+
+      - name: Verify bootstrap trust assets
+        run: |
+          cd release
+          sha256sum --check bootstrap-install.sh.sha256
+          sha256sum --check release-public-key.b64.sha256
+          ../scripts/verify-release-asset-signature.sh \
+            bootstrap-install.sh \
+            bootstrap-install.sh.sig \
+            release-public-key.b64
+          [[ $(stat -c '%a' bootstrap-install.sh) == 755 ]]
+          [[ $(base64 --decode release-public-key.b64 | wc -c) -eq 32 ]]
+          if grep -IlE -- '-----BEGIN ([A-Z0-9]+ )?PRIVATE KEY-----' ./* >/dev/null; then
+            echo "A private key was staged for release." >&2
+            exit 1
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: HServer Panel ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            release/*.tar.gz
+            release/*.tar.gz.sha256
+            release/release-manifest.json
+            release/release-manifest.json.sig
+            release/bootstrap-install.sh
+            release/bootstrap-install.sh.sha256
+            release/bootstrap-install.sh.sig
+            release/public-install.sh
+            release/public-install.sh.sha256
+            release/release-public-key.b64
+            release/release-public-key.b64.sha256

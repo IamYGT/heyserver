@@ -1,0 +1,29 @@
+{
+  "plans": [
+    {
+      "id": "example-app",
+      "name": "Example application",
+      "description": "Runs installation-owned release commands without exposing argv to the hub.",
+      "kind": "application",
+      "path": "/srv/example-app",
+      "host_port": 8080,
+      "actions": {
+        "preflight": {
+          "command": "/usr/local/sbin/example-app-release",
+          "args": ["preflight"],
+          "timeout_seconds": 300
+        },
+        "deploy": {
+          "command": "/usr/local/sbin/example-app-release",
+          "args": ["deploy"],
+          "timeout_seconds": 1200
+        },
+        "rollback": {
+          "command": "/usr/local/sbin/example-app-release",
+          "args": ["rollback"],
+          "timeout_seconds": 1200
+        }
+      }
+    }
+  ]
+}

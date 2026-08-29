@@ -1,0 +1,12 @@
+{
+  "plans": [
+    {
+      "id": "database-export",
+      "name": "All databases",
+      "service": "hserver-database-backup.service",
+      "timer": "hserver-database-backup.timer",
+      "root": "/var/backups/hserver-databases",
+      "checksum_file": "SHA256SUMS"
+    }
+  ]
+}

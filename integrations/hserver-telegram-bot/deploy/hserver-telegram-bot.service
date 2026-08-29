@@ -1,0 +1,23 @@
+[Unit]
+Description=HserverTrack Telegram Bot
+After=network-online.target hserver.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+# The unit only needs the panel API and Telegram network access. Override both
+# identity fields with a systemd drop-in when a different unprivileged account
+# is preferred; never run this integration as root.
+User=hserver-telegram-bot
+Group=hserver-telegram-bot
+WorkingDirectory=%h
+EnvironmentFile=/etc/hserver/hserver-telegram-bot.env
+# HSERVER_BOT_HOME is supplied by the environment contract above. A shell is
+# used only to expand that path; the bot itself remains the service process.
+ExecStart=/bin/sh -c 'exec "$HSERVER_BOT_HOME/.venv/bin/hserver-bot"'
+Restart=on-failure
+RestartSec=5
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

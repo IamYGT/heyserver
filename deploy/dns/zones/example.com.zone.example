@@ -1,0 +1,15 @@
+$TTL 3600
+@ IN SOA ns1.example.com. hostmaster.example.com. (
+    2026082601 ; serial
+    3600       ; refresh
+    900        ; retry
+    1209600    ; expire
+    300        ; negative cache TTL
+)
+
+@     IN NS ns1.example.com.
+@     IN NS ns2.example.com.
+ns1   IN A  192.0.2.10
+ns2   IN A  192.0.2.11
+@     IN A  192.0.2.20
+www   IN CNAME example.com.

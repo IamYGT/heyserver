@@ -1,0 +1,48 @@
+name: Feature request
+description: Propose a provider-neutral HServer capability or operator workflow
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Operator problem
+      description: What server-management task is difficult or impossible today?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: Describe the result rather than prescribing one implementation.
+    validations:
+      required: true
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Target scope
+      options:
+        - Local native host
+        - Managed-node agent
+        - Hub and agent
+        - Docker evaluation or contributor workflow
+        - Documentation or community workflow
+    validations:
+      required: true
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Capability and safety boundaries
+      description: For remote actions, state the least-privileged capability and fixed inputs the agent should expose.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Current workaround
+      description: Explain any commands or external tools currently required.
+  - type: checkboxes
+    id: neutrality
+    attributes:
+      label: Project fit
+      options:
+        - label: The request can work without embedding one operator's hostname, provider account, filesystem inventory, or credentials.
+          required: true

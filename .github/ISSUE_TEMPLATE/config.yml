@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Private vulnerability report
+    url: https://github.com/IamYGT/heyserver/security/advisories/new
+    about: Report vulnerabilities or suspected credential exposure privately.

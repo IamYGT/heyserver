@@ -1,0 +1,42 @@
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# CI/CD
+.github/
+
+# Documentation (the frontend build consumes the generated API contract)
+docs/*
+!docs/openapi.json
+*.md
+LICENSE
+
+# Build artifacts (will be rebuilt inside Docker)
+bin/
+dist/
+coverage/
+web/dist/
+web/node_modules/
+cmd/hserver/web/dist/
+
+# Runtime data (mount as volume)
+data/
+uptime-kuma/
+
+# Development config
+.env
+.env.*
+*.local
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Test files
+*_test.go
+testdata/

@@ -1,0 +1,76 @@
+name: Bug report
+description: Report a reproducible HServer defect
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve HServer. Do not include passwords, tokens, private keys, environment files, or production inventory.
+  - type: input
+    id: version
+    attributes:
+      label: HServer version
+      description: Use the version shown on the About page or release archive.
+      placeholder: v0.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: installation
+    attributes:
+      label: Installation method
+      options:
+        - Native release archive
+        - Native source build
+        - Docker evaluation
+        - Managed-node agent
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Host platform
+      description: Operating-system version and CPU architecture.
+      placeholder: Ubuntu 24.04, amd64
+    validations:
+      required: true
+  - type: textarea
+    id: symptom
+    attributes:
+      label: What happened?
+      description: Describe the observed behavior and its operator impact.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+      placeholder: |
+        1. Open ...
+        2. Select ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Relevant diagnostics
+      description: Prefer `hserverctl doctor --output PATH`, then include minimal doctor, service, API, or log output after reviewing operational values and removing secrets and unrelated host inventory.
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I searched existing issues and the troubleshooting guide.
+          required: true
+        - label: I removed credentials, private keys, environment files, and unrelated production inventory.
+          required: true
+        - label: This is not a vulnerability report; security reports use the private advisory flow.
+          required: true

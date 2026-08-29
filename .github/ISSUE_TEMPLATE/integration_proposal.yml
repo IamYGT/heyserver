@@ -1,0 +1,101 @@
+name: Integration proposal
+description: Propose an in-tree provider adapter or bounded server-management capability
+title: "[Integration]: "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        HServer v1 accepts reviewed in-tree integrations. Read `docs/extension-boundary.md` first. Do not include credentials, private endpoints, environment files, or production inventory.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Operator problem
+      description: What self-hosted server-management problem should this integration solve?
+    validations:
+      required: true
+  - type: dropdown
+    id: class
+    attributes:
+      label: Extension class
+      options:
+        - Local host capability
+        - Managed-node capability
+        - Provider adapter
+        - Client surface for an existing API
+        - Multiple classes
+    validations:
+      required: true
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Target scope
+      options:
+        - Local native host
+        - Managed-node agent
+        - Hub and managed-node agent
+        - Provider-neutral client only
+    validations:
+      required: true
+  - type: textarea
+    id: dependency
+    attributes:
+      label: Dependency and absence behavior
+      description: Name the provider, executable, service, or protocol and what remains usable when it is absent.
+    validations:
+      required: true
+  - type: textarea
+    id: configuration
+    attributes:
+      label: Configuration and secrets
+      description: List non-secret settings, protected environment keys or secret-file references, and what status may disclose.
+    validations:
+      required: true
+  - type: textarea
+    id: states
+    attributes:
+      label: State and remediation contract
+      description: Define not_configured, unavailable, and healthy observations plus the operator recovery action for each failure state.
+    validations:
+      required: true
+  - type: textarea
+    id: operations
+    attributes:
+      label: Reads, mutations, and fixed inputs
+      description: List every operation, action vocabulary, identity/path/count/size limits, timeout, confirmation, audit, and rollback behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: agent
+    attributes:
+      label: Managed-agent capability boundary
+      description: If managed nodes are in scope, name separate read/action capabilities, local enablement, task schemas, and disabled-capability behavior. Otherwise write not applicable.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Focused acceptance path
+      description: Describe absence, healthy, failure, authorization, confirmation, rollback, and package checks that will prove the change.
+    validations:
+      required: true
+  - type: textarea
+    id: lifecycle
+    attributes:
+      label: Install, upgrade, removal, and portability
+      description: State package requirements, migration or preservation behavior, removal behavior, supported distributions, and provider-neutral defaults.
+    validations:
+      required: true
+  - type: checkboxes
+    id: contract
+    attributes:
+      label: Extension contract
+      options:
+        - label: The proposal does not require runtime-loaded code, arbitrary commands, hidden SSH credentials, or a maintainer-owned hosted service.
+          required: true
+        - label: Credential values remain outside API payloads, logs, audit details, Git fixtures, and frontend bundles.
+          required: true
+        - label: The integration can report not configured and unavailable without breaking unrelated core features.
+          required: true
+        - label: Examples and tests will use placeholder identities rather than production inventory.
+          required: true

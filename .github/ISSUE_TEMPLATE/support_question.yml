@@ -1,0 +1,47 @@
+name: Support question
+description: Ask for installation or usage help without exposing host secrets
+title: "[Support]: "
+labels: [question]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: HServer version
+      placeholder: v0.1.0
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Host platform
+      placeholder: Ubuntu 24.04, amd64, native release archive
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: What are you trying to do?
+    validations:
+      required: true
+  - type: textarea
+    id: attempted
+    attributes:
+      label: What have you tried?
+      description: Include the smallest relevant command and exact error, with secrets and unrelated production inventory removed.
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Doctor summary
+      description: Prefer the reviewed output from `hserverctl doctor --output PATH`, or include the summary and failing lines from doctor.sh; never include configuration values.
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I checked the installation and troubleshooting guides.
+          required: true
+        - label: I did not include credentials, environment files, private keys, or unrelated production inventory.
+          required: true

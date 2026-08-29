@@ -1,0 +1,476 @@
+# Public Launch Checklist
+
+This checklist separates a clean public source snapshot from the private
+operational history that preceded HServer's community-project conversion.
+
+## Current source-head progress
+
+This status is source progress only, not release evidence. The managed-node
+live-metrics source path is complete for the capability-scoped `metrics.read`
+agent task, hub/API validation, and current CLI/web consumers, including
+guest-time-safe CPU accounting. The TUI consumer and OpenAPI contract revision
+70 (442 routes, 318 schemas) are complete, and combined metrics acceptance is
+complete. Local/Contabo runtime rollout remains open. The canonical public
+repository and release-signer selection/ceremony also remain pending; these
+changes do not claim live deployment or a public release.
+
+## 1. Export the audited tree
+
+Do not make an old operational repository public merely because its current
+working tree looks clean. Deleted files, hostnames, inventory, and generated
+operator artifacts remain recoverable from Git history.
+
+From a clean, committed checkout:
+
+```bash
+./scripts/export-public-source.sh /tmp/hserver-panel-public
+```
+
+The exporter uses `git archive`, refuses a dirty tree or an existing
+destination, omits `.git`, verifies the public policy files, and runs the
+Git-free installation-inventory validator before publishing the destination.
+A validation error leaves no destination behind. Run the public tree,
+provider-neutral script, lifecycle, and release-package checks before using the
+snapshot.
+
+The canonical local acceptance command reproduces the CI snapshot build and
+package check from a clean committed tree:
+
+```bash
+make test-public-source ARCH="$(go env GOARCH)"
+```
+
+The `Public Source Snapshot (amd64)` and `Public Source Snapshot (arm64)` CI
+jobs perform this export natively on every change, build the frontend, panel,
+CLI, and agent from the Git-free tree, then create and verify the matching
+release archive. Before building, each exported tree runs its own
+installation-inventory and provider-neutral script checks without relying on
+Git metadata. Tagged publication depends on the complete matrix, so a source
+snapshot that relies on untracked files, private Git history,
+installation-specific inventory, architecture-specific omissions, or missing
+packaged files cannot become a release.
+
+**Recorded amd64 acceptance result (evidence, not a permanent path):** From
+source HEAD `fd227828`, the clean Git-free v0.9.5 candidate was produced in the
+temporary workspace `/var/tmp/hserver-panel-public-v0.9.5-fd227828` with
+candidate root commit `009ec010cfe09e21a6010b7ea93761359cc3b128` and tree
+`a4a988f0fb8caffdd5c31245e1aa78ef00144d63`. Full public-source acceptance
+passed with 92 frontend files, 489 tests, and 10 route tests. This records the
+validation result only; it does not establish a public repository, live
+deployment, or runtime rollout.
+
+## 2. Create new public history
+
+The preferred launch path is a new one-commit repository, not a force-push over
+the private primary branch. From the clean private checkout, provide the public
+root commit's intended author identity:
+
+```bash
+./scripts/create-public-repository.sh /tmp/hserver-panel-public \
+  --author-name "HServer Maintainers" \
+  --author-email "maintainers@example.com"
+
+cd /tmp/hserver-panel-public
+git log --oneline --decorate --all
+git fsck --strict --no-dangling
+git remote add origin YOUR_NEW_PUBLIC_REMOTE
+git push -u origin main
+```
+
+The creator delegates source selection to `export-public-source.sh`, refuses a
+dirty private checkout, an existing destination, or a destination inside the
+private tree, and builds in a sibling staging directory before an atomic move.
+It requires exactly one root commit on `main`, a clean index, a strict Git object
+check, and the public inventory validator. It deliberately configures no remote
+and never pushes; inspect the resulting repository before adding the new public
+destination.
+
+Keep the original operational repository private as the audit archive. Do not
+copy its `.git` directory, refs, tags, reflogs, release artifacts, or
+pull-request refs into the public repository.
+
+## 3. Configure the public repository
+
+- protect `main` and require the lint, test, frontend build, Go build,
+  `Database Restore (PostgreSQL)`, `Database Restore (MariaDB)`,
+  `Docker Quick Evaluation`, `Public Source Snapshot (amd64)`,
+  `Public Source Snapshot (arm64)`,
+  `Release Package (amd64)`, and
+  `Release Package (arm64)` CI checks;
+- enable private vulnerability reporting for `SECURITY.md`;
+- enable Dependabot and platform secret scanning when available;
+- verify issue forms, pull-request template, license detection, and support
+  links;
+- allow releases only from version tags created from protected `main`; the
+  release provenance job verifies the live protected branch and tag ancestry;
+- generate the release Ed25519 key outside Git, store only its private PEM in
+  the protected `HSERVER_RELEASE_SIGNING_KEY` Actions secret, calculate SHA-256
+  over the decoded raw 32-byte public key, and record the key plus fingerprint
+  as an `active` signer in `trust/release-signers.json` through protected review;
+- keep the checked-in canonical trust store empty until that operator key
+  ceremony is complete. Tagged staging deliberately fails when it has no
+  active signer or the Actions secret derives a different public key;
+- choose the canonical public repository and publish the immutable installer
+  commit plus installer digest and signer fingerprint through an independently
+  authenticated channel. A checksum adjacent to a mutable release asset is a
+  convenience integrity check, not signer identity;
+- keep production deployment credentials outside repository actions. The
+  release signing key signs public metadata only and grants no server access.
+
+## 4. Release an installation candidate
+
+Create the installation candidate from an exact, previously unused stable
+SemVer tag in the designated public repository. Build it from the exact commit
+on protected public `main`; do not reuse a version whose immutable feed was
+built from a different repository commit, even when the exported source trees
+are identical. Choose the next stable version for the first public tag and
+publish that version only once. A `v0.x` release can remain product-level pre-1.0
+without using an unordered `-rc` suffix. HServer update manifests intentionally
+order only stable `major.minor.patch` versions, so the release workflow rejects
+commit-derived, dirty, and hyphenated prerelease tags before building tagged
+release binaries. Add the matching `## [X.Y.Z]` section to `CHANGELOG.md` before
+creating the `vX.Y.Z` tag; tagged CI rejects publication when the exact
+changelog section is absent. Keep prior release entries and their acceptance
+evidence unchanged. Confirm both architecture
+archives,
+adjacent checksum files, `bootstrap-install.sh`,
+`bootstrap-install.sh.sha256`, `bootstrap-install.sh.sig`, `release-public-key.b64`,
+`release-public-key.b64.sha256`, `public-install.sh`,
+`public-install.sh.sha256`, `release-manifest.json`, and
+`release-manifest.json.sig` exist, then install through the independently
+anchored wrapper on a disposable Ubuntu 24.04 VM:
+
+```bash
+release_version=vX.Y.Z
+release_base=https://github.com/OWNER/REPOSITORY/releases/download/$release_version
+installer_commit=IMMUTABLE_PUBLIC_COMMIT_SHA
+installer_url=https://raw.githubusercontent.com/OWNER/REPOSITORY/$installer_commit/scripts/public-install.sh
+trusted_installer_sha256=LOWERCASE_SHA256_FROM_AN_INDEPENDENT_SOURCE
+trusted_release_key_sha256=LOWERCASE_SHA256_OF_RAW_ED25519_PUBLIC_KEY
+install_dir=$(mktemp -d)
+cd "$install_dir"
+curl --proto '=https' --proto-redir '=https' -fSLo public-install.sh \
+  "$installer_url"
+printf '%s  public-install.sh\n' "$trusted_installer_sha256" | sha256sum --check -
+chmod 0755 public-install.sh
+./public-install.sh --release-base "$release_base" \
+  --trusted-release-key-sha256 "$trusted_release_key_sha256" \
+  --vhosts-root /srv/hserver/sites
+```
+
+The wrapper is a manifest-external trust-bootstrap asset. It retains its own
+checksum checks for transfer corruption, but signer identity comes only from
+the embedded or explicitly supplied raw-key fingerprint. The downloaded key
+must verify `bootstrap-install.sh.sig` before the wrapper changes mode or enters
+root. The release inventory gate also compares the derived release key with the
+canonical active signer and fails when the bootstrap signature is absent or
+invalid. The signed manifest schema remains unchanged.
+
+The release-package jobs run for every pull request and protected-branch push,
+not only for tags. They cross-compile the real CGO-enabled panel binary, build
+the agent and `hserverctl`, verify the archive checksum and required contents, and reject a
+binary whose ELF architecture disagrees with the package name. This artifact
+gate does not replace the native disposable-host installation flow below.
+The independent `Docker Quick Evaluation` job builds the documented Dockerfile
+from a clean checkout, including the generated OpenAPI contract, with
+project-scoped container and volume identities. It waits for health, uses the
+generated protected credentials to authenticate without printing them,
+persists onboarding state, restarts the container, verifies the state, and
+removes the disposable project and volume. Its first-login contract is also
+explicit: `init-env.sh` creates a mode-`0600` `.env`; the operator reads
+`HSERVER_ADMIN_EMAIL` and the generated `HSERVER_ADMIN_PASS` locally, opens
+`http://localhost:3085`, and completes onboarding to reach the dashboard;
+`init-env.sh` never prints the generated password. Tagged release publication
+depends on this result. It proves the public evaluation path, not native
+host-control capabilities.
+The release job generates the schema-v1 manifest only after both architecture
+packages pass and recalculates every published artifact hash. Configure a test
+panel with the candidate release asset's stable latest URL and public key.
+Confirm the UI reports `Ed25519 signature verified` and that a modified
+manifest or signature makes discovery unavailable. Confirm discovery
+does not download anything by itself, then explicitly stage the archive in the
+About page, verify the displayed digest and platform, approve installation in
+the second admin confirmation, and observe the terminal stage state.
+
+Every panel-stage, panel-install, and managed-agent-upgrade mutation must also
+fail closed when the release `signature_status` is not `verified`, at both the
+server boundary and the CLI/TUI/web clients. Unsigned status may remain
+observable, but it is not actionable release evidence.
+
+Before the successful path, run the packaged installer once with a deliberately
+unhealthy panel executable. Require a non-zero result and confirm the panel,
+CLI, systemd unit, generated configuration/data, managed Nginx snippets, and
+active/enabled service state are all absent afterward. Then continue with the
+verified release archive:
+
+1. `sudo ./doctor.sh preflight`
+2. `sudo ./install.sh install`
+3. `sudo ./doctor.sh installed`, then confirm the matching installer and doctor
+   persist under `/usr/local/libexec`, every packaged fixed Nginx lifecycle file
+   matches `/usr/local/share/hserver/nginx-snippets`, and
+   `hserver-install next-steps` identifies the protected credential file
+   without exposing its password;
+4. create a named packaged-CLI context with an independent token-file
+   reference, require both context and token files to be mode `0600`,
+   authenticate with a protected password file through the current context,
+   parse `host status`, `disk scan`, signed `updates status`, and empty
+   `updates stage-status` without repeating connection flags, run
+   `hserverctl doctor --output` into a mode-`0600` file, require its schema-v1
+   panel, authentication, and empty fresh-fleet checks to pass, and complete
+   onboarding;
+5. open the authenticated local terminal through that current context, execute
+   a unique marker, and observe that marker in real PTY output;
+6. invoke one bounded maintenance action and confirm its result plus an inactive
+   maintenance lock after completion;
+7. create and validate a portable panel-state bundle, change persisted
+   onboarding state, restore the bundle, and confirm the original state plus a
+   pre-restore recovery bundle;
+8. create a bounded files-root backup, validate that its boundary is files-only
+   with automatic file rollback, change a source payload, restore it, compare
+   the recovered SHA-256, and confirm the pre-restore file recovery archive is
+   listed and independently valid;
+9. enroll a second disposable VM with `agent-install.sh`, enable `terminal` and
+   process signals for the drill, and leave at least one safe denial-check
+   capability (`host.action` or `agent.update.read`) disabled;
+10. from the native panel host, run
+    `scripts/accept-provider-network-managed-agent.sh` to prove the public HTTPS
+    path, separate kernel, writable remote terminal, process inventory, one
+    stable-identity process signal, and task-free rejection of a known disabled
+    capability;
+11. switch the signed feed to a second stable build, use packaged
+   `hserverctl updates stage --confirm` and `updates install --confirm`, confirm the
+   installed panel and CLI both report that exact staged version, and confirm
+   its detached unit reaches `completed` after the panel reconnects; also run a
+   disposable binary-pair upgrade through the retained
+   `/usr/local/libexec/hserver-install` with no extracted package present and
+   require its rollback to restore the retained lifecycle assets;
+12. repeat with an injected failed health check and confirm `failed` plus
+   automatic rollback preserve the matched panel and CLI, SQLite data, and
+   service state;
+13. interrupt a disposable-host upgrade before its terminal status, restart the
+   panel, and confirm inactive transient units reconcile to `failed` rather than
+   polling forever;
+14. uninstall without purge, confirm both executables and the fixed retained
+    Nginx lifecycle directory are removed, and confirm configuration, data, and
+    unrelated files in `/usr/local/share/hserver` remain.
+
+Run step 10 from the native panel host, not from a third workstation. Use an
+admin token file owned by the current user with mode `0600`; the script reads
+the credential without printing it. The node must already be online through
+the public HTTPS panel origin and advertise `inventory`, `terminal`,
+`process.read`, and `process.signal`. At least one of `host.action`,
+`agent.update.read`, and `backup.read` must remain absent so the drill can prove
+fail-closed task admission without changing node configuration:
+
+```bash
+HSERVER_ACCEPT_PROVIDER_NETWORK=1 \
+  ./scripts/accept-provider-network-managed-agent.sh \
+  --confirm-bounded-marker \
+  --panel-url https://panel.example.com \
+  --node disposable-edge-1 \
+  --token-file "$HOME/.config/hserver/token" \
+  --receipt "$HOME/provider-network-receipt.json"
+```
+
+The explicit environment opt-in and bounded-marker confirmation are both
+mandatory; candidate publication still requires the node itself to be a
+disposable independent VM. Current panels prove the runner identity with the
+authenticated `/api/system/info` boot ID. Older pre-release panels without that
+field use exact hostname compatibility and record that weaker method in the
+receipt. The managed node must report a different boot ID.
+
+The PTY launches only a uniquely named Python marker for at most 300 seconds.
+Because heartbeat inventory is deliberately capped to the 50 highest-memory
+processes, the runner sizes the marker from 16 MiB to at most 96 MiB above the
+observed inventory floor and refuses unless four times that allocation remains
+available. It detaches the marker from the PTY, finds exactly one matching PID
+and start time in agent inventory, and terminates that stable identity. If a
+later check fails, cleanup retries only the observed identity; an unobserved
+marker expires on its own.
+
+The mode-`0600` schema-v3 receipt contains the panel origin, node ID, exact
+panel version and public `/api/health` build commit, CLI/agent releases, panel
+and managed-node architectures, panel identity method, selected disabled
+capability, terminal close mode, bounded marker allocation, timestamp, and
+boolean checks. The drill refuses nodes whose
+current heartbeat omits a supported release architecture. It does not
+contain tokens, raw boot IDs, terminal output, or host inventory. A legacy
+agent that reports Linux PTY `EIO` as an unexpected close is accepted only
+after the marker receipt and full process observation, and that compatibility
+mode remains explicit in the receipt. Current agent builds treat PTY `EIO` as
+a normal shell exit.
+
+Passing this drill proves a separate kernel and the exercised network/runtime
+path. The operator remains responsible for recording that the disposable node
+was actually provisioned with the intended independent provider or VM account.
+
+Before accepting the receipt for a release, validate its protected-file mode,
+freshness, exact panel/CLI/agent identities, both architectures, destination,
+schema, bounded marker, and all 13 checks. Strict defaults require schema v3, a
+current panel boot-ID match, and a normal terminal close:
+
+```bash
+./scripts/verify-provider-network-receipt.py \
+  "$HOME/provider-network-receipt.json" \
+  --max-age 24h \
+  --panel-version v1.0.0 \
+  --panel-commit 0123456789abcdef0123456789abcdef01234567 \
+  --panel-arch amd64 \
+  --cli-version v1.0.0 \
+  --agent-version v1.0.0 \
+  --node-arch arm64 \
+  --node disposable-edge-1 \
+  --panel-origin https://panel.example.com
+```
+
+`--max-age` accepts whole minutes, hours, or days and never more than `30d`.
+The verifier rejects symlinks, non-`0600` or foreign-owned files, duplicate or
+unknown schema fields, missing/false checks, future or stale timestamps,
+unsupported capability/compatibility values, and identity mismatches. Legacy
+schema-v1 and schema-v2 receipts can be inspected with `--require-schema any`,
+but neither schema binds `panel_commit`; legacy panel
+identity and terminal-close modes separately require `--require-panel-identity
+any` and `--require-terminal-close any`. Those explicit compatibility modes do
+not satisfy the strict current-candidate example above. Verification proves the
+receipt is structurally complete, fresh, protected, and matches the expected
+release identities. Structural verification alone is not cryptographic
+attestation and does not establish provider-account ownership.
+
+Current release evidence must also bind the exact receipt bytes to a dedicated
+operator-held Ed25519 key. Generate a provider-receipt key separately from the
+release-manifest key, sign without overwriting the structural receipt, and then
+require the signature during acceptance:
+
+```bash
+./scripts/generate-release-signing-key.sh \
+  /secure/hserver-provider-receipt-ed25519.pem \
+  /secure/hserver-provider-receipt-ed25519.pub
+
+./scripts/sign-provider-network-receipt.sh \
+  "$HOME/provider-network-receipt.json" \
+  /secure/hserver-provider-receipt-ed25519.pem \
+  "$HOME/provider-network-receipt.json.sig"
+
+./scripts/verify-provider-network-receipt.py \
+  "$HOME/provider-network-receipt.json" \
+  --signature "$HOME/provider-network-receipt.json.sig" \
+  --public-key /secure/hserver-provider-receipt-ed25519.pub \
+  --require-signature \
+  --max-age 24h \
+  --panel-version v1.0.0 \
+  --panel-commit 0123456789abcdef0123456789abcdef01234567 \
+  --panel-arch amd64 \
+  --cli-version v1.0.0 \
+  --agent-version v1.0.0 \
+  --node-arch arm64 \
+  --node disposable-edge-1 \
+  --panel-origin https://panel.example.com
+```
+
+Record the emitted `signing_key_sha256` beside the release decision. The
+verifier rejects a modified receipt, wrong key, malformed signature, symlink,
+foreign ownership, or artifact mode other than `0600`/`0644`. Without the two
+signature paths it deliberately reports `signature=not_checked`; the
+`--require-signature` flag turns accidental omission into failure. This proves
+which key signed the exact receipt bytes, but still does not independently
+prove provider-account ownership.
+
+Version tags enforce this native panel lifecycle on GitHub-hosted Ubuntu 24.04
+VMs for both architectures before the release job can publish. The labels are
+`ubuntu-24.04` for `amd64` and `ubuntu-24.04-arm` for `arm64`. The acceptance
+script refuses to run unless it is root on an explicitly disposable CI host,
+refuses a pre-existing HServer installation or occupied port, and purges only
+the installation it created after checking the non-purge uninstall boundary.
+It first injects an unhealthy initial executable and requires atomic cleanup
+before starting the signed bootstrap path.
+Its initial installation is performed through a locally signed schema-v1 feed
+and the published bootstrap client, so signature, archive, architecture,
+packaged lifecycle, persistent recovery tools, password-free first-access
+guidance, and persisted update-feed behavior remain part of the same native
+release gate rather than a shell-only fixture.
+The same tag gate creates a WAL-safe portable panel-state bundle, validates it,
+changes real onboarding state through the API, restores the bundle through the
+packaged lifecycle tool, checks the recovered state through the restarted
+panel, and requires the protected pre-restore recovery bundle. Before the
+restore drill,
+it creates a mode-`0600` named context with an independent protected token-file
+reference, authenticates through that current context, verifies mode-`0600`
+token persistence, and parses read-only host status, disk scan, signed release
+status, and empty fresh-stage output without repeated connection flags. It also
+runs the packaged read-only `hserverctl doctor --output` through that context,
+requires the report file to be mode `0600`, and requires its schema-v1 panel,
+authentication, and fresh fleet checks to pass. It then launches the packaged
+`hserverctl terminal` through the same current context inside an allocated TTY,
+executes a unique marker in the writable local PTY, and requires that marker in
+the CLI transcript. This proves the shipped client, persisted context
+selection, protected token-file selection, authenticated WebSocket upgrade,
+protocol negotiation, raw terminal mode, PTY input, and byte-safe output as one
+path. Finally it invokes the bounded `temp-clean` maintenance action, requires
+a non-empty action result, and confirms the maintenance status lock is
+inactive.
+
+Each tag also runs `Managed Agent Network Isolation` natively on `amd64` and
+`arm64`. The gate creates separate hub and node Linux network namespaces joined
+only by a point-to-point veth pair, gives neither namespace a default route,
+and confirms that node loopback cannot reach the panel and that the hub cannot
+find a panel listener at the node address. The real agent must then enroll
+outbound, advertise `inventory`, `process.read`, and `process.signal`, expose a
+fresh process observation, and terminate that exact stable process identity.
+The same run confirms that an unadvertised `host.action` returns `409 Conflict`
+without creating a task. The release job depends on both architecture results.
+This deterministic kernel-network boundary complements rather than replaces
+the candidate's separate-VM/provider-network drill.
+
+The same runner builds a second native panel, agent, and CLI package for its
+own architecture without publishing that acceptance-only artifact. It switches
+the local signed feed to that newer stable version, proves the CLI observes the
+exact SHA-256 and size, stages the full lifecycle package, and schedules the
+installation through `hserverctl`. After the real detached systemd restart, it
+requires the stage to reach `completed`, both installed executable identities
+to match the staged version, the service to be active, and the persisted
+onboarding state to remain unchanged.
+
+It also creates a bounded random file payload, runs the authenticated asynchronous
+files backup, waits for its durable job state, validates the files-only restore
+boundary, changes the payload, restores it, and compares the original SHA-256.
+The test requires `filesRollback=true`, verifies the pre-restore recovery
+archive is readable and listed as completed, and validates that archive as a
+restorable files artifact. Deterministic service tests inject a partial
+extraction failure and prove that overwritten bytes are recovered while newly
+created paths are removed.
+
+The independent `Database Restore` matrix provisions isolated PostgreSQL and
+MariaDB servers on Ubuntu 24.04. Both jobs exercise a real dump, mutation,
+restore, recovery-point creation, deliberately failing partial mutation, and
+automatic rollback. The release job names the matrix as a required dependency,
+so a tag cannot publish packages when either engine result fails. A release
+candidate must still verify its installation-specific database identities,
+network paths, and protected credential files.
+
+Each tag also runs `Managed Agent Lifecycle` on both architectures. That gate
+installs the real panel and systemd-managed agent on the disposable runner,
+enrolls the node through the one-time token API, serves a locally signed next
+release, and proves heartbeat, signed discovery, an explicitly enabled remote
+terminal capability, a protected named CLI context, a packaged
+`hserverctl doctor --node` report that requires the runner's exact native agent
+architecture plus the terminal and agent-update read capabilities, and a
+packaged `hserverctl terminal --node` PTY marker round trip through that current
+context. It reads the verified newer agent release through
+`hserverctl updates agent status`, then performs upgrade and rollback through
+the packaged, explicitly confirmed `hserverctl updates agent` commands. It also
+proves disabled-capability
+denial, the missing-capability error, unchanged task history after that
+rejection, systemd stop,
+server-observed offline transition, rejection and non-persistence of new work
+while offline, restart and online recovery, central upgrade, completed
+lifecycle state, central rollback, crash-loop automatic recovery,
+configuration/token preservation, and non-purge uninstall. The release job
+depends on both architecture results. This co-located systemd lifecycle gate
+and the independent network-namespace gate do not replace the separate-VM
+provider-network drill in the manual candidate checklist.
+These runner labels are listed in the official
+[GitHub-hosted runners reference](https://docs.github.com/en/actions/reference/runners/github-hosted-runners).
+
+Do not call the release generally available until that disposable-host flow has
+fresh evidence for both `amd64` and `arm64`, or until the unsupported architecture
+is explicitly excluded from the release.

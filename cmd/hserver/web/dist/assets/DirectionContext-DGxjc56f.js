@@ -1,0 +1,1 @@
+import{i as e,t}from"./react-B3nAlWH0.js";var n=e(t()),r=n.createContext(void 0);function i(){return n.useContext(r)?.direction??`ltr`}export{i as t};
