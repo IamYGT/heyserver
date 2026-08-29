@@ -19,13 +19,17 @@ done
 # source validator. Copying these audited public files avoids weakening that
 # validator with test-only exceptions.
 install -m 0644 "$repo_root/README.md" "$source_tree/README.md"
-mkdir -p "$source_tree/docs" "$source_tree/extensions"
+install -m 0644 "$repo_root/CONTRIBUTING.md" "$source_tree/CONTRIBUTING.md"
+mkdir -p "$source_tree/docs" "$source_tree/extensions" "$source_tree/trust"
+install -m 0644 "$repo_root/trust/README.md" "$source_tree/trust/README.md"
+install -m 0644 "$repo_root/trust/release-signers.json" "$source_tree/trust/release-signers.json"
 public_documents=(
   installation-guide.md \
   api-reference.md \
   cli.md \
   mail-system.md \
   optional-integrations.md \
+  release-manifest.md \
   extension-boundary.md
 )
 for document in "${public_documents[@]}"; do
