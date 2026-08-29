@@ -2,6 +2,23 @@
 set -eu
 
 root_dir=$(CDPATH=; export CDPATH; cd -- "$(dirname -- "$0")/.." && pwd)
+
+if [ "$(id -u)" -eq 0 ]; then
+  run_privileged() {
+    "$@"
+  }
+else
+  command -v sudo >/dev/null 2>&1 || {
+    printf '%s\n' 'hserver install test requires root or sudo; install sudo or rerun with elevated access' >&2
+    exit 1
+  }
+  # hserver-install.sh must stay root-only; elevate only its disposable
+  # fixture runs so the surrounding contributor test remains unprivileged.
+  run_privileged() {
+    sudo -- "$@"
+  }
+fi
+
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT INT TERM
 
@@ -111,36 +128,39 @@ EOF
 chmod +x "$tmp/bin/cp"
 
 run_installer() {
-  HSERVER_ROOT_PREFIX="$tmp/root" \
-  HSERVER_SYSTEMCTL="$tmp/systemctl" \
-  HSERVER_SYSTEMCTL_STATE_DIR="$tmp/systemctl-state" \
-  HSERVER_OS_RELEASE=/etc/os-release \
-  HSERVER_SKIP_HEALTHCHECK=1 \
-    "$root_dir/scripts/hserver-install.sh" "$@"
+  run_privileged env \
+    HSERVER_ROOT_PREFIX="$tmp/root" \
+    HSERVER_SYSTEMCTL="$tmp/systemctl" \
+    HSERVER_SYSTEMCTL_STATE_DIR="$tmp/systemctl-state" \
+    HSERVER_OS_RELEASE=/etc/os-release \
+    HSERVER_SKIP_HEALTHCHECK=1 \
+      "$root_dir/scripts/hserver-install.sh" "$@"
 }
 
 run_retained_installer() {
-  HSERVER_ROOT_PREFIX="$tmp/root" \
-  HSERVER_SYSTEMCTL="$tmp/systemctl" \
-  HSERVER_SYSTEMCTL_STATE_DIR="$tmp/systemctl-state" \
-  HSERVER_OS_RELEASE=/etc/os-release \
-  HSERVER_SKIP_HEALTHCHECK=1 \
-    "$tmp/root/usr/local/libexec/hserver-install" "$@"
+  run_privileged env \
+    HSERVER_ROOT_PREFIX="$tmp/root" \
+    HSERVER_SYSTEMCTL="$tmp/systemctl" \
+    HSERVER_SYSTEMCTL_STATE_DIR="$tmp/systemctl-state" \
+    HSERVER_OS_RELEASE=/etc/os-release \
+    HSERVER_SKIP_HEALTHCHECK=1 \
+      "$tmp/root/usr/local/libexec/hserver-install" "$@"
 }
 
 run_faulted_upgrade() {
   failure=$1
-  HSERVER_ROOT_PREFIX="$tmp/root" \
-  HSERVER_SYSTEMCTL="$tmp/systemctl" \
-  HSERVER_SYSTEMCTL_STATE_DIR="$tmp/systemctl-state" \
-  HSERVER_SYSTEMCTL_LOG="$tmp/$failure-systemctl.log" \
-  HSERVER_OS_RELEASE=/etc/os-release \
-  HSERVER_SKIP_HEALTHCHECK=1 \
-  HSERVER_TEST_SNAPSHOT_COPY_FAILURE="$failure" \
-  HSERVER_TEST_SNAPSHOT_COPY_MARKER="$tmp/$failure-copy-attempted" \
-  PATH="$tmp/bin:$PATH" \
-    "$root_dir/scripts/hserver-install.sh" upgrade \
-      --binary "$tmp/v2" --cli-binary "$tmp/cli-v2"
+  run_privileged env \
+    HSERVER_ROOT_PREFIX="$tmp/root" \
+    HSERVER_SYSTEMCTL="$tmp/systemctl" \
+    HSERVER_SYSTEMCTL_STATE_DIR="$tmp/systemctl-state" \
+    HSERVER_SYSTEMCTL_LOG="$tmp/$failure-systemctl.log" \
+    HSERVER_OS_RELEASE=/etc/os-release \
+    HSERVER_SKIP_HEALTHCHECK=1 \
+    HSERVER_TEST_SNAPSHOT_COPY_FAILURE="$failure" \
+    HSERVER_TEST_SNAPSHOT_COPY_MARKER="$tmp/$failure-copy-attempted" \
+    PATH="$tmp/bin:$PATH" \
+      "$root_dir/scripts/hserver-install.sh" upgrade \
+        --binary "$tmp/v2" --cli-binary "$tmp/cli-v2"
 }
 
 for unsafe_vhosts_root in \
@@ -163,13 +183,14 @@ done
 no_option_root=$tmp/no-option-root
 no_option_state=$tmp/no-option-systemctl-state
 mkdir -p "$no_option_state"
-HSERVER_ROOT_PREFIX="$no_option_root" \
-HSERVER_SYSTEMCTL="$tmp/systemctl" \
-HSERVER_SYSTEMCTL_STATE_DIR="$no_option_state" \
-HSERVER_OS_RELEASE=/etc/os-release \
-HSERVER_SKIP_HEALTHCHECK=1 \
-  "$root_dir/scripts/hserver-install.sh" install \
-    --binary "$tmp/v1" --cli-binary "$tmp/cli-v1" >"$tmp/no-option-install.log"
+run_privileged env \
+  HSERVER_ROOT_PREFIX="$no_option_root" \
+  HSERVER_SYSTEMCTL="$tmp/systemctl" \
+  HSERVER_SYSTEMCTL_STATE_DIR="$no_option_state" \
+  HSERVER_OS_RELEASE=/etc/os-release \
+  HSERVER_SKIP_HEALTHCHECK=1 \
+    "$root_dir/scripts/hserver-install.sh" install \
+      --binary "$tmp/v1" --cli-binary "$tmp/cli-v1" >"$tmp/no-option-install.log"
 grep -q '^HSERVER_VHOSTS_ROOT=$' "$no_option_root/etc/hserver/hserver.env"
 [ ! -e "$no_option_root/srv/hserver/sites" ]
 
@@ -192,7 +213,8 @@ grep -q 'host preflight failed' "$tmp/preflight.log"
 failed_root=$tmp/failed-root
 failed_state=$tmp/failed-systemctl-state
 mkdir -p "$failed_state"
-if PATH="$tmp/bin:$PATH" \
+if run_privileged env \
+  PATH="$tmp/bin:$PATH" \
   HSERVER_ROOT_PREFIX="$failed_root" \
   HSERVER_SYSTEMCTL="$tmp/systemctl" \
   HSERVER_SYSTEMCTL_STATE_DIR="$failed_state" \
@@ -248,7 +270,8 @@ printf '%s\n' unrelated >"$preserved_root/etc/nginx/snippets/unrelated.conf"
 printf '%s\n' preserved-lifecycle >"$preserved_root/usr/local/share/hserver/nginx-snippets/hserver-security-headers.conf"
 printf '%s\n' lifecycle-unrelated >"$preserved_root/usr/local/share/hserver/unrelated"
 touch "$preserved_state/active" "$preserved_state/enabled"
-if PATH="$tmp/bin:$PATH" \
+if run_privileged env \
+  PATH="$tmp/bin:$PATH" \
   HSERVER_ROOT_PREFIX="$preserved_root" \
   HSERVER_SYSTEMCTL="$tmp/systemctl" \
   HSERVER_SYSTEMCTL_STATE_DIR="$preserved_state" \
@@ -317,8 +340,9 @@ for lifecycle_command in upgrade rollback uninstall next-steps; do
   cmp -s "$tmp/vhosts-root-env-before-rejection" "$tmp/root/etc/hserver/hserver.env"
 done
 
-HSERVER_ROOT_PREFIX="$tmp/root" \
-  "$tmp/root/usr/local/libexec/hserver-install" next-steps >"$tmp/next-steps.log"
+run_privileged env \
+  HSERVER_ROOT_PREFIX="$tmp/root" \
+    "$tmp/root/usr/local/libexec/hserver-install" next-steps >"$tmp/next-steps.log"
 grep -q 'HServer is ready for first access.' "$tmp/next-steps.log"
 ! grep -Fq "$initial_password" "$tmp/next-steps.log"
 [ -f "$tmp/root/etc/hserver/hserver.env" ]
@@ -469,7 +493,8 @@ cmp -s "$root_dir/deploy/nginx-snippets/hserver-security-headers.conf" \
   "$tmp/root/etc/nginx/snippets/hserver-security-headers.conf"
 
 rm -f "$tmp/systemctl-state/active" "$tmp/systemctl-state/enabled"
-if PATH="$tmp/bin:$PATH" \
+if run_privileged env \
+  PATH="$tmp/bin:$PATH" \
   HSERVER_ROOT_PREFIX="$tmp/root" \
   HSERVER_SYSTEMCTL="$tmp/systemctl" \
   HSERVER_SYSTEMCTL_STATE_DIR="$tmp/systemctl-state" \
@@ -573,22 +598,23 @@ touch "$custom_state/active" "$custom_state/enabled"
 run_preserve_upgrade() {
   panel_source=$1
   cli_source=$2
-  HSERVER_ROOT_PREFIX="$custom_root" \
-  HSERVER_SYSTEMCTL="$tmp/systemctl" \
-  HSERVER_SYSTEMCTL_STATE_DIR="$custom_state" \
-  HSERVER_TEST_SERVICE_FILE="$custom_unit" \
-  HSERVER_TEST_DROPIN_FILE="$custom_dropin" \
-  HSERVER_PRESERVE_LAYOUT=1 \
-  HSERVER_BINARY_PATH="$custom_bin/hserver-panel" \
-  HSERVER_CLI_PATH="$custom_bin/hserverctl" \
-  HSERVER_DATA_DIR_PATH="$custom_data" \
-  HSERVER_ENV_FILE="$custom_data/hserver.env" \
-  HSERVER_HEALTH_BINARY="$custom_bin/hserver-panel" \
-  HSERVER_HEALTH_TIMEOUT=1 \
-  HSERVER_SKIP_HEALTHCHECK=${HSERVER_TEST_SKIP_HEALTHCHECK:-1} \
-  PATH="$tmp/bin:$PATH" \
-    "$root_dir/scripts/hserver-install.sh" upgrade \
-      --binary "$panel_source" --cli-binary "$cli_source"
+  run_privileged env \
+    HSERVER_ROOT_PREFIX="$custom_root" \
+    HSERVER_SYSTEMCTL="$tmp/systemctl" \
+    HSERVER_SYSTEMCTL_STATE_DIR="$custom_state" \
+    HSERVER_TEST_SERVICE_FILE="$custom_unit" \
+    HSERVER_TEST_DROPIN_FILE="$custom_dropin" \
+    HSERVER_PRESERVE_LAYOUT=1 \
+    HSERVER_BINARY_PATH="$custom_bin/hserver-panel" \
+    HSERVER_CLI_PATH="$custom_bin/hserverctl" \
+    HSERVER_DATA_DIR_PATH="$custom_data" \
+    HSERVER_ENV_FILE="$custom_data/hserver.env" \
+    HSERVER_HEALTH_BINARY="$custom_bin/hserver-panel" \
+    HSERVER_HEALTH_TIMEOUT=1 \
+    HSERVER_SKIP_HEALTHCHECK=${HSERVER_TEST_SKIP_HEALTHCHECK:-1} \
+    PATH="$tmp/bin:$PATH" \
+      "$root_dir/scripts/hserver-install.sh" upgrade \
+        --binary "$panel_source" --cli-binary "$cli_source"
 }
 
 run_preserve_upgrade "$tmp/v2" "$tmp/cli-v2" >/dev/null
@@ -649,7 +675,8 @@ cp "$tmp/cli-v1" "$symlink_bin/hserverctl"
 chmod 0755 "$symlink_bin/panel-target" "$symlink_bin/hserverctl"
 ln -s panel-target "$symlink_bin/hserver-panel"
 : >"$tmp/symlink-systemctl.log"
-if HSERVER_ROOT_PREFIX="$symlink_root" \
+if run_privileged env \
+  HSERVER_ROOT_PREFIX="$symlink_root" \
   HSERVER_SYSTEMCTL="$tmp/systemctl" \
   HSERVER_SYSTEMCTL_STATE_DIR="$custom_state" \
   HSERVER_SYSTEMCTL_LOG="$tmp/symlink-systemctl.log" \
