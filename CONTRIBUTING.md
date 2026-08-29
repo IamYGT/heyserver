@@ -22,7 +22,7 @@ environment file.
 
 ```bash
 git clone https://github.com/IamYGT/heyserver.git
-cd hserver-panel
+cd heyserver
 make dev-check
 make dev-setup
 make test
