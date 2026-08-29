@@ -97,7 +97,8 @@ with open(sys.argv[2], "w", encoding="utf-8") as handle:
 PY
 chmod 0600 "$tmp/login-response.json" "$tmp/auth-header.txt"
 
-printf '%s\n' '{"completed":true,"step":6}' >"$tmp/onboarding.json"
+onboarding_step=5
+printf '%s\n' '{"completed":true,"step":'"$onboarding_step"'}' >"$tmp/onboarding.json"
 curl -fsS --max-time 5 \
   -H "@$tmp/auth-header.txt" \
   -H 'Content-Type: application/json' \
@@ -116,7 +117,7 @@ import sys
 
 with open(sys.argv[1], encoding="utf-8") as handle:
     state = json.load(handle)
-if state.get("completed") is not True or state.get("step") != 6:
+if state.get("completed") is not True or state.get("step") != 5:
     raise SystemExit("Docker evaluation did not preserve onboarding state across restart")
 PY
 
