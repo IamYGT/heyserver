@@ -2,8 +2,10 @@
 set -eu
 
 root_dir=$(CDPATH=; export CDPATH; cd -- "$(dirname -- "$0")/.." && pwd)
+invoking_uid=$(id -u)
+invoking_gid=$(id -g)
 
-if [ "$(id -u)" -eq 0 ]; then
+if [ "$invoking_uid" -eq 0 ]; then
   run_privileged() {
     "$@"
   }
@@ -15,12 +17,30 @@ else
   # hserver-install.sh must stay root-only; elevate only its disposable
   # fixture runs so the surrounding contributor test remains unprivileged.
   run_privileged() {
-    sudo -- "$@"
+    status=0
+    sudo -- "$@" || status=$?
+    sudo -- env chown -R -- "$invoking_uid:$invoking_gid" "$tmp" >/dev/null 2>&1 \
+      || return 1
+    return "$status"
   }
 fi
 
 tmp=$(mktemp -d)
-trap 'rm -rf "$tmp"' EXIT INT TERM
+cleanup() {
+  status=$?
+  trap - EXIT INT TERM
+  cleanup_status=0
+  if [ "$invoking_uid" -eq 0 ]; then
+    rm -rf -- "$tmp" || cleanup_status=$?
+  else
+    sudo -- env rm -rf -- "$tmp" >/dev/null 2>&1 || cleanup_status=$?
+  fi
+  if [ "$status" -eq 0 ] && [ "$cleanup_status" -ne 0 ]; then
+    status=$cleanup_status
+  fi
+  exit "$status"
+}
+trap cleanup EXIT INT TERM
 
 mkdir -p "$tmp/systemctl-state" "$tmp/bin"
 
