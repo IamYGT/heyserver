@@ -2,24 +2,45 @@
 set -eu
 
 root_dir=$(CDPATH=; export CDPATH; cd -- "$(dirname -- "$0")/.." && pwd)
-if [ "$(id -u)" -ne 0 ]; then
+invoking_uid=$(id -u)
+invoking_gid=$(id -g)
+
+if [ "$invoking_uid" -eq 0 ]; then
+  run_privileged_env() {
+    env "$@"
+  }
+else
   command -v sudo >/dev/null 2>&1 || {
     printf '%s\n' "agent install test requires root or sudo; install sudo or rerun with elevated access" >&2
     exit 1
   }
+  run_privileged_env() {
+    status=0
+    sudo -- env "$@" || status=$?
+    # Restore fixture ownership so unprivileged assertions can read private
+    # files and the EXIT cleanup can remove every generated path.
+    sudo -- env chown -R -- "$invoking_uid:$invoking_gid" "$tmp" >/dev/null 2>&1 \
+      || return 1
+    return "$status"
+  }
 fi
 
-# Keep the test harness unprivileged; elevate only disposable fixture installs.
-run_privileged_env() {
-  if [ "$(id -u)" -eq 0 ]; then
-    env "$@"
-  else
-    sudo -- env "$@"
-  fi
-}
-
 tmp=$(mktemp -d)
-trap 'rm -rf "$tmp"' EXIT INT TERM
+cleanup() {
+  status=$?
+  trap - EXIT INT TERM
+  cleanup_status=0
+  if [ "$invoking_uid" -eq 0 ]; then
+    rm -rf -- "$tmp" || cleanup_status=$?
+  else
+    sudo -- env rm -rf -- "$tmp" >/dev/null 2>&1 || cleanup_status=$?
+  fi
+  if [ "$status" -eq 0 ] && [ "$cleanup_status" -ne 0 ]; then
+    status=$cleanup_status
+  fi
+  exit "$status"
+}
+trap cleanup EXIT INT TERM
 
 mkdir -p "$tmp/systemctl-state"
 mkdir -p "$tmp/custom-systemctl-state"
