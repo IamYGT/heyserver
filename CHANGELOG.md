@@ -22,6 +22,9 @@ is pre-1.0; public release acceptance remains in progress.
 - Full amd64 public-source acceptance now passes from source HEAD `fd227828`,
   including the clean Git-free candidate build and its 92 frontend files, 489
   tests, and 10 route tests.
+- The canonical public repository is now
+  [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially published
+  at public HEAD `53df8ba`; the private and public trees match at `3719df8`.
 - Docker quick-evaluation documentation now covers first login: read
   `HSERVER_ADMIN_EMAIL` and the generated `HSERVER_ADMIN_PASS` locally from the
   mode-`0600` `.env`, open `http://localhost:3085`, and complete onboarding;
@@ -33,10 +36,12 @@ is pre-1.0; public release acceptance remains in progress.
 
 ### Changed
 
-- Public-launch progress remains incomplete: canonical public repository and
-  release-signer selection/ceremony and local/Contabo runtime rollout are still
-  pending; these source and acceptance results do not imply a live deployment
-  or public release.
+- Canonical public repository selection and publication are complete. Latest CI
+  run `#33251833442` is red, and no tag, release, or release signer exists yet;
+  signer selection/ceremony, the first signed release, green CI, clean
+  disposable-VM acceptance, and live rollout remain pending. The live `v0.9.3`
+  rollout is not the current source, and these source results do not imply a
+  live deployment or public release.
 
 ## [0.9.4] — 2026-08-29
 
@@ -89,7 +94,7 @@ is pre-1.0; public release acceptance remains in progress.
 - The Developer API page now reports distinct safe states for permission denial
   (401/403), a missing contract (404), temporary unavailability (network/5xx),
   and other operation failures without exposing backend errors.
-- Canonical signer/repository selection remains a public-launch prerequisite; the
+- Release-signer selection and ceremony remain a public-launch prerequisite; the
   empty canonical trust store intentionally blocks official tagged staging, so
   public launch is not yet ready.
 

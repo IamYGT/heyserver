@@ -9,10 +9,15 @@ This status is source progress only, not release evidence. The managed-node
 live-metrics source path is complete for the capability-scoped `metrics.read`
 agent task, hub/API validation, and current CLI/web consumers, including
 guest-time-safe CPU accounting. The TUI consumer and OpenAPI contract revision
-70 (442 routes, 318 schemas) are complete, and combined metrics acceptance is
-complete. Local/Contabo runtime rollout remains open. The canonical public
-repository and release-signer selection/ceremony also remain pending; these
-changes do not claim live deployment or a public release.
+71 (443 routes, 321 schemas) are complete, and combined metrics acceptance is
+complete. Canonical public repository selection and publication are complete at
+[`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially published
+at public HEAD `53df8ba`; the private and public trees match at `3719df8`.
+Latest CI run `#33251833442` is red, and no tag, release, or release signer
+exists yet. Signer selection/ceremony, the first signed release, green CI,
+clean disposable-VM acceptance, and local/Contabo live rollout remain pending.
+The live `v0.9.3` rollout is not the current source; this status does not claim
+live deployment or a public release.
 
 ## 1. Export the audited tree
 
@@ -25,6 +30,10 @@ From a clean, committed checkout:
 ```bash
 ./scripts/export-public-source.sh /tmp/hserver-panel-public
 ```
+
+The `/tmp/hserver-panel-public` path is disposable staging for a one-time
+audit only; it is not the canonical public checkout or a permanent publication
+workflow.
 
 The exporter uses `git archive`, refuses a dirty tree or an existing
 destination, omits `.git`, verifies the public policy files, and runs the
@@ -50,20 +59,27 @@ snapshot that relies on untracked files, private Git history,
 installation-specific inventory, architecture-specific omissions, or missing
 packaged files cannot become a release.
 
-**Recorded amd64 acceptance result (evidence, not a permanent path):** From
-source HEAD `fd227828`, the clean Git-free v0.9.5 candidate was produced in the
-temporary workspace `/var/tmp/hserver-panel-public-v0.9.5-fd227828` with
+**Recorded amd64 acceptance result (historical evidence, not a permanent
+path):** From source HEAD `fd227828`, the clean Git-free v0.9.5 candidate was
+produced in the temporary workspace
+`/var/tmp/hserver-panel-public-v0.9.5-fd227828` with
 candidate root commit `009ec010cfe09e21a6010b7ea93761359cc3b128` and tree
 `a4a988f0fb8caffdd5c31245e1aa78ef00144d63`. Full public-source acceptance
 passed with 92 frontend files, 489 tests, and 10 route tests. This records the
-validation result only; it does not establish a public repository, live
-deployment, or runtime rollout.
+validation result only; it predates the current public HEAD and does not
+establish a public release, live deployment, or runtime rollout. The temporary
+workspace is disposable evidence, not a canonical checkout or permanent
+workflow.
 
 ## 2. Create new public history
 
-The preferred launch path is a new one-commit repository, not a force-push over
-the private primary branch. From the clean private checkout, provide the public
-root commit's intended author identity:
+The one-time public-history creation and publication are complete. The
+canonical public repository is
+[`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially published
+at public HEAD `53df8ba`, with private/public tree parity `3719df8`. The
+commands below document the one-time staging procedure that produced that
+history; their `/tmp` destination is disposable and must not be treated as a
+canonical checkout or permanent publication workflow.
 
 ```bash
 ./scripts/create-public-repository.sh /tmp/hserver-panel-public \
@@ -110,8 +126,12 @@ pull-request refs into the public repository.
 - keep the checked-in canonical trust store empty until that operator key
   ceremony is complete. Tagged staging deliberately fails when it has no
   active signer or the Actions secret derives a different public key;
-- choose the canonical public repository and publish the immutable installer
-  commit plus installer digest and signer fingerprint through an independently
+- use the canonical public repository
+  [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially published
+  at public HEAD `53df8ba`, with private/public tree parity `3719df8`; repository
+  selection and publication are complete;
+- after signer selection and ceremony, publish the immutable installer commit
+  plus installer digest and signer fingerprint through an independently
   authenticated channel. A checksum adjacent to a mutable release asset is a
   convenience integrity check, not signer identity;
 - keep production deployment credentials outside repository actions. The

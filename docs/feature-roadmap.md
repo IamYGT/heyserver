@@ -57,10 +57,16 @@ acceptance is still required before treating all of them as generally available.
 `metrics.read` path is complete across agent collection, capability/task
 admission, hub/API validation, CLI/web/TUI consumers, and OpenAPI contract
 revision 71 (443 routes, 321 schemas), including guest CPU de-duplication. The
-combined acceptance for this path is complete. Local/Contabo runtime rollout,
-canonical public repository selection, and release-signer selection/ceremony
-remain open. This records source and acceptance progress only; it is not
-evidence of live deployment or a public release.
+combined acceptance for this path is complete. Canonical public repository
+selection and publication are complete at
+[`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially published
+at public HEAD `53df8ba`; the private and public trees match at `3719df8`.
+Latest CI run `#33251833442` is red, and no tag, release, or release signer
+exists yet. Signer selection/ceremony, the first signed release, green CI,
+clean disposable-VM acceptance, and local/Contabo live rollout remain open.
+The live `v0.9.3` rollout is not the current source. This records source and
+acceptance progress only; it is not evidence of live deployment or a public
+release.
 
 ## v1.0 release gates
 
@@ -125,28 +131,36 @@ These are release requirements, not optional ideas.
    The current source HEAD contains a bounded, capability-scoped managed-node
    live-metrics path with freshness and shape validation, its TUI consumer, and
    OpenAPI contract revision 71 (443 routes and 321 schemas). The combined
-   metrics acceptance is complete. Local/Contabo runtime rollout remains open,
-   and no live deployment or public release is claimed here.
+   metrics acceptance is complete. The canonical public repository is
+   [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially
+   published at public HEAD `53df8ba`, with private/public tree parity
+   `3719df8`. Latest CI run `#33251833442` is red. Local/Contabo runtime
+   rollout remains open; the live `v0.9.3` rollout is not the current source,
+   and no signed public release or clean disposable-VM acceptance is claimed
+   here.
 
 3. **Clean public history**
 
-   Seed a new public repository with `create-public-repository.sh`, which uses
-   the audited `export-public-source.sh` snapshot and requires exactly one new
-   root commit without a configured remote; never publish the earlier
-   operational Git history. Protect `main`, require CI, enable private
-   vulnerability reporting, and publish checksummed release archives with an
-   Ed25519-signed release manifest. The release workflow now fails closed unless
-   the version tag descends from the current protected `main` commit, derives
-   and publishes the manifest verification key without staging the private key,
-   and provides checksums for both the bootstrap installer and public key. The
-   repository host still has to enable branch protection before the first
-   public tag can pass this gate. The public installer now verifies a detached
+   The one-time public-history creation and publication are complete. The
+   canonical public repository is
+   [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially
+   published at public HEAD `53df8ba`, with private/public tree parity
+   `3719df8`; any temporary export or creation path is disposable staging and
+   evidence, not a permanent workflow. Protect `main`, require CI, enable
+   private vulnerability reporting, and publish checksummed release archives
+   with an Ed25519-signed release manifest. The release workflow now fails
+   closed unless the version tag descends from the current protected `main`
+   commit, derives and publishes the manifest verification key without staging
+   the private key, and provides checksums for both the bootstrap installer and
+   public key. The public installer now verifies a detached
    `bootstrap-install.sh.sig` against a raw-Ed25519-key fingerprint anchored in
    `trust/release-signers.json`; official tagged staging fails closed while the
-   canonical trust store has no active signer. Canonical public repository and
-   signer selection/ceremony remain a public-launch prerequisite, so this project is not
-   public-launch ready until that operator ceremony and its independently
-   authenticated installer anchor are complete.
+   canonical trust store has no active signer. Latest CI run `#33251833442` is
+   red, and no tag, release, or signer exists yet. Signer selection/ceremony,
+   the first signed release, green CI, clean disposable-VM acceptance, and live
+   rollout remain public-launch prerequisites, so this project is not
+   public-launch ready until those gates and the independently authenticated
+   installer anchor are complete.
 
 4. **Restore drills**
 
