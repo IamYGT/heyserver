@@ -23,9 +23,10 @@ is pre-1.0; public release acceptance remains in progress.
   recorded as prior validation evidence; it is not current release or rollout
   evidence.
 - The canonical public repository is now
-  [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), with current public
-  HEAD `adaccb23adf9720141d721970590de3a82fd17b5`; it was initially published
-  at `53df8ba` with private/public tree parity `3719df8`.
+  [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver); public source commit
+  `adaccb23adf9720141d721970590de3a82fd17b5` produced the first fully green
+  main CI matrix run. It was initially published at `53df8ba` with
+  private/public tree parity `3719df8`.
 - Docker quick-evaluation documentation now covers first login: read
   `HSERVER_ADMIN_EMAIL` and the generated `HSERVER_ADMIN_PASS` locally from the
   mode-`0600` `.env`, open `http://localhost:3085`, and complete onboarding;
@@ -38,7 +39,7 @@ is pre-1.0; public release acceptance remains in progress.
 ### Changed
 
 - Canonical public repository selection and publication are complete. The first
-  fully green protected CI matrix run was `#33283277809`. No tag, release, or
+  fully green main CI matrix run was `#33283277809`. No tag, release, or
   release signer exists yet; signer selection/ceremony, the first signed
   release, clean disposable-VM acceptance, and live rollout remain pending. The
   live `v0.9.3` rollout is not the current source, and these source results do
