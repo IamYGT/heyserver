@@ -15,7 +15,7 @@ complete. Canonical public repository selection and publication are complete at
 at `53df8ba`, with initial private/public tree parity at `3719df8`. Immutable
 public source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the
 first fully green public main CI matrix run `#33283277809`; the current fully
-green public main CI run is `#33290958793` (2026-08-30). Branch protection was
+green public main CI run is `#33293045279` (2026-08-30). Branch protection was
 enabled after these runs and is currently active. The initial active signer is
 prepared in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY`
 Actions secret is configured; public signer PR #7 was merged at protected `main`
@@ -43,15 +43,30 @@ workflow reached terminal `completed/cancelled` at
 `2026-08-30T04:27:26Z` after normal cancellation followed by a force-cancel
 because runner finalization stalled. No successful `v0.9.7` GitHub Release
 exists.
-`v0.9.8` is the next immutable replacement candidate. No public PR, tag,
-release, clean independent-VM acceptance, or live rollout is claimed for
-`v0.9.8`. Private source fixes now explicitly configure the native temporary
-vhosts root and accept canonical tar `TypeDir` entries with a trailing slash
-while preserving unsafe-path rejection. The live `v0.9.3` rollout is not the
-current source; source or release evidence does not imply live deployment.
+The public `v0.9.8` tag object is
+`81d3095f4c6f0615bd6912225bf18c38788e6e6c` and resolves to public `main`
+commit `6f399eba2d4871d783dfff45a6d4ece276865d9a`. Tagged workflow
+`#33293250350` is immutable disqualified evidence. The initial signed install,
+retained upgrade, and rollback stages passed before the `Native Lifecycle`
+amd64 job `#99208960092` and arm64 job `#99208960118` failed because
+upgrade-feed signature rotation was missing, with
+`Refusing to overwrite ... release-manifest.json.sig`. The `Managed Agent Lifecycle`
+jobs `#99208960112` and `#99208960115` remained `in_progress` because runner
+finalization stalled. Normal cancellation was at `05:15 UTC`; force-cancel was
+accepted with HTTP 202 at `05:17:32 UTC`, but the last snapshot still
+showed `in_progress`. No `v0.9.8` GitHub Release exists. Its immutable tag and
+workflow are disqualified evidence; do not delete or reuse `v0.9.8`. The next
+immutable replacement candidate is `v0.9.9`.
+The current source fix `c97ced79` preserves the signer fail-closed contract,
+explicitly unlinks the old fixture signature before rotating the upgrade feed
+signature, and locks the static gate call ordering. `v0.9.9` remains pending
+acceptance; no public PR, tag, release, clean independent-VM acceptance, or
+live rollout is claimed for it. The live `v0.9.3` rollout is not the current
+source; source or release evidence does not imply live deployment.
 
 Historical CI failures `#33251833442`, `#33281342435`, and tagged runs
-`#33285788628` and `#33291179584` are retained only as historical evidence.
+`#33285788628`, `#33291179584`, and `#33293250350` are retained only as
+historical evidence.
 
 ## 1. Export the audited tree
 
@@ -197,18 +212,34 @@ workflow reached terminal `completed/cancelled` at
 `2026-08-30T04:27:26Z` after normal cancellation followed by a force-cancel
 because runner finalization stalled. No successful `v0.9.7` GitHub Release
 exists. The
-next immutable replacement candidate is `v0.9.8`. Its acceptance is
-established only by a published GitHub Release, a successful tagged
-lifecycle/provenance workflow, clean independent-VM acceptance, and the
-separate live rollout receipt. No public PR, tag, release, clean independent-VM
-acceptance, or live rollout is claimed for `v0.9.8`.
+public `v0.9.8` tag object is
+`81d3095f4c6f0615bd6912225bf18c38788e6e6c` and resolves to public `main`
+commit `6f399eba2d4871d783dfff45a6d4ece276865d9a`; tagged workflow
+`#33293250350` is immutable disqualified evidence. The initial signed install,
+retained upgrade, and rollback stages passed before `Native Lifecycle` amd64
+job `#99208960092` and arm64 job `#99208960118` failed because upgrade-feed
+signature rotation was missing, with
+`Refusing to overwrite ... release-manifest.json.sig`. `Managed Agent Lifecycle`
+jobs `#99208960112` and `#99208960115` remained `in_progress` because runner
+finalization stalled; normal cancellation was at `05:15 UTC`, force-cancel was
+accepted with HTTP 202 at `05:17:32 UTC`, and the last snapshot still showed
+`in_progress`. No `v0.9.8` GitHub Release exists; do not delete or reuse its
+immutable tag, which remains disqualified evidence. The next immutable
+replacement candidate is `v0.9.9`. Its acceptance is established only by a
+published GitHub Release, a successful tagged lifecycle/provenance workflow,
+clean independent-VM acceptance, and the separate live rollout receipt. The
+source fix `c97ced79` preserves the signer fail-closed contract, explicitly
+unlinks the old fixture signature before rotating the upgrade feed signature,
+and locks static gate call ordering. No public PR, tag, release, clean
+independent-VM acceptance, or live rollout is claimed for `v0.9.9`.
 
 Create the next installation candidate from an exact, previously unused stable
 SemVer tag in the designated public repository. Build it from the exact commit
 on protected public `main`; do not reuse the failed `v0.9.5` or `v0.9.6` tags,
-the disqualified `v0.9.7` tag, or a version whose immutable feed was built from
-a different repository commit, even when the exported source trees are
-identical. Use `v0.9.8` as the next immutable patch candidate and publish that
+the disqualified `v0.9.7` and `v0.9.8` tags, or a version whose immutable feed
+was built from a different repository commit, even when the exported source
+trees are identical. Use `v0.9.9` as the next immutable patch candidate and
+publish that
 version only once after its fresh gates pass. A
 `v0.x` release can remain product-level pre-1.0 without using an unordered `-rc`
 suffix. HServer update manifests intentionally order only stable
@@ -546,11 +577,25 @@ preserved `agent release archive contains an invalid path`. The workflow
 reached terminal `completed/cancelled` at
 `2026-08-30T04:27:26Z` after normal cancellation followed by a force-cancel
 because runner finalization stalled. No successful `v0.9.7` GitHub Release
-exists. The
-next immutable `v0.9.8` candidate must rerun this gate. Private source fixes
-now explicitly configure the native temporary vhosts root and accept canonical
-tar `TypeDir` entries with a trailing slash while preserving unsafe-path
-rejection; they are not public release evidence. That gate installs the real
+exists. The public `v0.9.8` tag object is
+`81d3095f4c6f0615bd6912225bf18c38788e6e6c` and resolves to public `main`
+commit `6f399eba2d4871d783dfff45a6d4ece276865d9a`; tagged workflow
+`#33293250350` is also immutable disqualified evidence. Its initial signed
+install, retained upgrade, and rollback stages passed before `Native
+Lifecycle` amd64 job `#99208960092` and arm64 job `#99208960118` failed because
+upgrade-feed signature rotation was missing, with
+`Refusing to overwrite ... release-manifest.json.sig`. `Managed Agent Lifecycle`
+jobs `#99208960112` and `#99208960115` remained `in_progress` because runner
+finalization stalled; normal cancellation was at `05:15 UTC`, force-cancel was
+accepted with HTTP 202 at `05:17:32 UTC`, and the last snapshot still showed
+`in_progress`. No `v0.9.8` GitHub Release exists; do not delete or reuse its
+immutable tag, which remains disqualified evidence. The next immutable
+`v0.9.9` candidate must rerun this gate. The source fix `c97ced79` preserves
+the signer fail-closed contract, explicitly unlinks the old fixture signature
+before rotating the upgrade feed signature, and locks static gate call
+ordering; it is not public release evidence. No public PR, tag, release,
+clean independent-VM acceptance, or live rollout is claimed for `v0.9.9`.
+That gate installs the real
 panel and systemd-managed agent on the disposable runner,
 enrolls the node through the one-time token API, serves a locally signed next
 release, and proves heartbeat, signed discovery, an explicitly enabled remote
