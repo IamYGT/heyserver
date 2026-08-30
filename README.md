@@ -39,10 +39,16 @@ failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
 `Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step 6
 while the canonical maximum is step 5. The tag and run remain historical
 failed-release evidence; no successful `v0.9.5` GitHub Release is claimed.
-`v0.9.6` is the immutable replacement candidate. Its GitHub Release page and
-tagged workflow are the authoritative distribution evidence; clean
-independent-VM acceptance and live rollout remain separate gates. The live
-`v0.9.3` rollout is not the current source.
+The public `v0.9.6` tag points to protected `main` commit
+`8d19991e7db7aa8ee39564a41bf1e6ef649d8d96`, but tagged workflow
+`#33288698005` is not releasable: `Public Source Snapshot (amd64)` failed
+asynchronous backup temporary-directory cleanup, and both `Native Lifecycle`
+jobs failed because retained rollback did not preserve SQLite onboarding state.
+The managed-agent lifecycle jobs had not completed at audit time. No successful
+`v0.9.6` GitHub Release exists; its tag and workflow remain failed-release
+evidence. `v0.9.7` is the next immutable replacement candidate, but its tagged
+workflow, GitHub Release, independent-VM acceptance, and live rollout remain
+pending. The live `v0.9.3` rollout is not the current source.
 
 ## Architecture
 

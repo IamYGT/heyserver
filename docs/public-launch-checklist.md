@@ -26,11 +26,17 @@ failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
 `Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step 6
 while the canonical maximum is step 5. The tag and run remain
 historical failed-release evidence; no successful `v0.9.5` GitHub Release is
-claimed. `v0.9.6` is the immutable replacement candidate. Its GitHub Release
-page and tagged workflow are the authoritative distribution evidence; clean
-independent-VM acceptance and local/Contabo live rollout remain separate gates.
-The live `v0.9.3` rollout is not the current source; source or release evidence
-does not imply live deployment.
+claimed. The public `v0.9.6` tag points to protected `main` commit
+`8d19991e7db7aa8ee39564a41bf1e6ef649d8d96`, but tagged workflow
+`#33288698005` is not releasable: `Public Source Snapshot (amd64)` failed
+asynchronous backup temporary-directory cleanup, and both `Native Lifecycle`
+jobs failed because retained rollback did not preserve SQLite onboarding state.
+Its managed-agent lifecycle jobs had not completed at audit time, and no
+successful `v0.9.6` GitHub Release exists. `v0.9.7` is the next immutable
+replacement candidate. Its tagged workflow, GitHub Release, clean
+independent-VM acceptance, and local/Contabo live rollout remain separate
+pending gates. The live `v0.9.3` rollout is not the current source; source or
+release evidence does not imply live deployment.
 
 Historical CI failures `#33251833442`, `#33281342435`, and tagged run
 `#33285788628` are retained only as historical evidence.
@@ -166,17 +172,21 @@ The public `v0.9.5` tag points to protected `main` commit
 failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
 `Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step 6
 while the canonical maximum is step 5. That tag and run are
-historical failed-release evidence, not a successful release. The next immutable
-replacement candidate is `v0.9.6`. Its acceptance is established only by a
-published GitHub Release, a successful tagged lifecycle/provenance workflow,
-clean independent-VM acceptance, and the separate live rollout receipt.
+historical failed-release evidence, not a successful release. The public
+`v0.9.6` tag and tagged workflow `#33288698005` are also failed-release evidence:
+required public-source and native-lifecycle jobs failed, and no successful
+GitHub Release exists. The next immutable replacement candidate is `v0.9.7`.
+Its acceptance is established only by a published GitHub Release, a successful
+tagged lifecycle/provenance workflow, clean independent-VM acceptance, and the
+separate live rollout receipt.
 
 Create the next installation candidate from an exact, previously unused stable
 SemVer tag in the designated public repository. Build it from the exact commit
-on protected public `main`; do not reuse the failed `v0.9.5` tag or a version
-whose immutable feed was built from a different repository commit, even when the
-exported source trees are identical. Use `v0.9.6` as the next immutable patch
-candidate and publish that version only once after its fresh gates pass. A
+on protected public `main`; do not reuse the failed `v0.9.5` or `v0.9.6` tags,
+or a version whose immutable feed was built from a different repository commit,
+even when the exported source trees are identical. Use `v0.9.7` as the next
+immutable patch candidate and publish that version only once after its fresh
+gates pass. A
 `v0.x` release can remain product-level pre-1.0 without using an unordered `-rc`
 suffix. HServer update manifests intentionally order only stable
 `major.minor.patch` versions, so the release workflow rejects commit-derived,
@@ -503,8 +513,10 @@ network paths, and protected credential files.
 Each tag also runs `Managed Agent Lifecycle` on both architectures. The public
 `v0.9.5` tagged run `#33285788628` failed all four lifecycle jobs (both Native
 Lifecycle jobs and both Managed Agent Lifecycle jobs) because their fixtures
-posted onboarding step 6 while the canonical maximum is 5; the next immutable
-`v0.9.6` candidate must rerun this gate. That gate installs the real
+posted onboarding step 6 while the canonical maximum is 5. The `v0.9.6` tagged
+workflow `#33288698005` is also disqualified by required public-source and
+native-lifecycle failures. The next immutable `v0.9.7` candidate must rerun this
+gate. That gate installs the real
 panel and systemd-managed agent on the disposable runner,
 enrolls the node through the one-time token API, serves a locally signed next
 release, and proves heartbeat, signed discovery, an explicitly enabled remote

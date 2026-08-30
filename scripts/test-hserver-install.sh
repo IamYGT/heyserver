@@ -5,6 +5,8 @@ root_dir=$(CDPATH=; export CDPATH; cd -- "$(dirname -- "$0")/.." && pwd)
 invoking_uid=$(id -u)
 invoking_gid=$(id -g)
 stage='fixture setup'
+wal_sqlite_pid=
+wal_sqlite_fd_open=0
 
 if [ "$invoking_uid" -eq 0 ]; then
   run_privileged() {
@@ -30,6 +32,15 @@ tmp=$(mktemp -d)
 cleanup() {
   status=$?
   trap - EXIT INT TERM
+  if [ -n "${wal_sqlite_pid:-}" ]; then
+    if [ "${wal_sqlite_fd_open:-0}" -eq 1 ]; then
+      printf '%s\n' '.exit' >&3 2>/dev/null || true
+      exec 3>&- || true
+      wal_sqlite_fd_open=0
+    fi
+    wait "$wal_sqlite_pid" 2>/dev/null || true
+    wal_sqlite_pid=
+  fi
   cleanup_status=0
   if [ "$invoking_uid" -eq 0 ]; then
     rm -rf -- "$tmp" || cleanup_status=$?
@@ -188,6 +199,20 @@ run_faulted_upgrade() {
     PATH="$tmp/bin:$PATH" \
       "$root_dir/scripts/hserver-install.sh" upgrade \
         --binary "$tmp/v2" --cli-binary "$tmp/cli-v2"
+}
+
+wait_for_sqlite_marker() {
+  marker=$1
+  attempts=0
+  while ! grep -Fqx "$marker" "$wal_sqlite_log"; do
+    attempts=$((attempts + 1))
+    if [ "$attempts" -ge 100 ]; then
+      cat "$wal_sqlite_log" >&2
+      printf '%s\n' "SQLite fixture did not reach marker: $marker" >&2
+      exit 1
+    fi
+    sleep 0.1
+  done
 }
 
 stage='unsafe vhosts-root rejection'
@@ -363,6 +388,74 @@ grep -q '^HSERVER_PHP_BINARY_ROOT=/usr/sbin$' "$tmp/root/etc/hserver/hserver.env
 grep -q '^HSERVER_UPGRADE_SNAPSHOT_RETENTION_COUNT=3$' "$tmp/root/etc/hserver/hserver.env"
 [ -d "$tmp/root/srv/hserver/sites" ]
 [ "$(stat -c %a "$tmp/root/srv/hserver/sites")" = 755 ]
+
+# The running panel keeps committed onboarding/settings rows in SQLite's WAL.
+# Keep that connection open while the installer snapshots the live database so
+# this exercises the online backup path rather than the legacy main-file copy.
+stage='WAL online backup preserves onboarding state'
+wal_db=$tmp/root/var/lib/hserver/hserver.db
+wal_sqlite_fifo=$tmp/wal-sqlite-input
+wal_sqlite_log=$tmp/wal-sqlite.log
+mkfifo "$wal_sqlite_fifo"
+sqlite3 "$wal_db" <"$wal_sqlite_fifo" >"$wal_sqlite_log" 2>&1 &
+wal_sqlite_pid=$!
+exec 3>"$wal_sqlite_fifo"
+wal_sqlite_fd_open=1
+printf '%s\n' \
+  'PRAGMA journal_mode=WAL;' \
+  'PRAGMA wal_autocheckpoint=0;' \
+  'CREATE TABLE settings (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT NOT NULL);' \
+  'BEGIN;' \
+  "INSERT INTO settings(key,value,updated_at) VALUES ('onboarding_completed','true','before-upgrade');" \
+  "INSERT INTO settings(key,value,updated_at) VALUES ('onboarding_step','5','before-upgrade');" \
+  "INSERT INTO settings(key,value,updated_at) VALUES ('installation_label','wal-before-upgrade','before-upgrade');" \
+  'COMMIT;' \
+  '.print wal-state-before-upgrade' >&3
+wait_for_sqlite_marker wal-state-before-upgrade
+[ -f "$wal_db-wal" ]
+[ -f "$wal_db-shm" ]
+# Restrictive source sidecars make the fixture match an installation-owned
+# database, and the installer must create the backup with the same 0600 mode.
+chmod 0600 "$wal_db" "$wal_db-wal" "$wal_db-shm"
+[ "$(stat -c %a "$wal_db-wal")" = 600 ]
+[ "$(stat -c %a "$wal_db-shm")" = 600 ]
+
+run_installer upgrade --binary "$tmp/v2" --cli-binary "$tmp/cli-v2" >/dev/null
+wal_snapshot=$(cat "$tmp/root/var/lib/hserver/releases/latest-pre-upgrade")
+case "$wal_snapshot" in
+  "$tmp/root/var/lib/hserver/releases/"*) ;;
+  *)
+    printf '%s\n' 'WAL snapshot marker points outside the fixture releases directory' >&2
+    exit 1
+    ;;
+esac
+[ -f "$wal_snapshot/hserver.db" ]
+grep -Fqx "hserver.db=$wal_db" "$wal_snapshot/databases.map"
+[ "$(stat -c %a "$wal_snapshot/hserver.db")" = 600 ]
+[ "$(sqlite3 "$wal_snapshot/hserver.db" "SELECT value FROM settings WHERE key='onboarding_completed';")" = true ]
+[ "$(sqlite3 "$wal_snapshot/hserver.db" "SELECT value FROM settings WHERE key='onboarding_step';")" = 5 ]
+[ "$(sqlite3 "$wal_snapshot/hserver.db" "SELECT value FROM settings WHERE key='installation_label';")" = wal-before-upgrade ]
+
+printf '%s\n' \
+  'BEGIN;' \
+  "UPDATE settings SET value='false', updated_at='after-upgrade' WHERE key='onboarding_completed';" \
+  "UPDATE settings SET value='0', updated_at='after-upgrade' WHERE key='onboarding_step';" \
+  "UPDATE settings SET value='wal-after-upgrade', updated_at='after-upgrade' WHERE key='installation_label';" \
+  'COMMIT;' \
+  '.print wal-state-after-upgrade' >&3
+wait_for_sqlite_marker wal-state-after-upgrade
+printf '%s\n' '.exit' >&3
+exec 3>&-
+wal_sqlite_fd_open=0
+wait "$wal_sqlite_pid"
+wal_sqlite_pid=
+
+run_installer rollback >/dev/null
+[ ! -e "$wal_db-wal" ]
+[ ! -e "$wal_db-shm" ]
+[ "$(sqlite3 "$wal_db" "SELECT value FROM settings WHERE key='onboarding_completed';")" = true ]
+[ "$(sqlite3 "$wal_db" "SELECT value FROM settings WHERE key='onboarding_step';")" = 5 ]
+[ "$(sqlite3 "$wal_db" "SELECT value FROM settings WHERE key='installation_label';")" = wal-before-upgrade ]
 
 stage='lifecycle argument validation'
 cp "$tmp/root/etc/hserver/hserver.env" "$tmp/vhosts-root-env-before-rejection"

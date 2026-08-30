@@ -619,4 +619,5 @@ func TestIntegration_BackupCreateAndJobStatus(t *testing.T) {
 	if rec.Code != http.StatusOK {
 		t.Fatalf("job status=%d body=%s", rec.Code, rec.Body.String())
 	}
+	waitForBackupJobTerminal(t, backupSvc, jobID)
 }

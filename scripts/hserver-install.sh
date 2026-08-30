@@ -8,6 +8,7 @@ SERVICE_NAME=hserver
 ROOT_PREFIX=${HSERVER_ROOT_PREFIX:-}
 SYSTEMCTL=${HSERVER_SYSTEMCTL:-systemctl}
 APT_GET=${HSERVER_APT_GET:-apt-get}
+SQLITE3=${HSERVER_SQLITE3:-sqlite3}
 HEALTH_TIMEOUT=${HSERVER_HEALTH_TIMEOUT:-30}
 SKIP_HEALTHCHECK=${HSERVER_SKIP_HEALTHCHECK:-0}
 PRESERVE_LAYOUT=${HSERVER_PRESERVE_LAYOUT:-0}
@@ -831,7 +832,18 @@ snapshot_state() (
   for database in "$db_path" "$DATA_DIR/metrics.db"; do
     if [ -f "$database" ]; then
       db_name=$(basename "$database")
-      cp -p "$database" "$stage/$db_name" || return 1
+      if [ -f "$database-wal" ] || [ -f "$database-shm" ]; then
+        require_command "$SQLITE3"
+        # SQLite runs the panel databases in WAL mode. Copying only the main
+        # file while the service is live can omit committed pages still held
+        # in the WAL, so use SQLite's online backup API through the CLI.
+        (umask 077; "$SQLITE3" -batch -bail "$database" \
+          '.timeout 5000' ".backup '$stage/$db_name'") || return 1
+      else
+        # A standalone legacy or non-SQLite state file has no WAL to merge;
+        # retain its exact bytes for the existing rollback compatibility path.
+        cp -p "$database" "$stage/$db_name" || return 1
+      fi
       printf '%s=%s\n' "$db_name" "$database" >>"$stage/databases.map" || return 1
     fi
   done
