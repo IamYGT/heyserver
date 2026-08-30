@@ -22,7 +22,6 @@ upgrade_version=$5
 upgrade_archive=$6
 upgrade_checksum=$7
 root_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-restore_probe=/var/www/vhosts/hserver-native-restore-probe
 
 python3 - "$version" "$upgrade_version" <<'PY'
 import re
@@ -57,14 +56,11 @@ if curl -fsS --max-time 1 http://127.0.0.1:3085/api/health >/dev/null 2>&1; then
   echo "Refusing to use occupied HServer port 3085." >&2
   exit 1
 fi
-if [[ -e "$restore_probe" ]]; then
-  echo "Refusing to overwrite a pre-existing native restore probe: $restore_probe" >&2
-  exit 1
-fi
-
 tmp=$(mktemp -d /tmp/hserver-native-acceptance-XXXXXXXX)
 umask 077
 package_dir="$tmp/hserver-panel-${version}-linux-${arch}"
+vhosts_root="$tmp/vhosts"
+restore_probe="$vhosts_root/hserver-native-restore-probe"
 installed=0
 restore_probe_created=0
 feed_pid=
@@ -191,7 +187,8 @@ curl -fsS --max-time 2 http://127.0.0.1:38085/release-manifest.json >/dev/null \
   || { cat "$tmp/release-feed.log" >&2; exit 1; }
 "$root_dir/scripts/bootstrap-install.sh" \
   --manifest-url http://127.0.0.1:38085/release-manifest.json \
-  --public-key "$(<"$tmp/release-public.b64")"
+  --public-key "$(<"$tmp/release-public.b64")" \
+  --vhosts-root "$vhosts_root"
 curl -fsS --max-time 3 http://127.0.0.1:3085/api/health >/dev/null
 cmp -s "$package_dir/hserverctl" /usr/local/bin/hserverctl
 cmp -s "$package_dir/install.sh" /usr/local/libexec/hserver-install
@@ -653,6 +650,9 @@ file_backup_code=$(curl -sS --max-time 10 \
   http://127.0.0.1:3085/api/backups)
 [[ "$file_backup_code" == 202 ]] || {
   echo "File backup returned HTTP $file_backup_code instead of 202." >&2
+  echo "File backup response body:" >&2
+  cat "$tmp/file-backup-response.json" >&2
+  printf '\n' >&2
   exit 1
 }
 file_backup_job=$(python3 - "$tmp/file-backup-response.json" <<'PY'
