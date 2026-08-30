@@ -398,7 +398,9 @@ for required in (
     'name: Managed Agent Lifecycle (${{ matrix.arch }})',
     "runner: ubuntu-24.04",
     "runner: ubuntu-24.04-arm",
+    "timeout-minutes: 30",
     "HSERVER_ACCEPT_DISPOSABLE_HOST=1",
+    "sudo timeout --signal=TERM --kill-after=30s 25m env",
     "./scripts/test-native-managed-agent-lifecycle.sh",
     "binutils util-linux",
 ):
@@ -436,6 +438,53 @@ for required in (
 ):
     if required not in managed_lifecycle:
         raise SystemExit(f"managed-agent CLI acceptance is missing: {required}")
+
+status_contract = re.search(
+    r"(?m)^managed_status_poll_attempts=(\d+)\n"
+    r"managed_status_request_timeout=(\d+)\n"
+    r"managed_status_poll_interval=(\d+)$",
+    managed_lifecycle,
+)
+if not status_contract:
+    raise SystemExit("managed-agent lifecycle status polling contract is missing")
+poll_attempts, request_timeout, poll_interval = map(int, status_contract.groups())
+if poll_attempts != 2 or request_timeout != 50 or poll_interval != 2:
+    raise SystemExit(
+        "managed-agent lifecycle status polling must use two 50-second requests with a two-second interval"
+    )
+if request_timeout <= 45:
+    raise SystemExit("managed-agent lifecycle status requests must leave response time beyond the server's 45-second wait")
+status_budget = poll_attempts * request_timeout + (poll_attempts - 1) * poll_interval
+if status_budget > 2 * 60:
+    raise SystemExit(f"managed-agent lifecycle status polling budget is too large: {status_budget}s")
+status_poll_calls = len(re.findall(r"(?m)^wait_for_update_status \"", managed_lifecycle))
+if status_poll_calls != 3 or status_budget * status_poll_calls > 6 * 60:
+    raise SystemExit(
+        "managed-agent lifecycle status polling aggregate must cover exactly three calls within six minutes"
+    )
+
+for required in (
+    'progress "verify release archive and package"',
+    'progress "install panel and verify health"',
+    'progress "authenticate panel and configure CLI context"',
+    'progress "prepare signed agent release feed"',
+    'progress "register node and install managed agent"',
+    'progress "verify heartbeat, update status, doctor, and terminal"',
+    'progress "verify offline and denied capability boundaries"',
+    'progress "run managed agent upgrade"',
+    'progress "run managed agent rollback"',
+    'progress "verify failed-upgrade recovery and uninstall cleanup"',
+    'progress "managed-agent lifecycle acceptance complete"',
+    'cleanup_done=0',
+    'trap cleanup EXIT',
+    "trap 'exit 143' INT TERM",
+    'timeout 10s systemctl stop hserver-agent-lifecycle.timer hserver-agent-lifecycle.service',
+    'updates agent status --node "$node_id" --wait 50s',
+    'updates agent upgrade --confirm --node "$node_id" --wait 2m',
+    'updates agent rollback --confirm --node "$node_id" --wait 2m',
+):
+    if required not in managed_lifecycle:
+        raise SystemExit(f"managed-agent lifecycle containment contract is missing: {required}")
 
 network = job_block("network-isolation-acceptance")
 for required in (

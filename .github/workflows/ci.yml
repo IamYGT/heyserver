@@ -557,6 +557,9 @@ jobs:
           - arch: arm64
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.runner }}
+    # The script has a 25-minute TERM/kill-after deadline; keep a separate
+    # job timeout so GitHub cancellation does not bypass its cleanup trap.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -593,7 +596,7 @@ jobs:
           NEXT_VERSION: ${{ steps.next.outputs.version }}
           GOARCH: ${{ matrix.arch }}
         run: |
-          sudo env \
+          sudo timeout --signal=TERM --kill-after=30s 25m env \
             CI=true \
             HSERVER_ACCEPT_DISPOSABLE_HOST=1 \
             ./scripts/test-native-managed-agent-lifecycle.sh \

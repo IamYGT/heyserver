@@ -22,12 +22,23 @@ upgrade_version=$5
 upgrade_agent=$6
 root_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 
+# The managed status endpoint waits up to 45 seconds for the agent task. Keep
+# each client request just above that server deadline, while bounding retries
+# tightly enough that a lost runner cannot spend tens of minutes polling.
+managed_status_poll_attempts=2
+managed_status_request_timeout=50
+managed_status_poll_interval=2
+
 die() {
   echo "$*" >&2
   exit 1
 }
 
-for command_name in base64 curl openssl python3 sha256sum systemctl systemd-run tar; do
+progress() {
+  printf '[managed-agent-lifecycle][%s] %s\n' "$arch" "$1"
+}
+
+for command_name in base64 curl openssl python3 sha256sum systemctl systemd-run tar timeout; do
   command -v "$command_name" >/dev/null 2>&1 || die "$command_name is required"
 done
 
@@ -91,8 +102,16 @@ node_id="native-agent-${arch}"
 panel_installed=0
 agent_touched=0
 feed_pid=
+cleanup_done=0
 
 cleanup() {
+  if (( cleanup_done )); then
+    return
+  fi
+  cleanup_done=1
+  progress "cleanup"
+  timeout 10s systemctl stop hserver-agent-lifecycle.timer hserver-agent-lifecycle.service >/dev/null 2>&1 || true
+  systemctl reset-failed hserver-agent-lifecycle.timer hserver-agent-lifecycle.service >/dev/null 2>&1 || true
   if [[ -n "$feed_pid" ]]; then
     kill "$feed_pid" >/dev/null 2>&1 || true
     wait "$feed_pid" >/dev/null 2>&1 || true
@@ -112,20 +131,26 @@ cleanup() {
   fi
   rm -rf "$tmp"
 }
-trap cleanup EXIT INT TERM
+trap cleanup EXIT
+trap 'exit 143' INT TERM
 
+progress "verify release archive and package"
 "$root_dir/scripts/verify-release-archive.sh" "$version" "$arch" "$archive" "$checksum"
 tar -xzf "$archive" -C "$tmp"
 [[ -x "$package_dir/install.sh" && -x "$package_dir/agent-install.sh" ]] || die "Release package lifecycle tools are missing."
 [[ $("$package_dir/hserver-agent" --version) == "hserver-agent $version" ]] || die "Packaged agent version is incorrect."
 [[ $("$upgrade_agent" --version) == "hserver-agent $upgrade_version" ]] || die "Upgrade agent version is incorrect."
+progress "release archive and package verified"
 
+progress "install panel and verify health"
 "$package_dir/doctor.sh" preflight
 "$package_dir/install.sh" install
 panel_installed=1
 "$package_dir/doctor.sh" installed
 curl -fsS --max-time 3 http://127.0.0.1:3085/api/health >/dev/null
+progress "panel installed and healthy"
 
+progress "authenticate panel and configure CLI context"
 login_request="$tmp/login.json"
 login_response="$tmp/login-response.json"
 auth_header="$tmp/auth-header.txt"
@@ -184,7 +209,9 @@ if current.get("name") != "managed" or current.get("server") != "http://127.0.0.
 if current.get("token_file") != sys.argv[2] or current.get("current") is not True:
     raise SystemExit(f"managed lifecycle token context is invalid: {current}")
 PY
+progress "CLI context authenticated"
 
+progress "prepare signed agent release feed"
 printf '%s\n' '{"completed":true,"step":5}' >"$tmp/onboarding.json"
 curl -fsS --max-time 5 \
   -H "@$auth_header" \
@@ -235,7 +262,9 @@ for _ in {1..20}; do
   sleep 1
 done
 curl -fsS --max-time 2 http://127.0.0.1:38086/release-manifest.json >/dev/null || die "Signed release feed did not become reachable."
+progress "signed agent release feed ready"
 
+progress "register node and install managed agent"
 printf '{"id":"%s","name":"Native Agent %s"}\n' "$node_id" "$arch" >"$tmp/node-register.json"
 curl -fsS --max-time 5 \
   -H "@$auth_header" \
@@ -285,6 +314,7 @@ systemctl is-active --quiet hserver-agent
 [[ $(/usr/local/bin/hserver-agent --version) == "hserver-agent $version" ]] || die "Installed agent version is incorrect."
 config_sha=$(sha256sum /etc/hserver-agent.env | awk '{print $1}')
 token_sha=$(sha256sum /etc/hserver-agent.token | awk '{print $1}')
+progress "managed agent installed"
 
 wait_for_node_version() {
   local expected=$1
@@ -344,8 +374,9 @@ wait_for_update_status() {
   local expected_operation=$2
   local expected_operation_status=$3
   local response="$tmp/agent-update-status.json"
-  for _ in {1..12}; do
-    if curl -fsS --max-time 75 -H "@$auth_header" -o "$response" \
+  local attempt
+  for (( attempt=1; attempt<=managed_status_poll_attempts; attempt++ )); do
+    if curl -fsS --max-time "$managed_status_request_timeout" -H "@$auth_header" -o "$response" \
       "http://127.0.0.1:3085/api/nodes/$node_id/agent-update" && \
       python3 - "$response" "$expected_current" "$upgrade_version" "$expected_operation" "$expected_operation_status" <<'PY'
 import json
@@ -368,14 +399,17 @@ PY
     then
       return 0
     fi
-    sleep 2
+    if (( attempt < managed_status_poll_attempts )); then
+      sleep "$managed_status_poll_interval"
+    fi
   done
   die "Agent lifecycle status did not reach ${expected_operation_status}."
 }
 
+progress "verify heartbeat, update status, doctor, and terminal"
 wait_for_node_version "$version"
 wait_for_update_status "$version" "" "idle"
-/usr/local/bin/hserverctl updates agent status --node "$node_id" \
+/usr/local/bin/hserverctl updates agent status --node "$node_id" --wait 50s \
   >"$tmp/hserverctl-agent-update-status.json"
 python3 - "$tmp/hserverctl-agent-update-status.json" "$version" "$upgrade_version" <<'PY'
 import json
@@ -448,7 +482,9 @@ for _ in {1..10}; do
   sleep 1
 done
 (( managed_terminal_ready )) || die "Packaged hserverctl managed terminal did not return its PTY marker."
+progress "managed agent read-only lifecycle checks passed"
 
+progress "verify offline and denied capability boundaries"
 systemctl stop hserver-agent
 if systemctl is-active --quiet hserver-agent; then
   die "Managed agent remained active after systemctl stop."
@@ -528,7 +564,8 @@ if len(after) != len(before):
     raise SystemExit("disabled capability rejection changed the persisted task count")
 PY
 
-/usr/local/bin/hserverctl updates agent upgrade --confirm --node "$node_id" \
+progress "run managed agent upgrade"
+/usr/local/bin/hserverctl updates agent upgrade --confirm --node "$node_id" --wait 2m \
   >"$tmp/upgrade-response.json"
 python3 - "$tmp/upgrade-response.json" "$upgrade_version" <<'PY'
 import json
@@ -545,8 +582,10 @@ systemctl is-active --quiet hserver-agent
 [[ $(sha256sum /etc/hserver-agent.env | awk '{print $1}') == "$config_sha" ]] || die "Managed upgrade changed agent configuration."
 [[ $(sha256sum /etc/hserver-agent.token | awk '{print $1}') == "$token_sha" ]] || die "Managed upgrade changed agent token."
 wait_for_update_status "$upgrade_version" "upgrade" "completed"
+progress "managed agent upgrade verified"
 
-/usr/local/bin/hserverctl updates agent rollback --confirm --node "$node_id" \
+progress "run managed agent rollback"
+/usr/local/bin/hserverctl updates agent rollback --confirm --node "$node_id" --wait 2m \
   >"$tmp/rollback-response.json"
 python3 - "$tmp/rollback-response.json" <<'PY'
 import json
@@ -563,7 +602,9 @@ systemctl is-active --quiet hserver-agent
 [[ $(sha256sum /etc/hserver-agent.env | awk '{print $1}') == "$config_sha" ]] || die "Managed rollback changed agent configuration."
 [[ $(sha256sum /etc/hserver-agent.token | awk '{print $1}') == "$token_sha" ]] || die "Managed rollback changed agent token."
 wait_for_update_status "$version" "rollback" "completed"
+progress "managed agent rollback verified"
 
+progress "verify failed-upgrade recovery and uninstall cleanup"
 cat >"$tmp/crash-agent" <<'EOF'
 #!/usr/bin/env sh
 exit 1
@@ -593,4 +634,5 @@ panel_installed=0
 [[ ! -e /etc/hserver && ! -e /var/lib/hserver && ! -e /usr/local/bin/hserver-panel ]] \
   || die "Panel purge cleanup did not remove the disposable installation."
 
+progress "managed-agent lifecycle acceptance complete"
 printf 'native managed-agent lifecycle acceptance: OK (%s)\n' "$arch"
