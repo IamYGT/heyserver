@@ -35,9 +35,10 @@ is pre-1.0; public release acceptance remains in progress.
   failed because upgrade-feed signature rotation was missing, with
   `Refusing to overwrite ... release-manifest.json.sig`.
 - The `Managed Agent Lifecycle` jobs `#99208960112` and `#99208960115`
-  remained `in_progress` because runner finalization stalled. Normal
-  cancellation was at `05:15 UTC`; force-cancel was accepted with HTTP 202 at
-  `05:17:32 UTC`, but the last snapshot still showed `in_progress`.
+  were cancelled. The workflow reached terminal `completed/cancelled` at
+  `2026-08-30T05:20:10Z` after normal cancellation at `05:15 UTC` followed by
+  a force-cancel accepted with HTTP 202 at `05:17:32 UTC` because runner
+  finalization stalled.
 - No `v0.9.8` GitHub Release exists. Its immutable tag and workflow remain
   disqualified evidence; do not delete or reuse `v0.9.8`. The next immutable
   replacement candidate is `v0.9.9`.

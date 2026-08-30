@@ -50,11 +50,12 @@ commit `6f399eba2d4871d783dfff45a6d4ece276865d9a`. Tagged workflow
 retained upgrade, and rollback stages passed before the `Native Lifecycle`
 amd64 job `#99208960092` and arm64 job `#99208960118` failed because
 upgrade-feed signature rotation was missing, with
-`Refusing to overwrite ... release-manifest.json.sig`. The `Managed Agent Lifecycle`
-jobs `#99208960112` and `#99208960115` remained `in_progress` because runner
-finalization stalled. Normal cancellation was at `05:15 UTC`; force-cancel was
-accepted with HTTP 202 at `05:17:32 UTC`, but the last snapshot still
-showed `in_progress`. No `v0.9.8` GitHub Release exists. Its immutable tag and
+`Refusing to overwrite ... release-manifest.json.sig`. The `Managed Agent
+Lifecycle` jobs `#99208960112` and `#99208960115` were cancelled. The workflow
+reached terminal `completed/cancelled` at `2026-08-30T05:20:10Z` after normal
+cancellation at `05:15 UTC` followed by a force-cancel accepted with HTTP 202
+at `05:17:32 UTC` because runner finalization stalled. No `v0.9.8` GitHub
+Release exists. Its immutable tag and
 workflow are disqualified evidence; do not delete or reuse `v0.9.8`. The next
 immutable replacement candidate is `v0.9.9`.
 The current source fix `c97ced79` preserves the signer fail-closed contract,
@@ -219,11 +220,12 @@ commit `6f399eba2d4871d783dfff45a6d4ece276865d9a`; tagged workflow
 retained upgrade, and rollback stages passed before `Native Lifecycle` amd64
 job `#99208960092` and arm64 job `#99208960118` failed because upgrade-feed
 signature rotation was missing, with
-`Refusing to overwrite ... release-manifest.json.sig`. `Managed Agent Lifecycle`
-jobs `#99208960112` and `#99208960115` remained `in_progress` because runner
-finalization stalled; normal cancellation was at `05:15 UTC`, force-cancel was
-accepted with HTTP 202 at `05:17:32 UTC`, and the last snapshot still showed
-`in_progress`. No `v0.9.8` GitHub Release exists; do not delete or reuse its
+`Refusing to overwrite ... release-manifest.json.sig`. `Managed Agent
+Lifecycle` jobs `#99208960112` and `#99208960115` were cancelled. The workflow
+reached terminal `completed/cancelled` at `2026-08-30T05:20:10Z` after normal
+cancellation at `05:15 UTC` followed by a force-cancel accepted with HTTP 202
+at `05:17:32 UTC` because runner finalization stalled. No `v0.9.8` GitHub
+Release exists; do not delete or reuse its
 immutable tag, which remains disqualified evidence. The next immutable
 replacement candidate is `v0.9.9`. Its acceptance is established only by a
 published GitHub Release, a successful tagged lifecycle/provenance workflow,
@@ -584,11 +586,12 @@ commit `6f399eba2d4871d783dfff45a6d4ece276865d9a`; tagged workflow
 install, retained upgrade, and rollback stages passed before `Native
 Lifecycle` amd64 job `#99208960092` and arm64 job `#99208960118` failed because
 upgrade-feed signature rotation was missing, with
-`Refusing to overwrite ... release-manifest.json.sig`. `Managed Agent Lifecycle`
-jobs `#99208960112` and `#99208960115` remained `in_progress` because runner
-finalization stalled; normal cancellation was at `05:15 UTC`, force-cancel was
-accepted with HTTP 202 at `05:17:32 UTC`, and the last snapshot still showed
-`in_progress`. No `v0.9.8` GitHub Release exists; do not delete or reuse its
+`Refusing to overwrite ... release-manifest.json.sig`. `Managed Agent
+Lifecycle` jobs `#99208960112` and `#99208960115` were cancelled. The workflow
+reached terminal `completed/cancelled` at `2026-08-30T05:20:10Z` after normal
+cancellation at `05:15 UTC` followed by a force-cancel accepted with HTTP 202
+at `05:17:32 UTC` because runner finalization stalled. No `v0.9.8` GitHub
+Release exists; do not delete or reuse its
 immutable tag, which remains disqualified evidence. The next immutable
 `v0.9.9` candidate must rerun this gate. The source fix `c97ced79` preserves
 the signer fail-closed contract, explicitly unlinks the old fixture signature
