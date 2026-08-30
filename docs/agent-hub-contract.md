@@ -532,17 +532,19 @@ and token destination.
     exact `hserverctl` release identity used for the PTY. The protected receipt
     omits credentials, raw boot IDs, terminal output, and inventory. This proves the
     exercised separate-kernel path, not provider account ownership.
-25. `scripts/verify-provider-network-receipt.py` validates protected schema-v1
-    and schema-v2 artifacts without contacting the node again. Current-candidate
-    defaults require schema v2 with exactly 13 successful checks, including the
-    CLI identity and managed-node architecture; schema v1 remains inspectable
-    only with `--require-schema any`. It requires a regular
-    current-user-owned mode-`0600` file, the fixed
-    16–96 MiB marker boundary, a fresh UTC timestamp, supported compatibility
-    values, and any caller-supplied exact panel, CLI, agent, node,
-    architecture, and origin identities. Strict defaults reject hostname and legacy-EIO
-    compatibility. Without signature arguments the result explicitly reports
-    `signature=not_checked`. Operators can sign the exact receipt bytes with
+25. `scripts/verify-provider-network-receipt.py` validates protected schema-v3
+    artifacts without contacting the node again. Current-candidate defaults
+    require schema v3 with exactly 13 successful checks (`checks=13/13`),
+    including the CLI identity, managed-node architecture, and public panel
+    build commit;
+    schema-v1 and schema-v2 remain inspectable only with `--require-schema any`
+    and neither binds `panel_commit`. It requires a regular current-user-owned
+    mode-`0600` file, the fixed 16–96 MiB marker boundary, a fresh UTC
+    timestamp, supported compatibility values, and any caller-supplied exact
+    panel, CLI, agent, node, architecture, and origin identities. Strict
+    defaults reject hostname and legacy-EIO compatibility. Without signature
+    arguments the result explicitly reports `signature=not_checked`. Operators
+    can sign the exact receipt bytes with
     `scripts/sign-provider-network-receipt.sh` and require a detached Ed25519
     signature plus a base64 raw public key during verification. A verified
     signature proves that the named key holder signed the unchanged receipt; it
