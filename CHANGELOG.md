@@ -6,16 +6,30 @@ is pre-1.0; public release acceptance remains in progress.
 
 ## [Unreleased]
 
-## [0.9.10] — pending acceptance
+## [0.9.11] — pending acceptance
 
 ### Changed
 
-- The next immutable replacement candidate is `v0.9.10`. Private source fix
-  `b547b3d4` sets `RuntimeMaxSec` to 10 minutes. Private source fix
-  `bf2f9f7f` adds progress markers, bounded polling, CLI waits, TERM cleanup,
-  and caps script/job timeouts at 25 minutes/30 minutes.
-- These commits are source evidence only. No public PR, public tag, GitHub
-  Release, clean-host acceptance, or live rollout is claimed for `v0.9.10`.
+- The next immutable replacement candidate is `v0.9.11`. Managed-agent
+  acceptance now bounds cleanup and uninstall operations, leaves time for
+  diagnostics, uploads systemd evidence on every outcome, and supports a
+  non-release manual diagnostic run.
+- No `v0.9.11` public tag, GitHub Release, clean-host acceptance, or live
+  rollout is claimed yet.
+
+## [0.9.10] — disqualified tagged candidate
+
+### Changed
+
+- The annotated public `v0.9.10` tag object is
+  `1ffe08c7a25c7ff50e08d9a0255b2b4861ec2196` and resolves to protected public
+  `main` commit `6d3f2a9761e26dd8b00385ee86c3398ce7cabdba` with exact tree
+  `9d2e7bd831c81cbee0adfd95508df98db1a6e656`.
+- Tagged workflow `#33302289601` ended `completed/cancelled`. Native lifecycle
+  acceptance passed on amd64 and arm64, while both managed-agent lifecycle jobs
+  exceeded the 30-minute job limit. No `v0.9.10` GitHub Release exists.
+- Do not delete or reuse the immutable `v0.9.10` tag. Its replacement candidate
+  is `v0.9.11`.
 
 ## [0.9.9] — disqualified tagged candidate
 
