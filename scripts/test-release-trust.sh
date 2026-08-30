@@ -6,12 +6,47 @@ tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT INT TERM
 
 "$repo_root/scripts/release-trust.py" "$repo_root/trust/release-signers.json"
-if "$repo_root/scripts/release-trust.py" "$repo_root/trust/release-signers.json" \
+canonical_public_key="$tmp/canonical-active.b64"
+canonical_active_count=$(python3 - "$repo_root/trust/release-signers.json" "$canonical_public_key" <<'PY'
+import json
+import pathlib
+import sys
+
+document = json.loads(pathlib.Path(sys.argv[1]).read_text())
+active = [signer["public_key"] for signer in document["signers"] if signer["status"] == "active"]
+if active:
+    pathlib.Path(sys.argv[2]).write_text(active[0] + "\n")
+print(len(active))
+PY
+)
+
+cat >"$tmp/empty-trust.json" <<'EOF'
+{"schema_version":1,"signers":[]}
+EOF
+if "$repo_root/scripts/release-trust.py" "$tmp/empty-trust.json" \
   --require-active >"$tmp/empty.log" 2>&1; then
-  echo "empty canonical trust store passed the official release gate" >&2
+  echo "empty temporary trust store passed the official release gate" >&2
   exit 1
 fi
 grep -Fq 'release trust store has no active signer' "$tmp/empty.log"
+
+if [[ "$canonical_active_count" -eq 0 ]]; then
+  if "$repo_root/scripts/release-trust.py" "$repo_root/trust/release-signers.json" \
+    --require-active >"$tmp/canonical-empty.log" 2>&1; then
+    echo "empty canonical trust store passed the official release gate" >&2
+    exit 1
+  fi
+  grep -Fq 'release trust store has no active signer' "$tmp/canonical-empty.log"
+else
+  "$repo_root/scripts/release-trust.py" "$repo_root/trust/release-signers.json" \
+    --require-active >/dev/null
+  canonical_fingerprints=$("$repo_root/scripts/release-trust.py" \
+    "$repo_root/trust/release-signers.json" --require-active --fingerprints)
+  canonical_active_fingerprint=$("$repo_root/scripts/release-trust.py" \
+    "$repo_root/trust/release-signers.json" \
+    --require-active --assert-active-key "$canonical_public_key")
+  [[ ",$canonical_fingerprints," == *",$canonical_active_fingerprint,"* ]]
+fi
 
 "$repo_root/scripts/generate-release-signing-key.sh" \
   "$tmp/active.pem" "$tmp/active.b64" >/dev/null

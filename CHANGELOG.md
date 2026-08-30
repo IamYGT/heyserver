@@ -6,6 +6,8 @@ is pre-1.0; public release acceptance remains in progress.
 
 ## [Unreleased]
 
+## [0.9.5] — 2026-08-30
+
 ### Added
 
 - Managed-node live metrics now have a provider-neutral, capability-scoped
@@ -23,10 +25,15 @@ is pre-1.0; public release acceptance remains in progress.
   recorded as prior validation evidence; it is not current release or rollout
   evidence.
 - The canonical public repository is now
-  [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver); public source commit
-  `adaccb23adf9720141d721970590de3a82fd17b5` produced the first fully green
-  main CI matrix run. It was initially published at `53df8ba` with
-  private/public tree parity `3719df8`.
+  [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver); immutable public
+  source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the first
+  fully green public main CI matrix run `#33283277809`. The current fully green
+  public main CI run is `#33283728373`. Branch protection was enabled after
+  these runs and is currently active. It was initially published at
+  `53df8ba` with private/public tree parity `3719df8`.
+- The initial active release signer is prepared in private commit `df0a5070`,
+  and the `HSERVER_RELEASE_SIGNING_KEY` Actions secret is configured; public
+  signer PR #7 remains pending.
 - Docker quick-evaluation documentation now covers first login: read
   `HSERVER_ADMIN_EMAIL` and the generated `HSERVER_ADMIN_PASS` locally from the
   mode-`0600` `.env`, open `http://localhost:3085`, and complete onboarding;
@@ -38,12 +45,17 @@ is pre-1.0; public release acceptance remains in progress.
 
 ### Changed
 
-- Canonical public repository selection and publication are complete. The first
-  fully green main CI matrix run was `#33283277809`. No tag, release, or
-  release signer exists yet; signer selection/ceremony, the first signed
-  release, clean disposable-VM acceptance, and live rollout remain pending. The
-  live `v0.9.3` rollout is not the current source, and these source results do
-  not imply a live deployment or public release. Earlier failed runs
+- Canonical public repository selection and publication are complete. The
+  first fully green public main CI matrix run was `#33283277809`; the current
+  fully green public main CI run is `#33283728373`. Branch protection was enabled
+  after these runs and is currently active. The initial active signer is
+  prepared in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY`
+  Actions secret is configured; public signer PR #7 remains pending. The first
+  signed release,
+  version tag, GitHub Release, tagged lifecycle/provenance acceptance, clean
+  independent-VM acceptance, and live rollout remain pending. The live
+  `v0.9.3` rollout is not the current source, and these source results do not
+  imply a live deployment or public release. Earlier failed runs
   `#33251833442` and `#33281342435` are historical CI evidence only.
 
 ## [0.9.4] — 2026-08-29
@@ -81,8 +93,9 @@ is pre-1.0; public release acceptance remains in progress.
   analysis requires explicit confirmation and managed targets remain unsupported.
 - Public installer trust is now anchored to raw-Ed25519-key SHA-256 fingerprints
   and a detached `bootstrap-install.sh.sig` verified before privilege entry;
-  official staging fails closed while `trust/release-signers.json` has no active
-  signer.
+  the initial active signer is prepared in private commit `df0a5070`, the
+  `HSERVER_RELEASE_SIGNING_KEY` Actions secret is configured, and public signer
+  PR #7 remains pending before tagged staging.
 
 ### Changed
 
@@ -97,9 +110,11 @@ is pre-1.0; public release acceptance remains in progress.
 - The Developer API page now reports distinct safe states for permission denial
   (401/403), a missing contract (404), temporary unavailability (network/5xx),
   and other operation failures without exposing backend errors.
-- Release-signer selection and ceremony remain a public-launch prerequisite; the
-  empty canonical trust store intentionally blocks official tagged staging, so
-  public launch is not yet ready.
+- Public signer PR #7 and its protected publication remain a public-launch
+  prerequisite; the initial active signer is prepared in private commit
+  `df0a5070` and the `HSERVER_RELEASE_SIGNING_KEY` Actions secret is configured,
+  but tagged staging, the first signed release, and public launch are not yet
+  ready.
 
 ### Fixed
 

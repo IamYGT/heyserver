@@ -25,11 +25,16 @@ accepts artifact metadata. The hub can request only an exact stable version or r
 cannot provide a download URL, checksum, path, command, or systemd argument.
 
 The project is currently **pre-1.0**. Its canonical public repository is
-[`IamYGT/heyserver`](https://github.com/IamYGT/heyserver). Public source commit
-`adaccb23adf9720141d721970590de3a82fd17b5` produced the first fully green main
-CI matrix run, `#33283277809`. No tag, release, or release signer exists yet;
-signer selection/ceremony, the first signed release, clean disposable-VM
-acceptance, and live rollout remain pending.
+[`IamYGT/heyserver`](https://github.com/IamYGT/heyserver). Immutable public
+source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the first
+fully green public main CI matrix run `#33283277809`; the current fully green
+public main CI run recorded on 2026-08-30 is `#33283728373`. Branch protection
+was enabled after these runs and is currently active. The initial active signer
+is prepared in private commit `df0a5070`, and the
+`HSERVER_RELEASE_SIGNING_KEY` Actions secret is configured; public signer PR #7,
+the first signed release, version tag, GitHub Release, tagged
+lifecycle/provenance acceptance, clean independent-VM acceptance, and live
+rollout remain pending. The live `v0.9.3` rollout is not the current source.
 
 ## Architecture
 

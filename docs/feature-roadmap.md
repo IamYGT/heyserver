@@ -1,6 +1,6 @@
 # HServer Community Roadmap
 
-**Updated:** 2026-08-29
+**Updated:** 2026-08-30
 
 **Direction:** provider-neutral, Apache-2.0 licensed, self-hosted Linux server
 management with a native local control plane and capability-scoped remote agents.
@@ -60,13 +60,18 @@ revision 71 (443 routes, 321 schemas), including guest CPU de-duplication. The
 combined acceptance for this path is complete. Canonical public repository
 selection and publication are complete at
 [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially published
-at public HEAD `53df8ba`; the private and public trees match at `3719df8`.
-Latest CI run `#33251833442` is red, and no tag, release, or release signer
-exists yet. Signer selection/ceremony, the first signed release, green CI,
-clean disposable-VM acceptance, and local/Contabo live rollout remain open.
-The live `v0.9.3` rollout is not the current source. This records source and
-acceptance progress only; it is not evidence of live deployment or a public
-release.
+at `53df8ba`, with private/public tree parity `3719df8`. Immutable public
+source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the first
+fully green public main CI matrix run `#33283277809`; the current fully green
+public main CI run is `#33283728373` (2026-08-30). Branch protection was enabled
+after these runs and is currently active. The initial active signer is prepared
+in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY` Actions
+secret is configured; public signer PR #7, the first signed release, version
+tag, GitHub Release, tagged lifecycle/provenance acceptance, clean
+independent-VM acceptance, and local/Contabo live rollout remain open. The live
+`v0.9.3` rollout is not the current source. This records source and acceptance
+progress only; it is not
+evidence of live deployment or a public release.
 
 ## v1.0 release gates
 
@@ -128,39 +133,44 @@ These are release requirements, not optional ideas.
    the verifier reports both verification state and public-key fingerprint
    without claiming that a signature proves provider-account ownership.
 
-   The current source HEAD contains a bounded, capability-scoped managed-node
+   The current source contains a bounded, capability-scoped managed-node
    live-metrics path with freshness and shape validation, its TUI consumer, and
    OpenAPI contract revision 71 (443 routes and 321 schemas). The combined
    metrics acceptance is complete. The canonical public repository is
    [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially
-   published at public HEAD `53df8ba`, with private/public tree parity
-   `3719df8`. Latest CI run `#33251833442` is red. Local/Contabo runtime
-   rollout remains open; the live `v0.9.3` rollout is not the current source,
-   and no signed public release or clean disposable-VM acceptance is claimed
-   here.
+   published at `53df8ba`, with private/public tree parity `3719df8`. Immutable
+   public source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the
+   first fully green public main CI matrix run `#33283277809`; the current fully
+   green public main CI run is `#33283728373` (2026-08-30). Branch protection was
+   enabled after these runs and is currently active. The initial active signer is
+   prepared in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY`
+   Actions secret is configured; public signer PR #7, the first signed release,
+   version tag, GitHub Release, tagged lifecycle/provenance acceptance, clean
+   independent-VM acceptance, and local/Contabo live rollout remain open. The
+   live `v0.9.3` rollout is not the current source, and no live deployment or
+   public release is claimed here.
 
 3. **Clean public history**
 
    The one-time public-history creation and publication are complete. The
    canonical public repository is
    [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially
-   published at public HEAD `53df8ba`, with private/public tree parity
-   `3719df8`; any temporary export or creation path is disposable staging and
-   evidence, not a permanent workflow. Protect `main`, require CI, enable
-   private vulnerability reporting, and publish checksummed release archives
-   with an Ed25519-signed release manifest. The release workflow now fails
-   closed unless the version tag descends from the current protected `main`
-   commit, derives and publishes the manifest verification key without staging
-   the private key, and provides checksums for both the bootstrap installer and
-   public key. The public installer now verifies a detached
-   `bootstrap-install.sh.sig` against a raw-Ed25519-key fingerprint anchored in
-   `trust/release-signers.json`; official tagged staging fails closed while the
-   canonical trust store has no active signer. Latest CI run `#33251833442` is
-   red, and no tag, release, or signer exists yet. Signer selection/ceremony,
-   the first signed release, green CI, clean disposable-VM acceptance, and live
-   rollout remain public-launch prerequisites, so this project is not
-   public-launch ready until those gates and the independently authenticated
-   installer anchor are complete.
+   published at `53df8ba`, with private/public tree parity `3719df8`; any
+   temporary export or creation path is disposable staging and evidence, not a
+   permanent workflow. Main branch protection is complete. The initial active
+   signer is prepared in private commit `df0a5070`, and the
+   `HSERVER_RELEASE_SIGNING_KEY` Actions secret is configured; public signer PR
+   #7 remains pending through protected review. The release workflow fails
+   closed unless the version tag descends from the protected `main` commit,
+   derives and publishes the manifest verification key without staging the
+   private key, and provides checksums for both the bootstrap installer and
+   public key. The public installer verifies a detached
+   `bootstrap-install.sh.sig` against the configured release signer before
+   privilege entry. Version-tag creation, GitHub Release publication, tagged
+   lifecycle/provenance acceptance, the first signed release, clean
+   independent-VM acceptance, and live rollout remain public-launch
+   prerequisites, so this project is not public-launch ready until those gates
+   and the independently authenticated installer anchor are complete.
 
 4. **Restore drills**
 

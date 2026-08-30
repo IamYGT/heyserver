@@ -18,17 +18,57 @@ done
 (cd "$staged" && sha256sum --check public-install.sh.sha256 >/dev/null)
 cmp -s "$root_dir/scripts/public-install.sh" "$staged/public-install.sh"
 
-# The checked-in canonical state intentionally blocks official tagged staging
-# until an operator selects and records the real active signer.
+# The checked-in canonical state carries the active signer used for official
+# tagged staging. Keep the empty-store gate below on a temporary fixture.
+canonical_trust="$root_dir/trust/release-signers.json"
+canonical_public_key="$tmp/canonical-active.b64"
+canonical_active_count=$(python3 - "$canonical_trust" "$canonical_public_key" <<'PY'
+import json
+import pathlib
+import sys
+
+document = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+active = [signer["public_key"] for signer in document["signers"] if signer["status"] == "active"]
+if active:
+    pathlib.Path(sys.argv[2]).write_text(active[0] + "\n", encoding="ascii")
+print(len(active))
+PY
+)
+[[ "$canonical_active_count" -gt 0 ]] || {
+  echo "canonical trust store must contain an active signer" >&2
+  exit 1
+}
+"$root_dir/scripts/release-trust.py" "$canonical_trust" --require-active >/dev/null
+canonical_fingerprints=$(
+  "$root_dir/scripts/release-trust.py" "$canonical_trust" \
+    --require-active --fingerprints
+)
+canonical_active_fingerprint=$(
+  "$root_dir/scripts/release-trust.py" "$canonical_trust" \
+    --require-active --assert-active-key "$canonical_public_key"
+)
+[[ ",$canonical_fingerprints," == *",$canonical_active_fingerprint,"* ]]
+official="$tmp/official"
+"$root_dir/scripts/stage-public-install.sh" "$official" "$canonical_trust" >/dev/null
+grep -Fq "embedded_trusted_release_key_sha256_csv='$canonical_fingerprints'" \
+  "$official/public-install.sh"
+(cd "$official" && sha256sum --check public-install.sh.sha256 >/dev/null)
+
+cat >"$tmp/empty-trust.json" <<'EOF'
+{"schema_version":1,"signers":[]}
+EOF
 if "$root_dir/scripts/stage-public-install.sh" "$tmp/blocked" \
-  "$root_dir/trust/release-signers.json" >"$tmp/blocked.log" 2>&1; then
-  echo "official staging accepted the empty canonical trust store" >&2
+  "$tmp/empty-trust.json" >"$tmp/blocked.log" 2>&1; then
+  echo "official staging accepted the temporary empty trust store" >&2
   exit 1
 fi
 grep -Fq 'release trust store has no active signer' "$tmp/blocked.log"
 
 "$root_dir/scripts/generate-release-signing-key.sh" \
   "$tmp/signing.pem" "$tmp/public.b64" >/dev/null
+"$root_dir/scripts/generate-release-signing-key.sh" \
+  --public-from-private "$tmp/signing.pem" "$tmp/derived-public.b64" >/dev/null
+cmp -s "$tmp/public.b64" "$tmp/derived-public.b64"
 "$root_dir/scripts/generate-release-signing-key.sh" \
   "$tmp/next.pem" "$tmp/next.b64" >/dev/null
 python3 - "$tmp/public.b64" "$tmp/next.b64" "$tmp/trust.json" <<'PY'
@@ -44,19 +84,19 @@ for path, status in ((sys.argv[1], "active"), (sys.argv[2], "next")):
 pathlib.Path(sys.argv[3]).write_text(json.dumps({"schema_version": 1, "signers": signers}) + "\n")
 PY
 fingerprints=$("$root_dir/scripts/release-trust.py" "$tmp/trust.json" --fingerprints)
-official="$tmp/official"
-"$root_dir/scripts/stage-public-install.sh" "$official" "$tmp/trust.json" >/dev/null
+temporary_official="$tmp/temporary-official"
+"$root_dir/scripts/stage-public-install.sh" "$temporary_official" "$tmp/trust.json" >/dev/null
 grep -Fq "embedded_trusted_release_key_sha256_csv='$fingerprints'" \
-  "$official/public-install.sh"
-! cmp -s "$root_dir/scripts/public-install.sh" "$official/public-install.sh"
-(cd "$official" && sha256sum --check public-install.sh.sha256 >/dev/null)
+  "$temporary_official/public-install.sh"
+! cmp -s "$root_dir/scripts/public-install.sh" "$temporary_official/public-install.sh"
+(cd "$temporary_official" && sha256sum --check public-install.sh.sha256 >/dev/null)
 
 # A complete feed carries a directly signed bootstrap in addition to convenience
-# checksums. The release key must be active when a canonical trust store is used.
+# checksums. The release key must be active in the trust store used for testing.
 feed="$tmp/feed"
 mkdir -p "$feed"
-cp "$official/public-install.sh" "$feed/public-install.sh"
-cp "$official/public-install.sh.sha256" "$feed/public-install.sh.sha256"
+cp "$temporary_official/public-install.sh" "$feed/public-install.sh"
+cp "$temporary_official/public-install.sh.sha256" "$feed/public-install.sh.sha256"
 cp "$root_dir/scripts/bootstrap-install.sh" "$feed/bootstrap-install.sh"
 chmod 0755 "$feed/bootstrap-install.sh"
 cp "$tmp/public.b64" "$feed/release-public-key.b64"
