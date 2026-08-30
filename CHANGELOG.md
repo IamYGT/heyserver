@@ -6,25 +6,42 @@ is pre-1.0; public release acceptance remains in progress.
 
 ## [Unreleased]
 
-## [0.9.8] — pending acceptance
+## [0.9.9] — pending acceptance
 
 ### Changed
 
-- `v0.9.8` is the next immutable replacement candidate after the public
-  `v0.9.7` tag at protected public `main` commit
-  `5c5bcf053b333f657ef011078f32ed54126946e6` and tagged workflow
-  `#33291179584` were disqualified. Both `Native Lifecycle` jobs returned
-  file-backup HTTP 400 because the fixture lacked an explicit temporary vhosts
-  root. The `Managed Agent Lifecycle` jobs were cancelled; their arm64 runner
-  log preserved `agent release archive contains an invalid path`. The workflow
-  reached terminal `completed/cancelled` at
-  `2026-08-30T04:27:26Z` after normal cancellation followed by a force-cancel
-  because runner finalization stalled. No successful `v0.9.7` GitHub Release
-  exists.
-  Public publication, signed assets, independent clean-host acceptance,
-  provider-network receipt, and live rollout for `v0.9.8` remain pending and
-  are separate release gates. No public PR, tag, release, clean-host result,
-  or live rollout is claimed for `v0.9.8`.
+- `v0.9.9` is the next immutable replacement candidate after the public
+  `v0.9.8` tag was disqualified. Public PR, tag, GitHub Release, clean-host
+  acceptance, and live rollout for `v0.9.9` are not claimed; its acceptance
+  remains pending and these are separate release gates.
+- The current fully green public main CI run is `#33293045279`; this source
+  result is distinct from the disqualified `v0.9.8` tagged workflow and does
+  not establish a public release or rollout.
+- The current source fix `c97ced79` preserves the signer fail-closed contract,
+  explicitly unlinks the old fixture signature before rotating the upgrade
+  feed signature, and locks the static gate call ordering. This is source
+  evidence only and does not establish public `v0.9.9` release evidence.
+
+## [0.9.8] — disqualified tagged candidate
+
+### Changed
+
+- The public `v0.9.8` tag object is
+  `81d3095f4c6f0615bd6912225bf18c38788e6e6c` and resolves to public `main`
+  commit `6f399eba2d4871d783dfff45a6d4ece276865d9a`. Tagged workflow
+  `#33293250350` is immutable disqualified evidence. The initial signed
+  install, retained upgrade, and rollback stages passed before the
+  `Native Lifecycle` amd64 job `#99208960092` and arm64 job `#99208960118`
+  failed because upgrade-feed signature rotation was missing, with
+  `Refusing to overwrite ... release-manifest.json.sig`.
+- The `Managed Agent Lifecycle` jobs `#99208960112` and `#99208960115`
+  were cancelled. The workflow reached terminal `completed/cancelled` at
+  `2026-08-30T05:20:10Z` after normal cancellation at `05:15 UTC` followed by
+  a force-cancel accepted with HTTP 202 at `05:17:32 UTC` because runner
+  finalization stalled.
+- No `v0.9.8` GitHub Release exists. Its immutable tag and workflow remain
+  disqualified evidence; do not delete or reuse `v0.9.8`. The next immutable
+  replacement candidate is `v0.9.9`.
 
 ### Fixed
 

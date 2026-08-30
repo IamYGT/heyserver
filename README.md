@@ -28,7 +28,7 @@ The project is currently **pre-1.0**. Its canonical public repository is
 [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver). Immutable public
 source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the first
 fully green public main CI matrix run `#33283277809`; the current fully green
-public main CI run recorded on 2026-08-30 is `#33290958793`. Branch protection
+public main CI run recorded on 2026-08-30 is `#33293045279`. Branch protection
 was enabled after these runs and is currently active. The initial active signer
 is prepared in private commit `df0a5070`, and the
 `HSERVER_RELEASE_SIGNING_KEY` Actions secret is configured; public signer PR #7
@@ -56,12 +56,26 @@ workflow reached terminal `completed/cancelled` at
 `2026-08-30T04:27:26Z` after normal cancellation followed by a force-cancel
 because runner finalization stalled. No successful `v0.9.7` GitHub Release
 exists.
-`v0.9.8` is the next immutable replacement candidate. No public PR, tag,
-GitHub Release, independent clean-host acceptance, or live rollout is claimed
-for `v0.9.8`. Private source fixes now explicitly configure the native
-temporary vhosts root and accept canonical tar `TypeDir` entries with a
-trailing slash while preserving unsafe-path rejection. The live `v0.9.3`
-rollout is not the current source.
+The public `v0.9.8` tag object is
+`81d3095f4c6f0615bd6912225bf18c38788e6e6c` and resolves to public `main`
+commit `6f399eba2d4871d783dfff45a6d4ece276865d9a`. Tagged workflow
+`#33293250350` is immutable disqualified evidence. The initial signed install,
+retained upgrade, and rollback stages passed before the `Native Lifecycle`
+amd64 job `#99208960092` and arm64 job `#99208960118` failed because
+upgrade-feed signature rotation was missing, with
+`Refusing to overwrite ... release-manifest.json.sig`. The `Managed Agent
+Lifecycle` jobs `#99208960112` and `#99208960115` were cancelled. The workflow
+reached terminal `completed/cancelled` at `2026-08-30T05:20:10Z` after normal
+cancellation at `05:15 UTC` followed by a force-cancel accepted with HTTP 202
+at `05:17:32 UTC` because runner finalization stalled. No `v0.9.8` GitHub
+Release exists. Its immutable tag and
+workflow are disqualified evidence; do not delete or reuse `v0.9.8`. The next
+immutable replacement candidate is `v0.9.9`.
+The current source fix `c97ced79` preserves the signer fail-closed contract,
+explicitly unlinks the old fixture signature before rotating the upgrade feed
+signature, and locks the static gate call ordering. `v0.9.9` remains pending
+acceptance; no public PR, tag, GitHub Release, clean-host acceptance, or live
+rollout is claimed for it. The live `v0.9.3` rollout is not the current source.
 
 ## Architecture
 

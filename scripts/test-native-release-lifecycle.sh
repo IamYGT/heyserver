@@ -799,6 +799,9 @@ document = {
 }
 path.write_text(json.dumps(document, separators=(",", ":")), encoding="utf-8")
 PY
+# The signer is fail-closed; rotate the fixture signature before publishing
+# the upgrade feed.
+unlink "$feed_dir/release-manifest.json.sig"
 "$root_dir/scripts/sign-release-manifest.sh" \
   "$feed_dir/release-manifest.json" \
   "$tmp/release-private.pem" \

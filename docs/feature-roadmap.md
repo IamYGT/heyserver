@@ -63,7 +63,7 @@ selection and publication are complete at
 at `53df8ba`, with private/public tree parity `3719df8`. Immutable public
 source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the first
 fully green public main CI matrix run `#33283277809`; the current fully green
-public main CI run is `#33290958793` (2026-08-30). Branch protection was enabled
+public main CI run is `#33293045279` (2026-08-30). Branch protection was enabled
 after these runs and is currently active. The initial active signer is prepared
 in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY` Actions
 secret is configured; public signer PR #7 was merged at protected `main` commit
@@ -88,12 +88,27 @@ workflow reached terminal `completed/cancelled` at
 `2026-08-30T04:27:26Z` after normal cancellation followed by a force-cancel
 because runner finalization stalled. No successful `v0.9.7` GitHub Release
 exists.
-`v0.9.8` is the next immutable replacement candidate. No public PR, tag,
-release, clean independent-VM acceptance, or live rollout is claimed for
-`v0.9.8`. Private source fixes now explicitly configure the native temporary
-vhosts root and accept canonical tar `TypeDir` entries with a trailing slash
-while preserving unsafe-path rejection. The live `v0.9.3` rollout is not the
-current source. Source and release evidence do not imply a live deployment.
+The public `v0.9.8` tag object is
+`81d3095f4c6f0615bd6912225bf18c38788e6e6c` and resolves to public `main`
+commit `6f399eba2d4871d783dfff45a6d4ece276865d9a`. Tagged workflow
+`#33293250350` is immutable disqualified evidence. The initial signed install,
+retained upgrade, and rollback stages passed before the `Native Lifecycle`
+amd64 job `#99208960092` and arm64 job `#99208960118` failed because
+upgrade-feed signature rotation was missing, with
+`Refusing to overwrite ... release-manifest.json.sig`. The `Managed Agent
+Lifecycle` jobs `#99208960112` and `#99208960115` were cancelled. The workflow
+reached terminal `completed/cancelled` at `2026-08-30T05:20:10Z` after normal
+cancellation at `05:15 UTC` followed by a force-cancel accepted with HTTP 202
+at `05:17:32 UTC` because runner finalization stalled. No `v0.9.8` GitHub
+Release exists. Its immutable tag and
+workflow are disqualified evidence; do not delete or reuse `v0.9.8`. The next
+immutable replacement candidate is `v0.9.9`.
+The current source fix `c97ced79` preserves the signer fail-closed contract,
+explicitly unlinks the old fixture signature before rotating the upgrade feed
+signature, and locks the static gate call ordering. `v0.9.9` remains pending
+acceptance; no public PR, tag, release, clean independent-VM acceptance, or
+live rollout is claimed for it. The live `v0.9.3` rollout is not the current
+source. Source and release evidence do not imply a live deployment.
 
 ## v1.0 release gates
 
@@ -163,7 +178,7 @@ These are release requirements, not optional ideas.
    published at `53df8ba`, with private/public tree parity `3719df8`. Immutable
    public source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the
    first fully green public main CI matrix run `#33283277809`; the current fully
-   green public main CI run is `#33290958793` (2026-08-30). Branch protection was
+   green public main CI run is `#33293045279` (2026-08-30). Branch protection was
    enabled after these runs and is currently active. The initial active signer is
    prepared in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY`
    Actions secret is configured; public signer PR #7 was merged at protected
@@ -187,13 +202,27 @@ These are release requirements, not optional ideas.
    path`. The workflow reached terminal `completed/cancelled` at
    `2026-08-30T04:27:26Z` after normal cancellation followed by a force-cancel
    because runner finalization stalled. No successful `v0.9.7` GitHub Release
-   exists. `v0.9.8` is the next immutable replacement candidate. No
-   public PR, tag, release, clean independent-VM acceptance, or live rollout
-   is claimed for `v0.9.8`. Private source fixes now explicitly configure the
-   native temporary vhosts root and accept canonical tar `TypeDir` entries with
-   a trailing slash while preserving unsafe-path rejection. The live `v0.9.3`
-   rollout is not the current source, and source or release evidence does not
-   imply a live deployment.
+   exists. The public `v0.9.8` tag object is
+   `81d3095f4c6f0615bd6912225bf18c38788e6e6c` and resolves to public `main`
+   commit `6f399eba2d4871d783dfff45a6d4ece276865d9a`; tagged workflow
+   `#33293250350` is immutable disqualified evidence. Its initial signed
+   install, retained upgrade, and rollback stages passed before `Native
+   Lifecycle` amd64 job `#99208960092` and arm64 job `#99208960118` failed on
+   missing upgrade-feed signature rotation with
+   `Refusing to overwrite ... release-manifest.json.sig`. `Managed Agent
+   Lifecycle` jobs `#99208960112` and `#99208960115` were cancelled. The
+   workflow reached terminal `completed/cancelled` at
+   `2026-08-30T05:20:10Z` after normal cancellation at `05:15 UTC` followed by
+   a force-cancel accepted with HTTP 202 at `05:17:32 UTC` because runner
+   finalization stalled. No `v0.9.8` GitHub Release exists; do not delete or
+   reuse its immutable tag, which remains disqualified evidence. The next
+   immutable replacement candidate is `v0.9.9`. Source fix `c97ced79` preserves
+   the signer fail-closed contract, explicitly unlinks the old fixture
+   signature before rotating the upgrade feed signature, and locks static gate
+   call ordering. `v0.9.9` remains pending acceptance; no public PR, tag,
+   release, clean independent-VM acceptance, or live rollout is claimed for
+   it. The live `v0.9.3` rollout is not the current source, and source or
+   release evidence does not imply a live deployment.
 
 3. **Clean public history**
 
@@ -212,9 +241,10 @@ These are release requirements, not optional ideas.
    private key, and provides checksums for both the bootstrap installer and
    public key. The public installer verifies a detached
    `bootstrap-install.sh.sig` against the configured release signer before
-   privilege entry. The failed public `v0.9.5`, disqualified `v0.9.6`, and
-   disqualified `v0.9.7` tag/runs remain historical evidence only; `v0.9.8` is
-   the next immutable replacement candidate. Tagged publication, GitHub
+   privilege entry. The failed public `v0.9.5`, disqualified `v0.9.6`,
+   disqualified `v0.9.7`, and disqualified `v0.9.8` tag/runs remain historical
+   evidence only; do not delete or reuse the immutable `v0.9.8` tag. The next
+   immutable replacement candidate is `v0.9.9`. Tagged publication, GitHub
    Release publication, lifecycle/provenance acceptance, clean independent-VM
    acceptance, live rollout, and the independently authenticated installer
    anchor are distinct public-launch gates. Their
