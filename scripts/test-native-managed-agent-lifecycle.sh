@@ -35,7 +35,11 @@ die() {
 }
 
 progress() {
-  printf '[managed-agent-lifecycle][%s] %s\n' "$arch" "$1"
+  message=$(printf '[managed-agent-lifecycle][%s] %s' "$arch" "$1")
+  printf '%s\n' "$message"
+  if [[ -n ${HSERVER_ACCEPTANCE_DIAGNOSTIC_FILE:-} ]]; then
+    printf '%s %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$message" >>"$HSERVER_ACCEPTANCE_DIAGNOSTIC_FILE"
+  fi
 }
 
 for command_name in base64 curl openssl python3 sha256sum systemctl systemd-run tar timeout; do
@@ -116,27 +120,27 @@ cleanup() {
   fi
   cleanup_done=1
   progress "cleanup"
-  bounded_cleanup 15s systemctl stop hserver-agent-lifecycle.timer hserver-agent-lifecycle.service
-  bounded_cleanup 10s systemctl reset-failed hserver-agent-lifecycle.timer hserver-agent-lifecycle.service
+  bounded_cleanup 10s systemctl stop hserver-agent-lifecycle.timer hserver-agent-lifecycle.service
+  bounded_cleanup 5s systemctl reset-failed hserver-agent-lifecycle.timer hserver-agent-lifecycle.service
   if [[ -n "$feed_pid" ]]; then
     kill "$feed_pid" >/dev/null 2>&1 || true
-    timeout 5s tail --pid="$feed_pid" -f /dev/null >/dev/null 2>&1 || kill -KILL "$feed_pid" >/dev/null 2>&1 || true
+    timeout 2s tail --pid="$feed_pid" -f /dev/null >/dev/null 2>&1 || kill -KILL "$feed_pid" >/dev/null 2>&1 || true
     wait "$feed_pid" >/dev/null 2>&1 || true
   fi
   if (( agent_touched )); then
     if [[ -x /usr/local/libexec/hserver-agent-install ]]; then
-      bounded_cleanup 45s /usr/local/libexec/hserver-agent-install uninstall --purge-config
+      bounded_cleanup 15s /usr/local/libexec/hserver-agent-install uninstall --purge-config
     elif [[ -x "$package_dir/agent-install.sh" ]]; then
-      bounded_cleanup 45s "$package_dir/agent-install.sh" uninstall --purge-config
+      bounded_cleanup 15s "$package_dir/agent-install.sh" uninstall --purge-config
     fi
     if [[ -e /var/lib/hserver-agent ]]; then
-      bounded_cleanup 30s find /var/lib/hserver-agent -xdev -depth -delete
+      bounded_cleanup 5s find /var/lib/hserver-agent -xdev -depth -delete
     fi
   fi
   if (( panel_installed )) && [[ -x "$package_dir/install.sh" ]]; then
-    bounded_cleanup 45s env HSERVER_HEALTH_TIMEOUT=3 "$package_dir/install.sh" uninstall --purge-config --purge-data
+    bounded_cleanup 15s env HSERVER_HEALTH_TIMEOUT=3 "$package_dir/install.sh" uninstall --purge-config --purge-data
   fi
-  bounded_cleanup 30s rm -rf "$tmp"
+  bounded_cleanup 5s rm -rf "$tmp"
 }
 trap cleanup EXIT
 trap 'exit 143' INT TERM
@@ -326,7 +330,7 @@ progress "managed agent installed"
 wait_for_node_version() {
   local expected=$1
   local response="$tmp/node-state.json"
-  for _ in {1..60}; do
+  for _ in {1..30}; do
     if curl -fsS --max-time 4 -H "@$auth_header" -o "$response" \
       "http://127.0.0.1:3085/api/nodes/$node_id" && \
       python3 - "$response" "$expected" <<'PY'
@@ -625,21 +629,21 @@ systemctl is-active --quiet hserver-agent
 [[ $(sha256sum /etc/hserver-agent.env | awk '{print $1}') == "$config_sha" ]] || die "Failed upgrade changed agent configuration."
 [[ $(sha256sum /etc/hserver-agent.token | awk '{print $1}') == "$token_sha" ]] || die "Failed upgrade changed agent token."
 
-timeout --signal=TERM --kill-after=5s 60s /usr/local/libexec/hserver-agent-install uninstall \
+timeout --signal=TERM --kill-after=5s 30s /usr/local/libexec/hserver-agent-install uninstall \
   || die "Agent non-purge uninstall timed out or failed."
 [[ ! -e /usr/local/bin/hserver-agent && ! -e /usr/local/libexec/hserver-agent-install && ! -e /etc/systemd/system/hserver-agent.service ]] \
   || die "Agent non-purge uninstall left executable lifecycle assets."
 [[ -f /etc/hserver-agent.env && -f /etc/hserver-agent.token && -d /var/lib/hserver-agent ]] \
   || die "Agent non-purge uninstall did not preserve configuration, token, and state."
-timeout --signal=TERM --kill-after=5s 60s "$package_dir/agent-install.sh" uninstall --purge-config >/dev/null \
+timeout --signal=TERM --kill-after=5s 30s "$package_dir/agent-install.sh" uninstall --purge-config >/dev/null \
   || die "Agent purge uninstall timed out or failed."
-timeout --signal=TERM --kill-after=5s 30s find /var/lib/hserver-agent -xdev -depth -delete \
+timeout --signal=TERM --kill-after=5s 10s find /var/lib/hserver-agent -xdev -depth -delete \
   || die "Agent state cleanup timed out or failed."
 agent_touched=0
 [[ ! -e /etc/hserver-agent.env && ! -e /etc/hserver-agent.token && ! -e /var/lib/hserver-agent ]] \
   || die "Agent purge cleanup did not remove its owned configuration and state."
 
-timeout --signal=TERM --kill-after=5s 60s "$package_dir/install.sh" uninstall --purge-config --purge-data >/dev/null \
+timeout --signal=TERM --kill-after=5s 30s "$package_dir/install.sh" uninstall --purge-config --purge-data >/dev/null \
   || die "Panel purge uninstall timed out or failed."
 panel_installed=0
 [[ ! -e /etc/hserver && ! -e /var/lib/hserver && ! -e /usr/local/bin/hserver-panel ]] \
