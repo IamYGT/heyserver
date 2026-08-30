@@ -104,32 +104,39 @@ agent_touched=0
 feed_pid=
 cleanup_done=0
 
+bounded_cleanup() {
+  local deadline=$1
+  shift
+  timeout --signal=TERM --kill-after=5s "$deadline" "$@" >/dev/null 2>&1 || true
+}
+
 cleanup() {
   if (( cleanup_done )); then
     return
   fi
   cleanup_done=1
   progress "cleanup"
-  timeout 10s systemctl stop hserver-agent-lifecycle.timer hserver-agent-lifecycle.service >/dev/null 2>&1 || true
-  systemctl reset-failed hserver-agent-lifecycle.timer hserver-agent-lifecycle.service >/dev/null 2>&1 || true
+  bounded_cleanup 15s systemctl stop hserver-agent-lifecycle.timer hserver-agent-lifecycle.service
+  bounded_cleanup 10s systemctl reset-failed hserver-agent-lifecycle.timer hserver-agent-lifecycle.service
   if [[ -n "$feed_pid" ]]; then
     kill "$feed_pid" >/dev/null 2>&1 || true
+    timeout 5s tail --pid="$feed_pid" -f /dev/null >/dev/null 2>&1 || kill -KILL "$feed_pid" >/dev/null 2>&1 || true
     wait "$feed_pid" >/dev/null 2>&1 || true
   fi
   if (( agent_touched )); then
     if [[ -x /usr/local/libexec/hserver-agent-install ]]; then
-      /usr/local/libexec/hserver-agent-install uninstall --purge-config >/dev/null 2>&1 || true
+      bounded_cleanup 45s /usr/local/libexec/hserver-agent-install uninstall --purge-config
     elif [[ -x "$package_dir/agent-install.sh" ]]; then
-      "$package_dir/agent-install.sh" uninstall --purge-config >/dev/null 2>&1 || true
+      bounded_cleanup 45s "$package_dir/agent-install.sh" uninstall --purge-config
     fi
     if [[ -e /var/lib/hserver-agent ]]; then
-      find /var/lib/hserver-agent -xdev -depth -delete >/dev/null 2>&1 || true
+      bounded_cleanup 30s find /var/lib/hserver-agent -xdev -depth -delete
     fi
   fi
   if (( panel_installed )) && [[ -x "$package_dir/install.sh" ]]; then
-    HSERVER_HEALTH_TIMEOUT=3 "$package_dir/install.sh" uninstall --purge-config --purge-data >/dev/null 2>&1 || true
+    bounded_cleanup 45s env HSERVER_HEALTH_TIMEOUT=3 "$package_dir/install.sh" uninstall --purge-config --purge-data
   fi
-  rm -rf "$tmp"
+  bounded_cleanup 30s rm -rf "$tmp"
 }
 trap cleanup EXIT
 trap 'exit 143' INT TERM
@@ -618,18 +625,22 @@ systemctl is-active --quiet hserver-agent
 [[ $(sha256sum /etc/hserver-agent.env | awk '{print $1}') == "$config_sha" ]] || die "Failed upgrade changed agent configuration."
 [[ $(sha256sum /etc/hserver-agent.token | awk '{print $1}') == "$token_sha" ]] || die "Failed upgrade changed agent token."
 
-/usr/local/libexec/hserver-agent-install uninstall
+timeout --signal=TERM --kill-after=5s 60s /usr/local/libexec/hserver-agent-install uninstall \
+  || die "Agent non-purge uninstall timed out or failed."
 [[ ! -e /usr/local/bin/hserver-agent && ! -e /usr/local/libexec/hserver-agent-install && ! -e /etc/systemd/system/hserver-agent.service ]] \
   || die "Agent non-purge uninstall left executable lifecycle assets."
 [[ -f /etc/hserver-agent.env && -f /etc/hserver-agent.token && -d /var/lib/hserver-agent ]] \
   || die "Agent non-purge uninstall did not preserve configuration, token, and state."
-"$package_dir/agent-install.sh" uninstall --purge-config >/dev/null
-find /var/lib/hserver-agent -xdev -depth -delete
+timeout --signal=TERM --kill-after=5s 60s "$package_dir/agent-install.sh" uninstall --purge-config >/dev/null \
+  || die "Agent purge uninstall timed out or failed."
+timeout --signal=TERM --kill-after=5s 30s find /var/lib/hserver-agent -xdev -depth -delete \
+  || die "Agent state cleanup timed out or failed."
 agent_touched=0
 [[ ! -e /etc/hserver-agent.env && ! -e /etc/hserver-agent.token && ! -e /var/lib/hserver-agent ]] \
   || die "Agent purge cleanup did not remove its owned configuration and state."
 
-"$package_dir/install.sh" uninstall --purge-config --purge-data >/dev/null
+timeout --signal=TERM --kill-after=5s 60s "$package_dir/install.sh" uninstall --purge-config --purge-data >/dev/null \
+  || die "Panel purge uninstall timed out or failed."
 panel_installed=0
 [[ ! -e /etc/hserver && ! -e /var/lib/hserver && ! -e /usr/local/bin/hserver-panel ]] \
   || die "Panel purge cleanup did not remove the disposable installation."
