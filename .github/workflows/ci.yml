@@ -633,15 +633,23 @@ jobs:
               "bin/hserver-agent-acceptance-${GOARCH}" \
               >"$diagnostics/runner.log" 2>&1 &
           lifecycle_pid=$!
-          for _ in {1..720}; do
-            if grep -q 'acceptance and cleanup complete' "$diagnostics/progress.log" 2>/dev/null; then
+          for _ in {1..360}; do
+            status_state=$(
+              curl -fsS --max-time 5 \
+                -H "@$status_auth_file" \
+                -H 'Accept: application/vnd.github+json' \
+                "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/statuses" \
+                | python3 -c 'import json,sys; context="ci/managed-lifecycle-progress/"+sys.argv[1]; print(next((item.get("state", "") for item in json.load(sys.stdin) if item.get("context") == context), ""))' "$GOARCH" \
+                || true
+            )
+            if [[ "$status_state" == success ]] || grep -q 'acceptance and cleanup complete' "$diagnostics/progress.log" 2>/dev/null; then
               sudo kill -TERM "$lifecycle_pid" >/dev/null 2>&1 || true
               sleep 1
               sudo kill -KILL "$lifecycle_pid" >/dev/null 2>&1 || true
               wait "$lifecycle_pid" >/dev/null 2>&1 || true
               exit 0
             fi
-            if grep -q 'acceptance failed; cleanup complete' "$diagnostics/progress.log" 2>/dev/null; then
+            if [[ "$status_state" == error || "$status_state" == failure ]] || grep -q 'acceptance failed; cleanup complete' "$diagnostics/progress.log" 2>/dev/null; then
               sudo kill -TERM "$lifecycle_pid" >/dev/null 2>&1 || true
               sleep 1
               sudo kill -KILL "$lifecycle_pid" >/dev/null 2>&1 || true
@@ -653,7 +661,7 @@ jobs:
               wait "$lifecycle_pid"
               exit $?
             fi
-            sleep 1
+            sleep 2
           done
           sudo kill -TERM "$lifecycle_pid" >/dev/null 2>&1 || true
           sleep 1
