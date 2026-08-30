@@ -470,7 +470,7 @@ wait_for_node_offline "$stopped_last_seen"
 
 curl -fsS --max-time 4 -H "@$auth_header" -o "$tmp/tasks-before-offline-request.json" \
   "http://127.0.0.1:3085/api/nodes/$node_id/tasks?limit=100"
-printf '%s\n' '{"kind":"agent.update.status","payload":{}}' >"$tmp/offline-task.json"
+printf '%s\n' '{"kind":"agent.update.status","payload":{},"confirmed":true}' >"$tmp/offline-task.json"
 offline_code=$(curl -sS --max-time 5 \
   -H "@$auth_header" \
   -H 'Content-Type: application/json' \
