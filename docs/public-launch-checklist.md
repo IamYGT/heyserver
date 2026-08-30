@@ -14,9 +14,21 @@ complete. Canonical public repository selection and publication are complete at
 [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially published
 at `53df8ba`, with initial private/public tree parity at `3719df8`. Immutable
 public source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the
-first fully green public main CI matrix run `#33283277809`; the current fully
-green public main CI run is `#33293045279` (2026-08-30). Branch protection was
-enabled after these runs and is currently active. The initial active signer is
+first fully green public main CI matrix run `#33283277809`. Public
+[PR #13](https://github.com/IamYGT/heyserver/pull/13) has head
+`1fcb2319160696e21fb25cd6b52c21f69cf0e3ee`; its CI run `#33295933393`
+completed with 14/14 checks successful. It merged at `2026-08-30T06:07:31Z`
+as protected `main` commit
+`bf67c80c9b383d28a4eefd1d75a014b41bd00f45` with exact tree
+`bb838be28a9cb23897e943250e1c69ce9e71d138`. The prior protected-main run
+`#33294999297` failed only its `EXIT cleanup` race, caused by Git 2.55
+detached auto-maintenance; private fix
+`aa10cb7b08fa98695ebdea7b95bfb2fb3a4835bd` uses command-scoped
+`maintenance.auto=false`. Protected-main CI run `#33296189213`
+completed/success with 14/14 checks, including the exact cleanup test and
+successful `Release Package (amd64)`/`Release Package (arm64)` jobs.
+Branch protection was enabled after these runs and is currently active. The
+initial active signer is
 prepared in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY`
 Actions secret is configured; public signer PR #7 was merged at protected `main`
 commit `b2af1591` on 2026-08-30. Public tag `v0.9.5` points to protected
@@ -58,12 +70,14 @@ at `05:17:32 UTC` because runner finalization stalled. No `v0.9.8` GitHub
 Release exists. Its immutable tag and
 workflow are disqualified evidence; do not delete or reuse `v0.9.8`. The next
 immutable replacement candidate is `v0.9.9`.
-The current source fix `c97ced79` preserves the signer fail-closed contract,
-explicitly unlinks the old fixture signature before rotating the upgrade feed
-signature, and locks the static gate call ordering. `v0.9.9` remains pending
-acceptance; no public PR, tag, release, clean independent-VM acceptance, or
-live rollout is claimed for it. The live `v0.9.3` rollout is not the current
-source; source or release evidence does not imply live deployment.
+Source fix `c97ced79` preserves the signer fail-closed contract, explicitly
+rotates the native upgrade-feed signature, and locks the static gate call
+ordering that disqualified `v0.9.8`.
+`v0.9.9` remains pending acceptance; its tag, GitHub Release, clean-host
+acceptance, and live rollout are not claimed. Public PR #13 and the green
+protected-main CI are source/merge evidence only. The live `v0.9.3` rollout is
+not the current source; source or release evidence does not imply live
+deployment.
 
 Historical CI failures `#33251833442`, `#33281342435`, and tagged runs
 `#33285788628`, `#33291179584`, and `#33293250350` are retained only as
@@ -230,10 +244,18 @@ immutable tag, which remains disqualified evidence. The next immutable
 replacement candidate is `v0.9.9`. Its acceptance is established only by a
 published GitHub Release, a successful tagged lifecycle/provenance workflow,
 clean independent-VM acceptance, and the separate live rollout receipt. The
-source fix `c97ced79` preserves the signer fail-closed contract, explicitly
-unlinks the old fixture signature before rotating the upgrade feed signature,
-and locks static gate call ordering. No public PR, tag, release, clean
-independent-VM acceptance, or live rollout is claimed for `v0.9.9`.
+Public PR #13 and its 14/14-success CI run `#33295933393` merged at
+`2026-08-30T06:07:31Z` as protected `main` commit
+`bf67c80c9b383d28a4eefd1d75a014b41bd00f45` (exact tree
+`bb838be28a9cb23897e943250e1c69ce9e71d138`). Protected-main CI
+`#33296189213` completed/success with 14/14 checks, including the exact cleanup
+test and both architecture release-package jobs. The prior main run
+`#33294999297` failed only its `EXIT cleanup` race from Git 2.55 detached
+auto-maintenance; private fix
+`aa10cb7b08fa98695ebdea7b95bfb2fb3a4835bd` uses command-scoped
+`maintenance.auto=false`. These are source/merge and protected-main CI evidence
+only; the `v0.9.9` tag, GitHub Release, clean-host acceptance, and live rollout
+remain unclaimed.
 
 Create the next installation candidate from an exact, previously unused stable
 SemVer tag in the designated public repository. Build it from the exact commit
@@ -593,11 +615,17 @@ cancellation at `05:15 UTC` followed by a force-cancel accepted with HTTP 202
 at `05:17:32 UTC` because runner finalization stalled. No `v0.9.8` GitHub
 Release exists; do not delete or reuse its
 immutable tag, which remains disqualified evidence. The next immutable
-`v0.9.9` candidate must rerun this gate. The source fix `c97ced79` preserves
-the signer fail-closed contract, explicitly unlinks the old fixture signature
-before rotating the upgrade feed signature, and locks static gate call
-ordering; it is not public release evidence. No public PR, tag, release,
-clean independent-VM acceptance, or live rollout is claimed for `v0.9.9`.
+`v0.9.9` candidate must rerun this gate. Public PR #13 and
+its 14/14-success CI run `#33295933393` merged at `2026-08-30T06:07:31Z` as
+protected `main` commit `bf67c80c9b383d28a4eefd1d75a014b41bd00f45` (exact tree
+`bb838be28a9cb23897e943250e1c69ce9e71d138`). Protected-main CI
+`#33296189213` completed/success with 14/14 checks, including the exact cleanup
+test and both architecture release-package jobs. The prior main run
+`#33294999297` failed only its `EXIT cleanup` race from Git 2.55 detached
+auto-maintenance; private fix `aa10cb7b08fa98695ebdea7b95bfb2fb3a4835bd`
+uses command-scoped `maintenance.auto=false`. These are source/merge and
+protected-main CI evidence only; the `v0.9.9` tag, GitHub Release, clean-host
+acceptance, and live rollout remain unclaimed.
 That gate installs the real
 panel and systemd-managed agent on the disposable runner,
 enrolls the node through the one-time token API, serves a locally signed next
