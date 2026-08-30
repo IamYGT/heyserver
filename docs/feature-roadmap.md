@@ -63,7 +63,7 @@ selection and publication are complete at
 at `53df8ba`, with private/public tree parity `3719df8`. Immutable public
 source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the first
 fully green public main CI matrix run `#33283277809`; the current fully green
-public main CI run is `#33283728373` (2026-08-30). Branch protection was enabled
+public main CI run is `#33290958793` (2026-08-30). Branch protection was enabled
 after these runs and is currently active. The initial active signer is prepared
 in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY` Actions
 secret is configured; public signer PR #7 was merged at protected `main` commit
@@ -78,9 +78,21 @@ commit `8d19991e7db7aa8ee39564a41bf1e6ef649d8d96`, but tagged workflow
 `#33288698005` is not releasable: `Public Source Snapshot (amd64)` and both
 `Native Lifecycle` jobs failed required acceptance gates. Its managed-agent
 lifecycle jobs had not completed at audit time, and no successful `v0.9.6`
-GitHub Release exists. `v0.9.7` is the next immutable replacement candidate;
-tagged publication, clean independent-VM acceptance, and local/Contabo live
-rollout remain separate pending gates. The live `v0.9.3` rollout is not the
+GitHub Release exists. The public `v0.9.7` tag points to protected public
+`main` commit `5c5bcf053b333f657ef011078f32ed54126946e6`, but tagged workflow
+`#33291179584` is immutable disqualified evidence: both `Native Lifecycle` jobs
+returned file-backup HTTP 400 because the fixture lacked an explicit temporary
+vhosts root. The `Managed Agent Lifecycle` jobs were cancelled; their arm64
+runner log preserved `agent release archive contains an invalid path`. The
+workflow reached terminal `completed/cancelled` at
+`2026-08-30T04:27:26Z` after normal cancellation followed by a force-cancel
+because runner finalization stalled. No successful `v0.9.7` GitHub Release
+exists.
+`v0.9.8` is the next immutable replacement candidate. No public PR, tag,
+release, clean independent-VM acceptance, or live rollout is claimed for
+`v0.9.8`. Private source fixes now explicitly configure the native temporary
+vhosts root and accept canonical tar `TypeDir` entries with a trailing slash
+while preserving unsafe-path rejection. The live `v0.9.3` rollout is not the
 current source. Source and release evidence do not imply a live deployment.
 
 ## v1.0 release gates
@@ -151,7 +163,7 @@ These are release requirements, not optional ideas.
    published at `53df8ba`, with private/public tree parity `3719df8`. Immutable
    public source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the
    first fully green public main CI matrix run `#33283277809`; the current fully
-   green public main CI run is `#33283728373` (2026-08-30). Branch protection was
+   green public main CI run is `#33290958793` (2026-08-30). Branch protection was
    enabled after these runs and is currently active. The initial active signer is
    prepared in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY`
    Actions secret is configured; public signer PR #7 was merged at protected
@@ -165,11 +177,23 @@ These are release requirements, not optional ideas.
    commit `8d19991e7db7aa8ee39564a41bf1e6ef649d8d96`, but tagged workflow
    `#33288698005` is disqualified by required public-source and native-lifecycle
    failures; its managed-agent lifecycle jobs had not completed at audit time,
-   and no successful GitHub Release exists. `v0.9.7` is the next immutable
-   replacement candidate. Clean independent-VM acceptance and local/Contabo
-   live rollout remain separate gates. The live `v0.9.3` rollout is not the
-   current source, and source or release evidence does not imply a live
-   deployment.
+   and no successful GitHub Release exists. The public `v0.9.7` tag points to
+   protected public `main` commit
+   `5c5bcf053b333f657ef011078f32ed54126946e6`, but tagged workflow
+   `#33291179584` is immutable disqualified evidence: both `Native Lifecycle`
+   jobs returned file-backup HTTP 400 because the fixture lacked an explicit
+   temporary vhosts root. The `Managed Agent Lifecycle` jobs were cancelled;
+   their arm64 runner log preserved `agent release archive contains an invalid
+   path`. The workflow reached terminal `completed/cancelled` at
+   `2026-08-30T04:27:26Z` after normal cancellation followed by a force-cancel
+   because runner finalization stalled. No successful `v0.9.7` GitHub Release
+   exists. `v0.9.8` is the next immutable replacement candidate. No
+   public PR, tag, release, clean independent-VM acceptance, or live rollout
+   is claimed for `v0.9.8`. Private source fixes now explicitly configure the
+   native temporary vhosts root and accept canonical tar `TypeDir` entries with
+   a trailing slash while preserving unsafe-path rejection. The live `v0.9.3`
+   rollout is not the current source, and source or release evidence does not
+   imply a live deployment.
 
 3. **Clean public history**
 
@@ -188,12 +212,12 @@ These are release requirements, not optional ideas.
    private key, and provides checksums for both the bootstrap installer and
    public key. The public installer verifies a detached
    `bootstrap-install.sh.sig` against the configured release signer before
-   privilege entry. The failed public `v0.9.5` and disqualified `v0.9.6`
-   tag/runs remain historical evidence only; `v0.9.7` is the next immutable
-   replacement candidate. Tagged publication, GitHub Release publication,
-   lifecycle/provenance acceptance, clean independent-VM acceptance, live
-   rollout, and the independently authenticated installer anchor are distinct
-   public-launch gates. Their
+   privilege entry. The failed public `v0.9.5`, disqualified `v0.9.6`, and
+   disqualified `v0.9.7` tag/runs remain historical evidence only; `v0.9.8` is
+   the next immutable replacement candidate. Tagged publication, GitHub
+   Release publication, lifecycle/provenance acceptance, clean independent-VM
+   acceptance, live rollout, and the independently authenticated installer
+   anchor are distinct public-launch gates. Their
    authoritative evidence is the tagged workflow, published release, and
    external acceptance receipts rather than this roadmap text.
 

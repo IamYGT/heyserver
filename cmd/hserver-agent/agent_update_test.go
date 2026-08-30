@@ -112,6 +112,60 @@ func TestAgentUpdateUpgradeStagesVerifiedReleaseAndSchedulesFixedUnit(t *testing
 	}
 }
 
+func TestExtractAgentReleaseAcceptsCanonicalReleaseDirectories(t *testing.T) {
+	version := "v0.9.7"
+	archive := testAgentReleaseArchiveWithCanonicalDirectories(t, version)
+	archivePath := filepath.Join(t.TempDir(), "release.tar.gz")
+	if err := os.WriteFile(archivePath, archive, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	destination := filepath.Join(t.TempDir(), "stage")
+	if err := os.Mkdir(destination, 0o700); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := extractAgentRelease(archivePath, destination, version, runtime.GOOS+"_"+runtime.GOARCH); err != nil {
+		t.Fatalf("extractAgentRelease: %v", err)
+	}
+	for _, name := range []string{"VERSION", "hserver-agent", "agent-install.sh"} {
+		if info, err := os.Stat(filepath.Join(destination, name)); err != nil || !info.Mode().IsRegular() {
+			t.Fatalf("extracted %s: info=%v err=%v", name, info, err)
+		}
+	}
+}
+
+func TestExtractAgentReleaseRejectsUnsafeCanonicalDirectoryEntries(t *testing.T) {
+	version := "v0.9.7"
+	root := "hserver-panel-" + version + "-" + runtime.GOOS + "-" + runtime.GOARCH
+	tests := []struct {
+		name  string
+		entry string
+	}{
+		{name: "traversal", entry: root + "/../escape/"},
+		{name: "absolute", entry: "/" + root + "/"},
+		{name: "backslash", entry: root + `/docs\escape/`},
+		{name: "outside expected root", entry: root + "-other/"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			archivePath := filepath.Join(t.TempDir(), "release.tar.gz")
+			if err := os.WriteFile(archivePath, testAgentDirectoryArchive(t, test.entry), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			destination := filepath.Join(t.TempDir(), "stage")
+			if err := os.Mkdir(destination, 0o700); err != nil {
+				t.Fatal(err)
+			}
+
+			err := extractAgentRelease(archivePath, destination, version, runtime.GOOS+"_"+runtime.GOARCH)
+			if err == nil || err.Error() != "agent release archive contains an invalid path" {
+				t.Fatalf("extractAgentRelease error = %v, want invalid path rejection", err)
+			}
+		})
+	}
+}
+
 func TestAgentUpdateUpgradeRequiresVerifiedManifestBeforeMutation(t *testing.T) {
 	archive := testAgentReleaseArchive(t, "v1.2.3")
 	digest := sha256.Sum256(archive)
@@ -229,6 +283,14 @@ func TestDetachedAgentLifecycleStateRequiresBothInactiveUnits(t *testing.T) {
 }
 
 func testAgentReleaseArchive(t *testing.T, version string) []byte {
+	return testAgentReleaseArchiveWithDirectories(t, version, false)
+}
+
+func testAgentReleaseArchiveWithCanonicalDirectories(t *testing.T, version string) []byte {
+	return testAgentReleaseArchiveWithDirectories(t, version, true)
+}
+
+func testAgentReleaseArchiveWithDirectories(t *testing.T, version string, includeDirectories bool) []byte {
 	t.Helper()
 	executable, err := os.Executable()
 	if err != nil {
@@ -248,6 +310,13 @@ func testAgentReleaseArchive(t *testing.T, version string) []byte {
 	var compressed bytes.Buffer
 	gzipWriter := gzip.NewWriter(&compressed)
 	tarWriter := tar.NewWriter(gzipWriter)
+	if includeDirectories {
+		for _, name := range []string{root + "/", root + "/docs/"} {
+			if err := tarWriter.WriteHeader(&tar.Header{Name: name, Mode: 0o755, Typeflag: tar.TypeDir}); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
 	for name, content := range files {
 		if err := tarWriter.WriteHeader(&tar.Header{Name: name, Mode: 0o755, Size: int64(len(content)), Typeflag: tar.TypeReg}); err != nil {
 			t.Fatal(err)
@@ -255,6 +324,23 @@ func testAgentReleaseArchive(t *testing.T, version string) []byte {
 		if _, err := tarWriter.Write(content); err != nil {
 			t.Fatal(err)
 		}
+	}
+	if err := tarWriter.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := gzipWriter.Close(); err != nil {
+		t.Fatal(err)
+	}
+	return compressed.Bytes()
+}
+
+func testAgentDirectoryArchive(t *testing.T, entry string) []byte {
+	t.Helper()
+	var compressed bytes.Buffer
+	gzipWriter := gzip.NewWriter(&compressed)
+	tarWriter := tar.NewWriter(gzipWriter)
+	if err := tarWriter.WriteHeader(&tar.Header{Name: entry, Mode: 0o755, Typeflag: tar.TypeDir}); err != nil {
+		t.Fatal(err)
 	}
 	if err := tarWriter.Close(); err != nil {
 		t.Fatal(err)

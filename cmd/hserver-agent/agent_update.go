@@ -306,8 +306,12 @@ func extractAgentRelease(archivePath, destination, version, platform string) err
 		if err != nil {
 			return err
 		}
-		clean := path.Clean(header.Name)
-		if clean != header.Name || clean == "." || strings.HasPrefix(clean, "/") || strings.HasPrefix(clean, "../") || clean != expectedRoot && !strings.HasPrefix(clean, expectedRoot+"/") {
+		entryName := header.Name
+		if header.Typeflag == tar.TypeDir {
+			entryName = strings.TrimSuffix(entryName, "/")
+		}
+		clean := path.Clean(entryName)
+		if strings.Contains(header.Name, `\`) || clean != entryName || clean == "." || strings.HasPrefix(clean, "/") || strings.HasPrefix(clean, "../") || clean != expectedRoot && !strings.HasPrefix(clean, expectedRoot+"/") {
 			return errors.New("agent release archive contains an invalid path")
 		}
 		switch header.Typeflag {
