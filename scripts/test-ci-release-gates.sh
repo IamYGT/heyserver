@@ -404,6 +404,7 @@ for required in (
     "HSERVER_ACCEPT_DISPOSABLE_HOST=1",
     "sudo env",
     'HSERVER_ACCEPTANCE_DIAGNOSTIC_FILE="$diagnostics/progress.log"',
+    ': >"$diagnostics/progress.log"',
     'HSERVER_ACCEPTANCE_STATUS_AUTH_FILE="$status_auth_file"',
     'lifecycle_pid=$!',
     "for _ in {1..720}; do",

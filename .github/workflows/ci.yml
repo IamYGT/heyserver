@@ -613,6 +613,8 @@ jobs:
         run: |
           diagnostics="$RUNNER_TEMP/managed-agent-lifecycle-${GOARCH}"
           mkdir -p "$diagnostics"
+          : >"$diagnostics/progress.log"
+          chmod 0600 "$diagnostics/progress.log"
           status_auth_file="$RUNNER_TEMP/managed-agent-status-auth-${GOARCH}"
           printf 'Authorization: Bearer %s\n' "$GITHUB_STATUS_TOKEN" >"$status_auth_file"
           chmod 0600 "$status_auth_file"
