@@ -10,15 +10,15 @@ is pre-1.0; public release acceptance remains in progress.
 
 ### Changed
 
-- The next immutable patch candidate is `v0.9.6`; it is not tagged or
-  released. The public `v0.9.5` tag points to protected `main` commit
+- `v0.9.6` is the immutable replacement for the failed `v0.9.5` candidate. The
+  public `v0.9.5` tag points to protected `main` commit
   `b2af1591f7a848acd71bbe54bc4f70fbffe99373`, but tagged run `#33285788628`
   failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
   `Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step
   6 while the canonical maximum is step 5. The tag and run remain historical
-  failed-release evidence; no successful `v0.9.5` or
-  `v0.9.6` release, clean independent-VM acceptance, or live rollout is
-  claimed.
+  failed-release evidence. A published `v0.9.6` GitHub Release and successful
+  tagged workflow are the authoritative distribution evidence; clean
+  independent-VM acceptance and live rollout remain separate gates.
 
 ### Fixed
 
@@ -79,10 +79,11 @@ is pre-1.0; public release acceptance remains in progress.
   failed-release evidence. The first successful signed
   release, GitHub Release, tagged lifecycle/provenance acceptance, clean
   independent-VM acceptance, and live rollout remain pending. The next
-  immutable patch candidate is `v0.9.6`; no release or rollout is claimed for
-  it. The live `v0.9.3` rollout is not the current source, and these source
-  results do not imply a live deployment or public release. Earlier failed runs
-  `#33251833442` and `#33281342435` are historical CI evidence only.
+  immutable replacement candidate is `v0.9.6`; its GitHub Release page and
+  tagged workflow are the authoritative distribution evidence. The live
+  `v0.9.3` rollout is not the current source, and source or release results do
+  not imply a live deployment. Earlier failed runs `#33251833442` and
+  `#33281342435` are historical CI evidence only.
 
 ## [0.9.4] — 2026-08-29
 

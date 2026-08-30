@@ -73,12 +73,11 @@ commit
 failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
 `Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step 6
 while the canonical maximum is step 5. The tag and run remain historical
-failed-release evidence. The first successful signed release,
-GitHub Release, tagged lifecycle/provenance acceptance, clean independent-VM
-acceptance, and local/Contabo live rollout remain open. The next immutable patch
-candidate is `v0.9.6`; no release or rollout is claimed for it. The live
-`v0.9.3` rollout is not the current source. This records source and acceptance
-progress only; it is not evidence of live deployment or a public release.
+failed-release evidence. `v0.9.6` is the immutable replacement candidate; its
+GitHub Release page and tagged workflow are the authoritative distribution
+evidence. Clean independent-VM acceptance and local/Contabo live rollout remain
+separate gates. The live `v0.9.3` rollout is not the current source. Source and
+release evidence do not imply a live deployment.
 
 ## v1.0 release gates
 
@@ -158,12 +157,12 @@ These are release requirements, not optional ideas.
    failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
    `Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step
    6 while the canonical maximum is step 5. The tag and run remain historical
-   failed-release evidence. The first successful signed
-   release, GitHub Release, tagged lifecycle/provenance acceptance, clean
-   independent-VM acceptance, and local/Contabo live rollout remain open. The
-   next immutable patch candidate is `v0.9.6`; no release or rollout is claimed
-   for it. The live `v0.9.3` rollout is not the current source, and no live
-   deployment or public release is claimed here.
+   failed-release evidence. `v0.9.6` is the immutable replacement candidate;
+   its GitHub Release page and tagged workflow are the authoritative
+   distribution evidence. Clean independent-VM acceptance and local/Contabo
+   live rollout remain separate gates. The live `v0.9.3` rollout is not the
+   current source, and source or release evidence does not imply a live
+   deployment.
 
 3. **Clean public history**
 
@@ -183,12 +182,12 @@ These are release requirements, not optional ideas.
    public key. The public installer verifies a detached
    `bootstrap-install.sh.sig` against the configured release signer before
    privilege entry. The failed public `v0.9.5` tag/run remains historical
-   evidence only; the next immutable patch candidate is `v0.9.6`. Successful
-   tagged publication, GitHub Release publication, tagged lifecycle/provenance
-   acceptance, the first signed release, clean independent-VM acceptance, and
-   live rollout remain public-launch prerequisites, so this project is not
-   public-launch ready until those gates
-   and the independently authenticated installer anchor are complete.
+   evidence only; `v0.9.6` is the immutable replacement candidate. Tagged
+   publication, GitHub Release publication, lifecycle/provenance acceptance,
+   clean independent-VM acceptance, live rollout, and the independently
+   authenticated installer anchor are distinct public-launch gates. Their
+   authoritative evidence is the tagged workflow, published release, and
+   external acceptance receipts rather than this roadmap text.
 
 4. **Restore drills**
 

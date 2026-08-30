@@ -38,11 +38,11 @@ was merged at protected `main` commit `b2af1591` on 2026-08-30. The public
 failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
 `Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step 6
 while the canonical maximum is step 5. The tag and run remain historical
-failed-release evidence; no successful `v0.9.5` GitHub Release is claimed. The
-next immutable patch candidate is `v0.9.6`; its signed release,
-GitHub Release, tagged lifecycle/provenance acceptance, clean independent-VM
-acceptance, and live rollout remain pending. The live `v0.9.3` rollout is not
-the current source.
+failed-release evidence; no successful `v0.9.5` GitHub Release is claimed.
+`v0.9.6` is the immutable replacement candidate. Its GitHub Release page and
+tagged workflow are the authoritative distribution evidence; clean
+independent-VM acceptance and live rollout remain separate gates. The live
+`v0.9.3` rollout is not the current source.
 
 ## Architecture
 
