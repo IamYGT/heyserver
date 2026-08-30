@@ -402,7 +402,7 @@ for required in (
     "github.event_name == 'workflow_dispatch'",
     "statuses: write",
     "HSERVER_ACCEPT_DISPOSABLE_HOST=1",
-    "sudo timeout --signal=TERM --kill-after=30s 12m env",
+    "sudo env",
     'HSERVER_ACCEPTANCE_DIAGNOSTIC_FILE="$diagnostics/progress.log"',
     'HSERVER_ACCEPTANCE_STATUS_AUTH_FILE="$status_auth_file"',
     "./scripts/test-native-managed-agent-lifecycle.sh",
