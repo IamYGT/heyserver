@@ -16,6 +16,7 @@ for required in \
   MAINTAINERS.md \
   CONTRIBUTING.md \
   .github/ISSUE_TEMPLATE/config.yml \
+  .github/CODEOWNERS \
   .github/ISSUE_TEMPLATE/bug_report.yml \
   .github/ISSUE_TEMPLATE/feature_request.yml \
   .github/ISSUE_TEMPLATE/support_question.yml \
@@ -93,5 +94,8 @@ grep -Fq 'blank_issues_enabled: false' "$repo_root/.github/ISSUE_TEMPLATE/config
 grep -Fq 'https://github.com/IamYGT/heyserver/security/advisories/new' \
   "$repo_root/.github/ISSUE_TEMPLATE/config.yml" || \
   fail 'issue-form configuration security route differs from policy docs'
+
+grep -Fxq '* @IamYGT' "$repo_root/.github/CODEOWNERS" || \
+  fail 'CODEOWNERS must assign global ownership to @IamYGT'
 
 printf '%s\n' 'community docs and issue-form link check: OK'
