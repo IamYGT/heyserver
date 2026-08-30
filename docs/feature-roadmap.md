@@ -119,7 +119,7 @@ These are release requirements, not optional ideas.
    remains part of candidate acceptance because namespace isolation does not
    claim an independent kernel or infrastructure path. The public
    `accept-provider-network-managed-agent.sh` tool now makes that manual drill
-   reproducible and emits a protected schema-v2 receipt after proving the
+   reproducible and emits a protected schema-v3 receipt after proving the
    native panel host, a different managed-node kernel, exact panel/CLI/agent
    identities, both release architectures, the real CLI PTY path, one bounded
    observed process mutation, and task-free disabled-capability denial. It
