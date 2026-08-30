@@ -26,11 +26,11 @@ failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
 `Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step 6
 while the canonical maximum is step 5. The tag and run remain
 historical failed-release evidence; no successful `v0.9.5` GitHub Release is
-claimed. The next immutable patch candidate is `v0.9.6`; its signed release,
-GitHub Release, tagged lifecycle/provenance acceptance, clean independent-VM
-acceptance, and local/Contabo live rollout remain pending. The live `v0.9.3`
-rollout is not the current source; this status does not claim live deployment
-or a public release.
+claimed. `v0.9.6` is the immutable replacement candidate. Its GitHub Release
+page and tagged workflow are the authoritative distribution evidence; clean
+independent-VM acceptance and local/Contabo live rollout remain separate gates.
+The live `v0.9.3` rollout is not the current source; source or release evidence
+does not imply live deployment.
 
 Historical CI failures `#33251833442`, `#33281342435`, and tagged run
 `#33285788628` are retained only as historical evidence.
@@ -167,9 +167,9 @@ failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
 `Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step 6
 while the canonical maximum is step 5. That tag and run are
 historical failed-release evidence, not a successful release. The next immutable
-patch candidate is `v0.9.6`; its tag, GitHub Release, successful tagged
-lifecycle/provenance acceptance, clean independent-VM acceptance, and live
-rollout remain pending.
+replacement candidate is `v0.9.6`. Its acceptance is established only by a
+published GitHub Release, a successful tagged lifecycle/provenance workflow,
+clean independent-VM acceptance, and the separate live rollout receipt.
 
 Create the next installation candidate from an exact, previously unused stable
 SemVer tag in the designated public repository. Build it from the exact commit
