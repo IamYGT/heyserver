@@ -170,8 +170,14 @@ cleanup() {
   fi
   bounded_cleanup 5s rm -rf "$tmp"
   if (( exit_code == 0 )); then
+    if [[ -n ${HSERVER_ACCEPTANCE_DIAGNOSTIC_FILE:-} ]]; then
+      printf '%s acceptance and cleanup complete\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >>"$HSERVER_ACCEPTANCE_DIAGNOSTIC_FILE"
+    fi
     publish_progress "acceptance and cleanup complete" success
   else
+    if [[ -n ${HSERVER_ACCEPTANCE_DIAGNOSTIC_FILE:-} ]]; then
+      printf '%s acceptance failed; cleanup complete\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >>"$HSERVER_ACCEPTANCE_DIAGNOSTIC_FILE"
+    fi
     publish_progress "acceptance failed; cleanup complete" error
   fi
 }

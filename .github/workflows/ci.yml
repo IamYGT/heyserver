@@ -628,7 +628,38 @@ jobs:
               "dist/hserver-panel-${BUILD_VERSION}-linux-${GOARCH}.tar.gz" \
               "dist/hserver-panel-${BUILD_VERSION}-linux-${GOARCH}.tar.gz.sha256" \
               "$NEXT_VERSION" \
-              "bin/hserver-agent-acceptance-${GOARCH}"
+              "bin/hserver-agent-acceptance-${GOARCH}" \
+              >"$diagnostics/runner.log" 2>&1 &
+          lifecycle_pid=$!
+          for _ in {1..720}; do
+            if grep -q 'acceptance and cleanup complete' "$diagnostics/progress.log" 2>/dev/null; then
+              sudo kill -TERM "$lifecycle_pid" >/dev/null 2>&1 || true
+              sleep 1
+              sudo kill -KILL "$lifecycle_pid" >/dev/null 2>&1 || true
+              wait "$lifecycle_pid" >/dev/null 2>&1 || true
+              exit 0
+            fi
+            if grep -q 'acceptance failed; cleanup complete' "$diagnostics/progress.log" 2>/dev/null; then
+              sudo kill -TERM "$lifecycle_pid" >/dev/null 2>&1 || true
+              sleep 1
+              sudo kill -KILL "$lifecycle_pid" >/dev/null 2>&1 || true
+              wait "$lifecycle_pid" >/dev/null 2>&1 || true
+              cat "$diagnostics/runner.log"
+              exit 1
+            fi
+            if ! sudo kill -0 "$lifecycle_pid" >/dev/null 2>&1; then
+              wait "$lifecycle_pid"
+              exit $?
+            fi
+            sleep 1
+          done
+          sudo kill -TERM "$lifecycle_pid" >/dev/null 2>&1 || true
+          sleep 1
+          sudo kill -KILL "$lifecycle_pid" >/dev/null 2>&1 || true
+          wait "$lifecycle_pid" >/dev/null 2>&1 || true
+          cat "$diagnostics/runner.log"
+          echo "Managed lifecycle acceptance exceeded its 12-minute supervisor deadline." >&2
+          exit 1
 
       - name: Collect managed-agent lifecycle diagnostics
         if: always()
