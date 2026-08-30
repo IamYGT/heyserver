@@ -66,12 +66,14 @@ fully green public main CI matrix run `#33283277809`; the current fully green
 public main CI run is `#33283728373` (2026-08-30). Branch protection was enabled
 after these runs and is currently active. The initial active signer is prepared
 in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY` Actions
-secret is configured; public signer PR #7 remains pending. The public `v0.9.5`
-tag points to protected `main` commit
+secret is configured; public signer PR #7 was merged at protected `main` commit
+`b2af1591` on 2026-08-30. The public `v0.9.5` tag points to protected `main`
+commit
 `b2af1591f7a848acd71bbe54bc4f70fbffe99373`, but tagged run `#33285788628`
-failed both `Managed Agent Lifecycle` jobs because the lifecycle fixture posted
-onboarding step 6 while the canonical maximum is step 5. The tag and run remain
-historical failed-release evidence. The first successful signed release,
+failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
+`Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step 6
+while the canonical maximum is step 5. The tag and run remain historical
+failed-release evidence. The first successful signed release,
 GitHub Release, tagged lifecycle/provenance acceptance, clean independent-VM
 acceptance, and local/Contabo live rollout remain open. The next immutable patch
 candidate is `v0.9.6`; no release or rollout is claimed for it. The live
@@ -149,12 +151,14 @@ These are release requirements, not optional ideas.
    green public main CI run is `#33283728373` (2026-08-30). Branch protection was
    enabled after these runs and is currently active. The initial active signer is
    prepared in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY`
-   Actions secret is configured; public signer PR #7 remains pending. The
-   public `v0.9.5` tag points to protected `main` commit
+   Actions secret is configured; public signer PR #7 was merged at protected
+   `main` commit `b2af1591` on 2026-08-30. The public `v0.9.5` tag points to
+   protected `main` commit
    `b2af1591f7a848acd71bbe54bc4f70fbffe99373`, but tagged run `#33285788628`
-   failed both `Managed Agent Lifecycle` jobs because the lifecycle fixture
-   posted onboarding step 6 while the canonical maximum is step 5. The tag and
-   run remain historical failed-release evidence. The first successful signed
+   failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
+   `Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step
+   6 while the canonical maximum is step 5. The tag and run remain historical
+   failed-release evidence. The first successful signed
    release, GitHub Release, tagged lifecycle/provenance acceptance, clean
    independent-VM acceptance, and local/Contabo live rollout remain open. The
    next immutable patch candidate is `v0.9.6`; no release or rollout is claimed
@@ -171,8 +175,9 @@ These are release requirements, not optional ideas.
    permanent workflow. Main branch protection is complete. The initial active
    signer is prepared in private commit `df0a5070`, and the
    `HSERVER_RELEASE_SIGNING_KEY` Actions secret is configured; public signer PR
-   #7 remains pending through protected review. The release workflow fails
-   closed unless the version tag descends from the protected `main` commit,
+   #7 was merged at protected `main` commit `b2af1591` on 2026-08-30. The
+   release workflow fails closed unless the version tag descends from the
+   protected `main` commit,
    derives and publishes the manifest verification key without staging the
    private key, and provides checksums for both the bootstrap installer and
    public key. The public installer verifies a detached
