@@ -99,9 +99,10 @@ jobs:
 
       - name: Run tests with coverage
         run: |
+          mkdir -p coverage
           PKGS=$(go list ./... | grep -vE 'testcmd|flatted/golang|/terminal$|/testutil$')
           CGO_ENABLED=1 go test \
-            -coverprofile=coverage.out \
+            -coverprofile=coverage/coverage.out \
             -covermode=atomic \
             $PKGS
 
@@ -113,20 +114,20 @@ jobs:
 
       - name: Enforce minimum coverage (25%)
         run: |
-          TOTAL=$(go tool cover -func=coverage.out | awk '/^total:/ {gsub(/%/,"",$3); print $3}')
+          TOTAL=$(go tool cover -func=coverage/coverage.out | awk '/^total:/ {gsub(/%/,"",$3); print $3}')
           echo "Total coverage: ${TOTAL}%"
           awk -v cov="$TOTAL" 'BEGIN { if (cov+0 < 25) { print "Coverage below 25%: " cov "%"; exit 1 } }'
 
       - name: Generate HTML coverage report
-        run: go tool cover -html=coverage.out -o coverage.html
+        run: go tool cover -html=coverage/coverage.out -o coverage/coverage.html
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
         with:
           name: go-coverage-report
           path: |
-            coverage.out
-            coverage.html
+            coverage/coverage.out
+            coverage/coverage.html
           retention-days: 14
 
   # ─── Database: Real isolated backup, restore, and failed-restore rollback ──
