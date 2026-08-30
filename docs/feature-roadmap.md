@@ -73,11 +73,15 @@ commit
 failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
 `Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step 6
 while the canonical maximum is step 5. The tag and run remain historical
-failed-release evidence. `v0.9.6` is the immutable replacement candidate; its
-GitHub Release page and tagged workflow are the authoritative distribution
-evidence. Clean independent-VM acceptance and local/Contabo live rollout remain
-separate gates. The live `v0.9.3` rollout is not the current source. Source and
-release evidence do not imply a live deployment.
+failed-release evidence. The public `v0.9.6` tag points to protected `main`
+commit `8d19991e7db7aa8ee39564a41bf1e6ef649d8d96`, but tagged workflow
+`#33288698005` is not releasable: `Public Source Snapshot (amd64)` and both
+`Native Lifecycle` jobs failed required acceptance gates. Its managed-agent
+lifecycle jobs had not completed at audit time, and no successful `v0.9.6`
+GitHub Release exists. `v0.9.7` is the next immutable replacement candidate;
+tagged publication, clean independent-VM acceptance, and local/Contabo live
+rollout remain separate pending gates. The live `v0.9.3` rollout is not the
+current source. Source and release evidence do not imply a live deployment.
 
 ## v1.0 release gates
 
@@ -157,9 +161,12 @@ These are release requirements, not optional ideas.
    failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
    `Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step
    6 while the canonical maximum is step 5. The tag and run remain historical
-   failed-release evidence. `v0.9.6` is the immutable replacement candidate;
-   its GitHub Release page and tagged workflow are the authoritative
-   distribution evidence. Clean independent-VM acceptance and local/Contabo
+   failed-release evidence. The public `v0.9.6` tag points to protected `main`
+   commit `8d19991e7db7aa8ee39564a41bf1e6ef649d8d96`, but tagged workflow
+   `#33288698005` is disqualified by required public-source and native-lifecycle
+   failures; its managed-agent lifecycle jobs had not completed at audit time,
+   and no successful GitHub Release exists. `v0.9.7` is the next immutable
+   replacement candidate. Clean independent-VM acceptance and local/Contabo
    live rollout remain separate gates. The live `v0.9.3` rollout is not the
    current source, and source or release evidence does not imply a live
    deployment.
@@ -181,11 +188,12 @@ These are release requirements, not optional ideas.
    private key, and provides checksums for both the bootstrap installer and
    public key. The public installer verifies a detached
    `bootstrap-install.sh.sig` against the configured release signer before
-   privilege entry. The failed public `v0.9.5` tag/run remains historical
-   evidence only; `v0.9.6` is the immutable replacement candidate. Tagged
-   publication, GitHub Release publication, lifecycle/provenance acceptance,
-   clean independent-VM acceptance, live rollout, and the independently
-   authenticated installer anchor are distinct public-launch gates. Their
+   privilege entry. The failed public `v0.9.5` and disqualified `v0.9.6`
+   tag/runs remain historical evidence only; `v0.9.7` is the next immutable
+   replacement candidate. Tagged publication, GitHub Release publication,
+   lifecycle/provenance acceptance, clean independent-VM acceptance, live
+   rollout, and the independently authenticated installer anchor are distinct
+   public-launch gates. Their
    authoritative evidence is the tagged workflow, published release, and
    external acceptance receipts rather than this roadmap text.
 

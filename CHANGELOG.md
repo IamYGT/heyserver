@@ -6,19 +6,38 @@ is pre-1.0; public release acceptance remains in progress.
 
 ## [Unreleased]
 
+## [0.9.7] — pending acceptance
+
+### Changed
+
+- `v0.9.7` is the next immutable replacement candidate after the public
+  `v0.9.6` tag and tagged workflow `#33288698005` were disqualified by required
+  job failures. Its tagged workflow, GitHub Release, signed assets, independent
+  clean-host acceptance, provider-network receipt, and live rollout remain
+  pending and are separate release gates.
+
+### Fixed
+
+- Backup integration acceptance now waits for asynchronous backup completion
+  before its temporary directory is removed.
+- Managed-agent lifecycle acceptance now explicitly confirms the offline task
+  fixture so the intended offline-node conflict boundary is exercised.
+- Native installer snapshots use SQLite's online backup API when WAL sidecars
+  are present, preserving committed onboarding state across rollback while
+  retaining the existing byte-copy path for standalone legacy state files.
+
 ## [0.9.6] — 2026-08-30
 
 ### Changed
 
-- `v0.9.6` is the immutable replacement for the failed `v0.9.5` candidate. The
-  public `v0.9.5` tag points to protected `main` commit
-  `b2af1591f7a848acd71bbe54bc4f70fbffe99373`, but tagged run `#33285788628`
-  failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
-  `Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step
-  6 while the canonical maximum is step 5. The tag and run remain historical
-  failed-release evidence. A published `v0.9.6` GitHub Release and successful
-  tagged workflow are the authoritative distribution evidence; clean
-  independent-VM acceptance and live rollout remain separate gates.
+- The public `v0.9.6` tag points to protected `main` commit
+  `8d19991e7db7aa8ee39564a41bf1e6ef649d8d96`, but tagged workflow
+  `#33288698005` is not releasable. `Public Source Snapshot (amd64)` failed
+  asynchronous backup temporary-directory cleanup, and both `Native Lifecycle`
+  jobs failed because retained rollback did not preserve SQLite onboarding
+  state. The managed-agent lifecycle jobs had not completed at audit time. No
+  successful `v0.9.6` GitHub Release exists; the immutable tag and workflow
+  remain failed-release evidence.
 
 ### Fixed
 
