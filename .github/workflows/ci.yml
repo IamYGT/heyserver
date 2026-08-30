@@ -18,9 +18,9 @@ jobs:
     name: Go Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: true
@@ -36,9 +36,9 @@ jobs:
     name: Go Security Scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: true
@@ -54,9 +54,9 @@ jobs:
     name: Frontend Lint & Type Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -83,14 +83,14 @@ jobs:
     name: Go Tests & Coverage
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: true
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -122,7 +122,7 @@ jobs:
         run: go tool cover -html=coverage/coverage.out -o coverage/coverage.html
 
       - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: go-coverage-report
           path: |
@@ -145,9 +145,9 @@ jobs:
             package: mariadb-server
             script: ./scripts/test-mariadb-restore-drill.sh
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: true
@@ -167,9 +167,9 @@ jobs:
     name: Frontend Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -188,9 +188,9 @@ jobs:
     name: Frontend Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -205,7 +205,7 @@ jobs:
         working-directory: web
 
       - name: Upload frontend dist
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: frontend-dist
           path: web/dist/
@@ -216,7 +216,7 @@ jobs:
     name: Docker Quick Evaluation
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Build, start, restart, and verify persisted evaluation state
         run: make test-docker
@@ -227,9 +227,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [frontend-build, frontend-test, go-test]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: true
@@ -238,7 +238,7 @@ jobs:
         run: sudo apt-get install -y gcc
 
       - name: Download frontend dist
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: frontend-dist
           path: web/dist/
@@ -266,7 +266,7 @@ jobs:
             ./cmd/hserver
 
       - name: Upload binary artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: hserver-panel-linux-amd64
           path: bin/${{ env.BINARY_NAME }}
@@ -285,16 +285,16 @@ jobs:
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.runner }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: true
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -322,11 +322,11 @@ jobs:
             cc: aarch64-linux-gnu-gcc
             compiler_package: gcc-aarch64-linux-gnu
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: true
@@ -361,7 +361,7 @@ jobs:
         run: ./scripts/validate-release-changelog.sh "$BUILD_VERSION"
 
       - name: Download frontend dist
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: frontend-dist
           path: web/dist/
@@ -418,7 +418,7 @@ jobs:
             "dist/hserver-panel-${BUILD_VERSION}-linux-${GOARCH}.tar.gz.sha256"
 
       - name: Upload release package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-${{ matrix.arch }}
           path: |
@@ -445,9 +445,9 @@ jobs:
             debian_arch: arm64
     runs-on: ${{ matrix.runner }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: true
@@ -456,13 +456,13 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y binutils gcc sqlite3 util-linux
 
       - name: Download native release package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: release-${{ matrix.arch }}
           path: dist
 
       - name: Download current frontend dist
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: frontend-dist
           path: web/dist/
@@ -558,9 +558,9 @@ jobs:
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.runner }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: true
@@ -569,7 +569,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y binutils util-linux
 
       - name: Download native release package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: release-${{ matrix.arch }}
           path: dist
@@ -619,9 +619,9 @@ jobs:
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.runner }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: true
@@ -630,7 +630,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y gcc iproute2 iputils-ping
 
       - name: Download current frontend dist
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: frontend-dist
           path: web/dist/
@@ -668,7 +668,7 @@ jobs:
     steps:
       - name: Resolve the protected main trust anchor
         id: protected-main
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             if (context.eventName !== 'push' || !context.ref.startsWith('refs/tags/v')) {
@@ -690,7 +690,7 @@ jobs:
             }
             core.setOutput('main_sha', branch.data.commit.sha);
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -739,10 +739,10 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Download architecture packages
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: release-*
           path: release
@@ -813,7 +813,7 @@ jobs:
           fi
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: HServer Panel ${{ github.ref_name }}
           draft: false
