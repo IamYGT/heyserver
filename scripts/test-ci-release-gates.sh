@@ -362,6 +362,21 @@ for required in (
     if required not in native_lifecycle:
         raise SystemExit(f"retained native lifecycle acceptance is missing: {required}")
 
+sign_command = '"$root_dir/scripts/sign-release-manifest.sh"'
+signature_unlink = 'unlink "$feed_dir/release-manifest.json.sig"'
+sign_offsets = [match.start() for match in re.finditer(re.escape(sign_command), native_lifecycle)]
+if len(sign_offsets) != 2:
+    raise SystemExit("native lifecycle must sign its initial and upgrade release manifests")
+unlink_offsets = [
+    match.start()
+    for match in re.finditer(re.escape(signature_unlink), native_lifecycle)
+]
+if (
+    len(unlink_offsets) != 1
+    or not sign_offsets[0] < unlink_offsets[0] < sign_offsets[1]
+):
+    raise SystemExit("native lifecycle does not rotate the prior signature before signing its upgrade feed")
+
 for required in (
     'run_retained_installer upgrade --binary "$tmp/v2" --cli-binary "$tmp/cli-v2"',
     'LIFECYCLE_ASSETS_DIR_WAS_PRESENT=1',
