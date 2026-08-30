@@ -4,6 +4,7 @@ set -eu
 root_dir=$(CDPATH=; export CDPATH; cd -- "$(dirname -- "$0")/.." && pwd)
 invoking_uid=$(id -u)
 invoking_gid=$(id -g)
+stage='fixture setup'
 
 if [ "$invoking_uid" -eq 0 ]; then
   run_privileged() {
@@ -37,6 +38,9 @@ cleanup() {
   fi
   if [ "$status" -eq 0 ] && [ "$cleanup_status" -ne 0 ]; then
     status=$cleanup_status
+  fi
+  if [ "$status" -ne 0 ]; then
+    printf '%s\n' "hserver-install lifecycle test failed at stage: $stage" >&2
   fi
   exit "$status"
 }
@@ -186,6 +190,7 @@ run_faulted_upgrade() {
         --binary "$tmp/v2" --cli-binary "$tmp/cli-v2"
 }
 
+stage='unsafe vhosts-root rejection'
 for unsafe_vhosts_root in \
   relative-sites \
   / \
@@ -203,6 +208,7 @@ do
   [ ! -e "$tmp/root" ]
 done
 
+stage='default install'
 no_option_root=$tmp/no-option-root
 no_option_state=$tmp/no-option-systemctl-state
 mkdir -p "$no_option_state"
@@ -217,6 +223,7 @@ run_privileged env \
 grep -q '^HSERVER_VHOSTS_ROOT=$' "$no_option_root/etc/hserver/hserver.env"
 [ ! -e "$no_option_root/srv/hserver/sites" ]
 
+stage='missing CLI rejection'
 if run_installer install --binary "$tmp/v1" --cli-binary "$tmp/missing-cli" >"$tmp/missing-cli.log" 2>&1; then
   printf '%s\n' "install unexpectedly accepted a missing CLI" >&2
   exit 1
@@ -225,6 +232,7 @@ fi
 [ ! -e "$tmp/root/usr/local/bin/hserverctl" ]
 grep -q 'binary not found' "$tmp/missing-cli.log"
 
+stage='host preflight rejection'
 if TEST_SYSTEMD_STATE=down run_installer install --binary "$tmp/v1" --cli-binary "$tmp/cli-v1" >"$tmp/preflight.log" 2>&1; then
   printf '%s\n' "install unexpectedly passed a failed host preflight" >&2
   exit 1
@@ -233,6 +241,7 @@ fi
 [ ! -e "$tmp/root/usr/local/bin/hserverctl" ]
 grep -q 'host preflight failed' "$tmp/preflight.log"
 
+stage='failed initial install rollback'
 failed_root=$tmp/failed-root
 failed_state=$tmp/failed-systemctl-state
 mkdir -p "$failed_state"
@@ -266,6 +275,7 @@ fi
 grep -q 'installation failed its health check and was rolled back' "$tmp/broken-install.log" \
   || { cat "$tmp/broken-install.log" >&2; exit 1; }
 
+stage='preserved initial state rollback'
 preserved_root=$tmp/preserved-root
 preserved_state=$tmp/preserved-systemctl-state
 mkdir -p \
@@ -326,6 +336,7 @@ grep -q '^HSERVER_PORT=3085$' "$preserved_root/etc/hserver/hserver.env"
 [ -f "$preserved_state/enabled" ]
 grep -q 'installation failed its health check and was rolled back' "$tmp/preserved-install.log"
 
+stage='successful install and next steps'
 HSERVER_INSTALL_UPDATE_MANIFEST_URL=https://releases.example.com/hserver/release-manifest.json \
 HSERVER_INSTALL_UPDATE_MANIFEST_PUBLIC_KEYS=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA= \
   run_installer install --vhosts-root /srv/hserver/sites \
@@ -353,6 +364,7 @@ grep -q '^HSERVER_UPGRADE_SNAPSHOT_RETENTION_COUNT=3$' "$tmp/root/etc/hserver/hs
 [ -d "$tmp/root/srv/hserver/sites" ]
 [ "$(stat -c %a "$tmp/root/srv/hserver/sites")" = 755 ]
 
+stage='lifecycle argument validation'
 cp "$tmp/root/etc/hserver/hserver.env" "$tmp/vhosts-root-env-before-rejection"
 for lifecycle_command in upgrade rollback uninstall next-steps; do
   if run_installer "$lifecycle_command" --vhosts-root /srv/hserver/sites \
@@ -363,6 +375,7 @@ for lifecycle_command in upgrade rollback uninstall next-steps; do
   cmp -s "$tmp/vhosts-root-env-before-rejection" "$tmp/root/etc/hserver/hserver.env"
 done
 
+stage='retained lifecycle upgrade and rollback'
 run_privileged env \
   HSERVER_ROOT_PREFIX="$tmp/root" \
     "$tmp/root/usr/local/libexec/hserver-install" next-steps >"$tmp/next-steps.log"
@@ -425,6 +438,7 @@ cmp -s "$root_dir/deploy/nginx-snippets/hserver-security-headers.conf" \
 # Snapshot copy failures must be rejected before systemctl stop. The old
 # release, configuration, snapshot marker, and service state stay intact for
 # copy, disk-full, and permission-style failures.
+stage='snapshot copy failure rollback'
 fault_snapshot_count=$(find "$tmp/root/var/lib/hserver/releases" \
   -mindepth 1 -maxdepth 1 -type d -name '*-pre-upgrade*' | wc -l | tr -d ' ')
 cp "$tmp/root/var/lib/hserver/releases/latest-pre-upgrade" "$tmp/fault-marker-before"
@@ -455,6 +469,7 @@ for failure in copy disk permission; do
     -mindepth 1 -maxdepth 1 -type d -name '.pre-upgrade.*' -print -quit)" ]
 done
 
+stage='invalid snapshot retention rejection'
 cp "$tmp/root/etc/hserver/hserver.env" "$tmp/retention-env-before-rejection"
 printf '%s\n' 'HSERVER_UPGRADE_SNAPSHOT_RETENTION_COUNT=0' \
   >>"$tmp/root/etc/hserver/hserver.env"
@@ -470,6 +485,7 @@ mv "$tmp/retention-env-before-rejection" "$tmp/root/etc/hserver/hserver.env"
 grep -q 'HSERVER_UPGRADE_SNAPSHOT_RETENTION_COUNT must be a positive integer' \
   "$tmp/invalid-retention-upgrade.log"
 
+stage='legacy lifecycle recovery'
 printf '%s\n' sentinel >"$tmp/root/var/lib/hserver/hserver.db"
 cat >"$tmp/root/usr/local/libexec/hserver-install" <<'EOF'
 #!/usr/bin/env sh
@@ -551,6 +567,7 @@ run_installer rollback >/dev/null
 # Five consecutive upgrades must not grow the pre-upgrade snapshot directory
 # without bound. The newest marker remains usable and its SQLite copy is the
 # state restored by the final manual rollback.
+stage='snapshot retention bound and rollback'
 for version in 3 4 5 6 7; do
   printf 'db-before-v%s\n' "$version" >"$tmp/root/var/lib/hserver/hserver.db"
   run_installer upgrade --binary "$tmp/v$version" --cli-binary "$tmp/cli-v$version" >/dev/null
@@ -569,6 +586,7 @@ run_installer rollback >/dev/null
 [ -f "$tmp/systemctl-state/active" ]
 [ -f "$tmp/systemctl-state/enabled" ]
 
+stage='uninstall'
 printf '%s\n' preserve-on-uninstall >"$tmp/root/usr/local/share/hserver/unrelated"
 run_installer uninstall >/dev/null
 [ ! -e "$tmp/root/usr/local/bin/hserver-panel" ]
@@ -586,6 +604,7 @@ run_installer uninstall >/dev/null
 # explicitly configured noncanonical installation. It replaces the fixed
 # binary pair and leaves the custom unit, drop-in, environment, data, and DB
 # layout byte-for-byte unchanged.
+stage='preserve-layout fixture setup'
 custom_root=$tmp/custom-root
 custom_state=$tmp/custom-systemctl-state
 custom_bin=$custom_root/opt/hserver-panel/bin
@@ -640,6 +659,7 @@ run_preserve_upgrade() {
         --binary "$panel_source" --cli-binary "$cli_source"
 }
 
+stage='preserve-layout successful upgrade'
 run_preserve_upgrade "$tmp/v2" "$tmp/cli-v2" >/dev/null
 [ "$("$custom_bin/hserver-panel")" = v2 ]
 [ "$("$custom_bin/hserverctl")" = cli-v2 ]
@@ -660,6 +680,7 @@ grep -q '^SERVICE_WAS_ENABLED=1$' "$custom_snapshot/manifest.env"
 
 # A deliberately stopped and disabled custom service remains stopped and
 # disabled after a successful binary-pair update.
+stage='preserve-layout stopped service'
 rm -f "$custom_state/active" "$custom_state/enabled"
 run_preserve_upgrade "$tmp/v1" "$tmp/cli-v1" >/dev/null
 [ "$("$custom_bin/hserver-panel")" = v1 ]
@@ -669,6 +690,7 @@ run_preserve_upgrade "$tmp/v1" "$tmp/cli-v1" >/dev/null
 
 # A failed candidate health check restores exact binaries and the prior
 # enabled/active service state without restoring or deleting live SQLite files.
+stage='preserve-layout health rollback'
 touch "$custom_state/active" "$custom_state/enabled"
 cp "$custom_bin/hserver-panel" "$tmp/custom-panel-before-failure"
 cp "$custom_bin/hserverctl" "$tmp/custom-cli-before-failure"
@@ -689,6 +711,7 @@ grep -q 'upgrade failed and was rolled back' "$tmp/custom-broken-upgrade.log"
 
 # Symlink and non-regular destinations fail before a snapshot, systemctl call,
 # or binary mutation.
+stage='symlink destination rejection'
 symlink_root=$tmp/symlink-root
 symlink_bin=$symlink_root/opt/hserver-panel/bin
 symlink_data=$symlink_root/opt/hserver-panel/state
