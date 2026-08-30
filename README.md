@@ -28,7 +28,7 @@ The project is currently **pre-1.0**. Its canonical public repository is
 [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver). Immutable public
 source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the first
 fully green public main CI matrix run `#33283277809`; the current fully green
-public main CI run recorded on 2026-08-30 is `#33283728373`. Branch protection
+public main CI run recorded on 2026-08-30 is `#33290958793`. Branch protection
 was enabled after these runs and is currently active. The initial active signer
 is prepared in private commit `df0a5070`, and the
 `HSERVER_RELEASE_SIGNING_KEY` Actions secret is configured; public signer PR #7
@@ -46,9 +46,19 @@ asynchronous backup temporary-directory cleanup, and both `Native Lifecycle`
 jobs failed because retained rollback did not preserve SQLite onboarding state.
 The managed-agent lifecycle jobs had not completed at audit time. No successful
 `v0.9.6` GitHub Release exists; its tag and workflow remain failed-release
-evidence. `v0.9.7` is the next immutable replacement candidate, but its tagged
-workflow, GitHub Release, independent-VM acceptance, and live rollout remain
-pending. The live `v0.9.3` rollout is not the current source.
+evidence. The public `v0.9.7` tag points to protected public `main` commit
+`5c5bcf053b333f657ef011078f32ed54126946e6`, but tagged workflow
+`#33291179584` is immutable disqualified evidence: both `Native Lifecycle` jobs
+returned file-backup HTTP 400 because the fixture lacked an explicit temporary
+vhosts root, and the `Managed Agent Lifecycle` arm64 runner log failed
+`agent release archive contains an invalid path`. API job/run records may
+remain stale `in_progress`; no successful `v0.9.7` GitHub Release exists.
+`v0.9.8` is the next immutable replacement candidate. No public PR, tag,
+GitHub Release, independent clean-host acceptance, or live rollout is claimed
+for `v0.9.8`. Private source fixes now explicitly configure the native
+temporary vhosts root and accept canonical tar `TypeDir` entries with a
+trailing slash while preserving unsafe-path rejection. The live `v0.9.3`
+rollout is not the current source.
 
 ## Architecture
 

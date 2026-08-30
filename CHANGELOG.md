@@ -6,15 +6,42 @@ is pre-1.0; public release acceptance remains in progress.
 
 ## [Unreleased]
 
-## [0.9.7] — pending acceptance
+## [0.9.8] — pending acceptance
 
 ### Changed
 
-- `v0.9.7` is the next immutable replacement candidate after the public
-  `v0.9.6` tag and tagged workflow `#33288698005` were disqualified by required
-  job failures. Its tagged workflow, GitHub Release, signed assets, independent
-  clean-host acceptance, provider-network receipt, and live rollout remain
-  pending and are separate release gates.
+- `v0.9.8` is the next immutable replacement candidate after the public
+  `v0.9.7` tag at protected public `main` commit
+  `5c5bcf053b333f657ef011078f32ed54126946e6` and tagged workflow
+  `#33291179584` were disqualified. Both `Native Lifecycle` jobs returned
+  file-backup HTTP 400 because the fixture lacked an explicit temporary vhosts
+  root, and the `Managed Agent Lifecycle` arm64 runner log failed with
+  `agent release archive contains an invalid path`. API job/run records may
+  remain stale `in_progress`; no successful `v0.9.7` GitHub Release exists.
+  Public publication, signed assets, independent clean-host acceptance,
+  provider-network receipt, and live rollout for `v0.9.8` remain pending and
+  are separate release gates. No public PR, tag, release, clean-host result,
+  or live rollout is claimed for `v0.9.8`.
+
+### Fixed
+
+- Private native lifecycle fixtures now explicitly configure a temporary vhosts
+  root.
+- The private agent archive extractor accepts canonical tar `TypeDir` entries
+  with a trailing slash while preserving unsafe-path rejection.
+
+## [0.9.7] — disqualified tagged candidate
+
+### Changed
+
+- The public `v0.9.7` tag points to protected public `main` commit
+  `5c5bcf053b333f657ef011078f32ed54126946e6`, but tagged workflow
+  `#33291179584` is immutable disqualified evidence. Both `Native Lifecycle`
+  jobs returned file-backup HTTP 400 because the fixture lacked an explicit
+  temporary vhosts root, and the `Managed Agent Lifecycle` arm64 runner log
+  failed with `agent release archive contains an invalid path`. API job/run
+  records may remain stale `in_progress`; no successful `v0.9.7` GitHub Release
+  exists. The tag and workflow remain failed-release evidence only.
 
 ### Fixed
 

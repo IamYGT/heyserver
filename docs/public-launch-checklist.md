@@ -15,7 +15,7 @@ complete. Canonical public repository selection and publication are complete at
 at `53df8ba`, with initial private/public tree parity at `3719df8`. Immutable
 public source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the
 first fully green public main CI matrix run `#33283277809`; the current fully
-green public main CI run is `#33283728373` (2026-08-30). Branch protection was
+green public main CI run is `#33290958793` (2026-08-30). Branch protection was
 enabled after these runs and is currently active. The initial active signer is
 prepared in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY`
 Actions secret is configured; public signer PR #7 was merged at protected `main`
@@ -32,14 +32,23 @@ claimed. The public `v0.9.6` tag points to protected `main` commit
 asynchronous backup temporary-directory cleanup, and both `Native Lifecycle`
 jobs failed because retained rollback did not preserve SQLite onboarding state.
 Its managed-agent lifecycle jobs had not completed at audit time, and no
-successful `v0.9.6` GitHub Release exists. `v0.9.7` is the next immutable
-replacement candidate. Its tagged workflow, GitHub Release, clean
-independent-VM acceptance, and local/Contabo live rollout remain separate
-pending gates. The live `v0.9.3` rollout is not the current source; source or
-release evidence does not imply live deployment.
+successful `v0.9.6` GitHub Release exists. The public `v0.9.7` tag points to
+protected public `main` commit
+`5c5bcf053b333f657ef011078f32ed54126946e6`, but tagged workflow
+`#33291179584` is immutable disqualified evidence: both `Native Lifecycle` jobs
+returned file-backup HTTP 400 because the fixture lacked an explicit temporary
+vhosts root, and the `Managed Agent Lifecycle` arm64 runner log failed
+`agent release archive contains an invalid path`. API job/run records may
+remain stale `in_progress`; no successful `v0.9.7` GitHub Release exists.
+`v0.9.8` is the next immutable replacement candidate. No public PR, tag,
+release, clean independent-VM acceptance, or live rollout is claimed for
+`v0.9.8`. Private source fixes now explicitly configure the native temporary
+vhosts root and accept canonical tar `TypeDir` entries with a trailing slash
+while preserving unsafe-path rejection. The live `v0.9.3` rollout is not the
+current source; source or release evidence does not imply live deployment.
 
-Historical CI failures `#33251833442`, `#33281342435`, and tagged run
-`#33285788628` are retained only as historical evidence.
+Historical CI failures `#33251833442`, `#33281342435`, and tagged runs
+`#33285788628` and `#33291179584` are retained only as historical evidence.
 
 ## 1. Export the audited tree
 
@@ -175,18 +184,26 @@ while the canonical maximum is step 5. That tag and run are
 historical failed-release evidence, not a successful release. The public
 `v0.9.6` tag and tagged workflow `#33288698005` are also failed-release evidence:
 required public-source and native-lifecycle jobs failed, and no successful
-GitHub Release exists. The next immutable replacement candidate is `v0.9.7`.
-Its acceptance is established only by a published GitHub Release, a successful
-tagged lifecycle/provenance workflow, clean independent-VM acceptance, and the
-separate live rollout receipt.
+GitHub Release exists. The public `v0.9.7` tag points to protected public
+`main` commit `5c5bcf053b333f657ef011078f32ed54126946e6`, but tagged workflow
+`#33291179584` is immutable disqualified evidence: both `Native Lifecycle` jobs
+returned file-backup HTTP 400 because the fixture lacked an explicit temporary
+vhosts root, and the `Managed Agent Lifecycle` arm64 runner log failed
+`agent release archive contains an invalid path`. API job/run records may
+remain stale `in_progress`; no successful `v0.9.7` GitHub Release exists. The
+next immutable replacement candidate is `v0.9.8`. Its acceptance is
+established only by a published GitHub Release, a successful tagged
+lifecycle/provenance workflow, clean independent-VM acceptance, and the
+separate live rollout receipt. No public PR, tag, release, clean independent-VM
+acceptance, or live rollout is claimed for `v0.9.8`.
 
 Create the next installation candidate from an exact, previously unused stable
 SemVer tag in the designated public repository. Build it from the exact commit
 on protected public `main`; do not reuse the failed `v0.9.5` or `v0.9.6` tags,
-or a version whose immutable feed was built from a different repository commit,
-even when the exported source trees are identical. Use `v0.9.7` as the next
-immutable patch candidate and publish that version only once after its fresh
-gates pass. A
+the disqualified `v0.9.7` tag, or a version whose immutable feed was built from
+a different repository commit, even when the exported source trees are
+identical. Use `v0.9.8` as the next immutable patch candidate and publish that
+version only once after its fresh gates pass. A
 `v0.x` release can remain product-level pre-1.0 without using an unordered `-rc`
 suffix. HServer update manifests intentionally order only stable
 `major.minor.patch` versions, so the release workflow rejects commit-derived,
@@ -515,8 +532,16 @@ Each tag also runs `Managed Agent Lifecycle` on both architectures. The public
 Lifecycle jobs and both Managed Agent Lifecycle jobs) because their fixtures
 posted onboarding step 6 while the canonical maximum is 5. The `v0.9.6` tagged
 workflow `#33288698005` is also disqualified by required public-source and
-native-lifecycle failures. The next immutable `v0.9.7` candidate must rerun this
-gate. That gate installs the real
+native-lifecycle failures. The public `v0.9.7` tagged workflow
+`#33291179584` is also disqualified: both `Native Lifecycle` jobs returned
+file-backup HTTP 400 because the fixture lacked an explicit temporary vhosts
+root, and the `Managed Agent Lifecycle` arm64 runner log failed
+`agent release archive contains an invalid path`. API job/run records may
+remain stale `in_progress`; no successful `v0.9.7` GitHub Release exists. The
+next immutable `v0.9.8` candidate must rerun this gate. Private source fixes
+now explicitly configure the native temporary vhosts root and accept canonical
+tar `TypeDir` entries with a trailing slash while preserving unsafe-path
+rejection; they are not public release evidence. That gate installs the real
 panel and systemd-managed agent on the disposable runner,
 enrolls the node through the one-time token API, serves a locally signed next
 release, and proves heartbeat, signed discovery, an explicitly enabled remote
