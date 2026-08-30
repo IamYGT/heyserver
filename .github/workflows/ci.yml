@@ -569,7 +569,7 @@ jobs:
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.runner }}
     # Leave time after the script deadline for bounded cleanup and diagnostics.
-    timeout-minutes: 25
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -606,9 +606,12 @@ jobs:
           NEXT_VERSION: ${{ steps.next.outputs.version }}
           GOARCH: ${{ matrix.arch }}
         run: |
-          sudo timeout --signal=TERM --kill-after=30s 18m env \
+          diagnostics="$RUNNER_TEMP/managed-agent-lifecycle-${GOARCH}"
+          mkdir -p "$diagnostics"
+          sudo timeout --signal=TERM --kill-after=30s 12m env \
             CI=true \
             HSERVER_ACCEPT_DISPOSABLE_HOST=1 \
+            HSERVER_ACCEPTANCE_DIAGNOSTIC_FILE="$diagnostics/progress.log" \
             ./scripts/test-native-managed-agent-lifecycle.sh \
               "$BUILD_VERSION" \
               "$GOARCH" \
