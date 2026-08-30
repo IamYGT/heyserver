@@ -31,10 +31,18 @@ fully green public main CI matrix run `#33283277809`; the current fully green
 public main CI run recorded on 2026-08-30 is `#33283728373`. Branch protection
 was enabled after these runs and is currently active. The initial active signer
 is prepared in private commit `df0a5070`, and the
-`HSERVER_RELEASE_SIGNING_KEY` Actions secret is configured; public signer PR #7,
-the first signed release, version tag, GitHub Release, tagged
-lifecycle/provenance acceptance, clean independent-VM acceptance, and live
-rollout remain pending. The live `v0.9.3` rollout is not the current source.
+`HSERVER_RELEASE_SIGNING_KEY` Actions secret is configured; public signer PR #7
+was merged at protected `main` commit `b2af1591` on 2026-08-30. The public
+`v0.9.5` tag points to protected `main` commit
+`b2af1591f7a848acd71bbe54bc4f70fbffe99373`, but tagged run `#33285788628`
+failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
+`Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step 6
+while the canonical maximum is step 5. The tag and run remain historical
+failed-release evidence; no successful `v0.9.5` GitHub Release is claimed. The
+next immutable patch candidate is `v0.9.6`; its signed release,
+GitHub Release, tagged lifecycle/provenance acceptance, clean independent-VM
+acceptance, and live rollout remain pending. The live `v0.9.3` rollout is not
+the current source.
 
 ## Architecture
 

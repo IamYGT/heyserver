@@ -13,8 +13,9 @@ release_manager="$repo_root/internal/services/releaseupdates/manager.go"
 installer_lifecycle="$repo_root/scripts/test-hserver-install.sh"
 release_config="$repo_root/internal/config/config.go"
 release_router="$repo_root/internal/api/router.go"
+settings_handlers="$repo_root/internal/api/handlers_settings.go"
 
-python3 - "$workflow" "$native_lifecycle" "$managed_lifecycle" "$network_isolation" "$public_acceptance" "$makefile" "$release_launcher" "$release_manager" "$installer_lifecycle" "$release_config" "$release_router" <<'PY'
+python3 - "$workflow" "$native_lifecycle" "$managed_lifecycle" "$network_isolation" "$public_acceptance" "$makefile" "$release_launcher" "$release_manager" "$installer_lifecycle" "$release_config" "$release_router" "$settings_handlers" <<'PY'
 import pathlib
 import re
 import sys
@@ -30,6 +31,17 @@ release_manager = pathlib.Path(sys.argv[8]).read_text(encoding="utf-8")
 installer_lifecycle = pathlib.Path(sys.argv[9]).read_text(encoding="utf-8")
 release_config = pathlib.Path(sys.argv[10]).read_text(encoding="utf-8")
 release_router = pathlib.Path(sys.argv[11]).read_text(encoding="utf-8")
+settings_handlers = pathlib.Path(sys.argv[12]).read_text(encoding="utf-8")
+
+onboarding_max_matches = re.findall(
+    r"(?m)^const\s+onboardingMaxStep\s*=\s*(\d+)\s*$",
+    settings_handlers,
+)
+if len(onboarding_max_matches) != 1:
+    raise SystemExit("canonical onboarding max step declaration is missing or ambiguous")
+onboarding_max_step = int(onboarding_max_matches[0])
+if onboarding_max_step < 0:
+    raise SystemExit("canonical onboarding max step must be non-negative")
 
 def job_block(name: str) -> str:
     match = re.search(
@@ -39,6 +51,35 @@ def job_block(name: str) -> str:
     if not match:
         raise SystemExit(f"CI job is missing: {name}")
     return match.group(1)
+
+
+def completed_onboarding_steps(source: str):
+    payload_steps = re.findall(
+        r"(?m)^(?=[^\n]*onboarding[^\n]*\.json)[^\n]*"
+        r'\{"completed"\s*:\s*true\s*,\s*"step"\s*:\s*(\d+)\s*\}[^\n]*$',
+        source,
+    )
+    assertion_steps = re.findall(
+        r'state\.get\("completed"\)\s+is\s+not\s+True\s+or\s+'
+        r'state\.get\("step"\)\s*!=\s*(\d+)',
+        source,
+    )
+    return [int(step) for step in payload_steps + assertion_steps]
+
+
+for name, source in (
+    ("native lifecycle", native_lifecycle),
+    ("managed-agent lifecycle", managed_lifecycle),
+):
+    completed_steps = completed_onboarding_steps(source)
+    if not completed_steps:
+        raise SystemExit(f"{name} has no completed onboarding step contract")
+    for completed_step in completed_steps:
+        if completed_step < 0 or completed_step > onboarding_max_step:
+            raise SystemExit(
+                f"{name} uses completed onboarding step {completed_step} "
+                f"outside canonical range 0..{onboarding_max_step}"
+            )
 
 database = job_block("database-restore-acceptance")
 for required in (

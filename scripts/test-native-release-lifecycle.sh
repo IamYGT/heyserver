@@ -352,7 +352,7 @@ if stage != {"stage": None}:
     raise SystemExit(f"fresh native installation unexpectedly has an update stage: {stage}")
 PY
 
-printf '%s\n' '{"completed":true,"step":6}' >"$tmp/onboarding.json"
+printf '%s\n' '{"completed":true,"step":5}' >"$tmp/onboarding.json"
 curl -fsS --max-time 5 \
   -H "@$auth_header" \
   -H 'Content-Type: application/json' \
@@ -367,7 +367,7 @@ import sys
 
 with open(sys.argv[1], encoding="utf-8") as handle:
     state = json.load(handle)
-if state.get("completed") is not True or state.get("step") != 6:
+if state.get("completed") is not True or state.get("step") != 5:
     raise SystemExit("onboarding state was not persisted")
 PY
 
@@ -449,7 +449,7 @@ import sys
 
 with open(sys.argv[1], encoding="utf-8") as handle:
     state = json.load(handle)
-if state.get("completed") is not True or state.get("step") != 6:
+if state.get("completed") is not True or state.get("step") != 5:
     raise SystemExit("retained native upgrade did not preserve SQLite onboarding state")
 PY
 printf 'native retained upgrade acceptance: OK (%s)\n' "$arch"
@@ -504,7 +504,7 @@ import sys
 
 with open(sys.argv[1], encoding="utf-8") as handle:
     state = json.load(handle)
-if state.get("completed") is not True or state.get("step") != 6:
+if state.get("completed") is not True or state.get("step") != 5:
     raise SystemExit("retained native rollback did not preserve SQLite onboarding state")
 PY
 printf 'native retained explicit rollback acceptance: OK (%s)\n' "$arch"
@@ -596,7 +596,7 @@ import sys
 
 with open(sys.argv[1], encoding="utf-8") as handle:
     state = json.load(handle)
-if state.get("completed") is not True or state.get("step") != 6:
+if state.get("completed") is not True or state.get("step") != 5:
     raise SystemExit("native SQLite restore did not recover the backed-up onboarding state")
 PY
 recovery_snapshot=$(find /var/lib/hserver/restores -type f -name 'pre-restore-*.panel-backup.tar.gz' | sort | tail -n 1)
@@ -918,7 +918,7 @@ import sys
 
 with open(sys.argv[1], encoding="utf-8") as handle:
     state = json.load(handle)
-if state.get("completed") is not True or state.get("step") != 6:
+if state.get("completed") is not True or state.get("step") != 5:
     raise SystemExit("verified native CLI update did not preserve SQLite onboarding state")
 PY
 
@@ -953,7 +953,7 @@ import sys
 
 with open(sys.argv[1], encoding="utf-8") as handle:
     state = json.load(handle)
-if state.get("completed") is not True or state.get("step") != 6:
+if state.get("completed") is not True or state.get("step") != 5:
     raise SystemExit("failed upgrade rollback did not preserve SQLite state")
 PY
 

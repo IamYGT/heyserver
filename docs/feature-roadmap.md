@@ -66,12 +66,19 @@ fully green public main CI matrix run `#33283277809`; the current fully green
 public main CI run is `#33283728373` (2026-08-30). Branch protection was enabled
 after these runs and is currently active. The initial active signer is prepared
 in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY` Actions
-secret is configured; public signer PR #7, the first signed release, version
-tag, GitHub Release, tagged lifecycle/provenance acceptance, clean
-independent-VM acceptance, and local/Contabo live rollout remain open. The live
+secret is configured; public signer PR #7 was merged at protected `main` commit
+`b2af1591` on 2026-08-30. The public `v0.9.5` tag points to protected `main`
+commit
+`b2af1591f7a848acd71bbe54bc4f70fbffe99373`, but tagged run `#33285788628`
+failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
+`Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step 6
+while the canonical maximum is step 5. The tag and run remain historical
+failed-release evidence. The first successful signed release,
+GitHub Release, tagged lifecycle/provenance acceptance, clean independent-VM
+acceptance, and local/Contabo live rollout remain open. The next immutable patch
+candidate is `v0.9.6`; no release or rollout is claimed for it. The live
 `v0.9.3` rollout is not the current source. This records source and acceptance
-progress only; it is not
-evidence of live deployment or a public release.
+progress only; it is not evidence of live deployment or a public release.
 
 ## v1.0 release gates
 
@@ -112,7 +119,7 @@ These are release requirements, not optional ideas.
    remains part of candidate acceptance because namespace isolation does not
    claim an independent kernel or infrastructure path. The public
    `accept-provider-network-managed-agent.sh` tool now makes that manual drill
-   reproducible and emits a protected schema-v2 receipt after proving the
+   reproducible and emits a protected schema-v3 receipt after proving the
    native panel host, a different managed-node kernel, exact panel/CLI/agent
    identities, both release architectures, the real CLI PTY path, one bounded
    observed process mutation, and task-free disabled-capability denial. It
@@ -144,11 +151,19 @@ These are release requirements, not optional ideas.
    green public main CI run is `#33283728373` (2026-08-30). Branch protection was
    enabled after these runs and is currently active. The initial active signer is
    prepared in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY`
-   Actions secret is configured; public signer PR #7, the first signed release,
-   version tag, GitHub Release, tagged lifecycle/provenance acceptance, clean
+   Actions secret is configured; public signer PR #7 was merged at protected
+   `main` commit `b2af1591` on 2026-08-30. The public `v0.9.5` tag points to
+   protected `main` commit
+   `b2af1591f7a848acd71bbe54bc4f70fbffe99373`, but tagged run `#33285788628`
+   failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
+   `Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step
+   6 while the canonical maximum is step 5. The tag and run remain historical
+   failed-release evidence. The first successful signed
+   release, GitHub Release, tagged lifecycle/provenance acceptance, clean
    independent-VM acceptance, and local/Contabo live rollout remain open. The
-   live `v0.9.3` rollout is not the current source, and no live deployment or
-   public release is claimed here.
+   next immutable patch candidate is `v0.9.6`; no release or rollout is claimed
+   for it. The live `v0.9.3` rollout is not the current source, and no live
+   deployment or public release is claimed here.
 
 3. **Clean public history**
 
@@ -160,16 +175,19 @@ These are release requirements, not optional ideas.
    permanent workflow. Main branch protection is complete. The initial active
    signer is prepared in private commit `df0a5070`, and the
    `HSERVER_RELEASE_SIGNING_KEY` Actions secret is configured; public signer PR
-   #7 remains pending through protected review. The release workflow fails
-   closed unless the version tag descends from the protected `main` commit,
+   #7 was merged at protected `main` commit `b2af1591` on 2026-08-30. The
+   release workflow fails closed unless the version tag descends from the
+   protected `main` commit,
    derives and publishes the manifest verification key without staging the
    private key, and provides checksums for both the bootstrap installer and
    public key. The public installer verifies a detached
    `bootstrap-install.sh.sig` against the configured release signer before
-   privilege entry. Version-tag creation, GitHub Release publication, tagged
-   lifecycle/provenance acceptance, the first signed release, clean
-   independent-VM acceptance, and live rollout remain public-launch
-   prerequisites, so this project is not public-launch ready until those gates
+   privilege entry. The failed public `v0.9.5` tag/run remains historical
+   evidence only; the next immutable patch candidate is `v0.9.6`. Successful
+   tagged publication, GitHub Release publication, tagged lifecycle/provenance
+   acceptance, the first signed release, clean independent-VM acceptance, and
+   live rollout remain public-launch prerequisites, so this project is not
+   public-launch ready until those gates
    and the independently authenticated installer anchor are complete.
 
 4. **Restore drills**

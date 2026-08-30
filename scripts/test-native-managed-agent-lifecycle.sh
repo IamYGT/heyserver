@@ -185,7 +185,7 @@ if current.get("token_file") != sys.argv[2] or current.get("current") is not Tru
     raise SystemExit(f"managed lifecycle token context is invalid: {current}")
 PY
 
-printf '%s\n' '{"completed":true,"step":6}' >"$tmp/onboarding.json"
+printf '%s\n' '{"completed":true,"step":5}' >"$tmp/onboarding.json"
 curl -fsS --max-time 5 \
   -H "@$auth_header" \
   -H 'Content-Type: application/json' \

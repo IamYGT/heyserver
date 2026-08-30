@@ -18,14 +18,22 @@ first fully green public main CI matrix run `#33283277809`; the current fully
 green public main CI run is `#33283728373` (2026-08-30). Branch protection was
 enabled after these runs and is currently active. The initial active signer is
 prepared in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY`
-Actions secret is configured; public signer PR #7, the first signed release,
-version tag, GitHub Release, tagged lifecycle/provenance acceptance, clean
-independent-VM acceptance, and local/Contabo live rollout remain pending.
-The live `v0.9.3` rollout is not the current source; this status does not claim
-live deployment or a public release.
+Actions secret is configured; public signer PR #7 was merged at protected `main`
+commit `b2af1591` on 2026-08-30. Public tag `v0.9.5` points to protected
+`main` commit
+`b2af1591f7a848acd71bbe54bc4f70fbffe99373`, but tagged run `#33285788628`
+failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
+`Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step 6
+while the canonical maximum is step 5. The tag and run remain
+historical failed-release evidence; no successful `v0.9.5` GitHub Release is
+claimed. The next immutable patch candidate is `v0.9.6`; its signed release,
+GitHub Release, tagged lifecycle/provenance acceptance, clean independent-VM
+acceptance, and local/Contabo live rollout remain pending. The live `v0.9.3`
+rollout is not the current source; this status does not claim live deployment
+or a public release.
 
-Historical CI failures `#33251833442` and `#33281342435` preceded the first
-fully green run and are retained only as historical evidence.
+Historical CI failures `#33251833442`, `#33281342435`, and tagged run
+`#33285788628` are retained only as historical evidence.
 
 ## 1. Export the audited tree
 
@@ -74,10 +82,10 @@ produced in the temporary workspace
 candidate root commit `009ec010cfe09e21a6010b7ea93761359cc3b128` and tree
 `a4a988f0fb8caffdd5c31245e1aa78ef00144d63`. Full public-source acceptance
 passed with 92 frontend files, 489 tests, and 10 route tests. This records the
-validation result only; it predates the current public HEAD and does not
-establish a public release, live deployment, or runtime rollout. The temporary
-workspace is disposable evidence, not a canonical checkout or permanent
-workflow.
+source validation result only; it predates the public `v0.9.5` tag and its
+failed tagged run `#33285788628`, and does not establish a public release, live
+deployment, or runtime rollout. The temporary workspace is disposable evidence,
+not a canonical checkout or permanent workflow.
 
 ## 2. Create new public history
 
@@ -132,42 +140,51 @@ pull-request refs into the public repository.
   release provenance job verifies the live protected branch and tag ancestry;
 - keep the release Ed25519 private key outside Git. The initial active signer is
   prepared in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY`
-  Actions secret is configured; public signer PR #7 remains pending through
-  protected review before tagged staging;
-- require the configured key and the publicly reviewed signer from PR #7 to
-  match before tagged staging; staging remains gated until that publication is
-  complete;
+  Actions secret is configured; public signer PR #7 was merged at protected
+  `main` commit `b2af1591` on 2026-08-30;
+- require the configured key and the publicly reviewed signer from merged PR #7
+  to match before tagged staging; signer publication is complete, but staging
+  remains gated by the release checks below;
 - use the canonical public repository
   [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially published
   at `53df8ba`, with private/public tree parity `3719df8`; the immutable public
   source commit associated with the first fully green public main CI matrix
   run is `adaccb23adf9720141d721970590de3a82fd17b5`;
-- after public signer PR #7 is merged, publish the immutable installer commit
-  plus installer digest and signer fingerprint through an independently
-  authenticated channel. A checksum adjacent to a mutable release asset is a
-  convenience integrity check, not signer identity;
+- following the protected merge of public signer PR #7 at `b2af1591` on
+  2026-08-30, publish the immutable installer commit plus installer digest and
+  signer fingerprint through an independently authenticated channel. A checksum
+  adjacent to a mutable release asset is a convenience integrity check, not
+  signer identity;
 - keep production deployment credentials outside repository actions. The
   release signing key signs public metadata only and grants no server access.
 
 ## 4. Release an installation candidate
 
 The first fully green public main CI matrix run does not create a release.
-Version-tag creation, GitHub Release publication, tagged lifecycle/provenance
-acceptance, clean independent-VM acceptance, and live rollout remain pending.
+The public `v0.9.5` tag points to protected `main` commit
+`b2af1591f7a848acd71bbe54bc4f70fbffe99373`, but tagged run `#33285788628`
+failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
+`Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step 6
+while the canonical maximum is step 5. That tag and run are
+historical failed-release evidence, not a successful release. The next immutable
+patch candidate is `v0.9.6`; its tag, GitHub Release, successful tagged
+lifecycle/provenance acceptance, clean independent-VM acceptance, and live
+rollout remain pending.
 
-Create the installation candidate from an exact, previously unused stable
+Create the next installation candidate from an exact, previously unused stable
 SemVer tag in the designated public repository. Build it from the exact commit
-on protected public `main`; do not reuse a version whose immutable feed was
-built from a different repository commit, even when the exported source trees
-are identical. Choose the next stable version for the first public tag and
-publish that version only once. A `v0.x` release can remain product-level pre-1.0
-without using an unordered `-rc` suffix. HServer update manifests intentionally
-order only stable `major.minor.patch` versions, so the release workflow rejects
-commit-derived, dirty, and hyphenated prerelease tags before building tagged
-release binaries. Add the matching `## [X.Y.Z]` section to `CHANGELOG.md` before
-creating the `vX.Y.Z` tag; tagged CI rejects publication when the exact
-changelog section is absent. Keep prior release entries and their acceptance
-evidence unchanged. Confirm both architecture
+on protected public `main`; do not reuse the failed `v0.9.5` tag or a version
+whose immutable feed was built from a different repository commit, even when the
+exported source trees are identical. Use `v0.9.6` as the next immutable patch
+candidate and publish that version only once after its fresh gates pass. A
+`v0.x` release can remain product-level pre-1.0 without using an unordered `-rc`
+suffix. HServer update manifests intentionally order only stable
+`major.minor.patch` versions, so the release workflow rejects commit-derived,
+dirty, and hyphenated prerelease tags before building tagged release binaries.
+Add the matching `## [X.Y.Z]` section to `CHANGELOG.md` before creating the
+`vX.Y.Z` tag; tagged CI rejects publication when the exact changelog section is
+absent. Keep prior release entries and their acceptance evidence unchanged.
+Confirm both architecture
 archives,
 adjacent checksum files, `bootstrap-install.sh`,
 `bootstrap-install.sh.sha256`, `bootstrap-install.sh.sig`, `release-public-key.b64`,
@@ -483,8 +500,12 @@ so a tag cannot publish packages when either engine result fails. A release
 candidate must still verify its installation-specific database identities,
 network paths, and protected credential files.
 
-Each tag also runs `Managed Agent Lifecycle` on both architectures. That gate
-installs the real panel and systemd-managed agent on the disposable runner,
+Each tag also runs `Managed Agent Lifecycle` on both architectures. The public
+`v0.9.5` tagged run `#33285788628` failed all four lifecycle jobs (both Native
+Lifecycle jobs and both Managed Agent Lifecycle jobs) because their fixtures
+posted onboarding step 6 while the canonical maximum is 5; the next immutable
+`v0.9.6` candidate must rerun this gate. That gate installs the real
+panel and systemd-managed agent on the disposable runner,
 enrolls the node through the one-time token API, serves a locally signed next
 release, and proves heartbeat, signed discovery, an explicitly enabled remote
 terminal capability, a protected named CLI context, a packaged
