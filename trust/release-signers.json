@@ -1,4 +1,10 @@
 {
   "schema_version": 1,
-  "signers": []
+  "signers": [
+    {
+      "key_id": "1460825a55b30ca4782af346adc5ed7f2d4bc1e0edaf3c0cb38bcf7d0f634945",
+      "public_key": "2m49opuQ8L8/qg+hTRFih0SdaXrE86X2g9EccKCn0jI=",
+      "status": "active"
+    }
+  ]
 }
