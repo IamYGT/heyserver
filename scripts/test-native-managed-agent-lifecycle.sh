@@ -34,12 +34,39 @@ die() {
   exit 1
 }
 
+publish_progress() {
+  local description=$1
+  local state=${2:-pending}
+  if [[ -z ${HSERVER_ACCEPTANCE_STATUS_AUTH_FILE:-} || -z ${HSERVER_ACCEPTANCE_STATUS_URL:-} ]]; then
+    return
+  fi
+  local payload
+  payload=$(python3 - "$state" "$arch" "$description" <<'PY'
+import json
+import sys
+
+print(json.dumps({
+    "state": sys.argv[1],
+    "context": f"ci/managed-lifecycle-progress/{sys.argv[2]}",
+    "description": sys.argv[3][:140],
+}))
+PY
+  )
+  curl -fsS --max-time 5 \
+    -H "@$HSERVER_ACCEPTANCE_STATUS_AUTH_FILE" \
+    -H 'Accept: application/vnd.github+json' \
+    -H 'Content-Type: application/json' \
+    --data-binary "$payload" \
+    "$HSERVER_ACCEPTANCE_STATUS_URL" >/dev/null 2>&1 || true
+}
+
 progress() {
   message=$(printf '[managed-agent-lifecycle][%s] %s' "$arch" "$1")
   printf '%s\n' "$message"
   if [[ -n ${HSERVER_ACCEPTANCE_DIAGNOSTIC_FILE:-} ]]; then
     printf '%s %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$message" >>"$HSERVER_ACCEPTANCE_DIAGNOSTIC_FILE"
   fi
+  publish_progress "$1"
 }
 
 for command_name in base64 curl openssl python3 sha256sum systemctl systemd-run tar timeout; do
@@ -115,6 +142,7 @@ bounded_cleanup() {
 }
 
 cleanup() {
+  local exit_code=$?
   if (( cleanup_done )); then
     return
   fi
@@ -141,6 +169,11 @@ cleanup() {
     bounded_cleanup 15s env HSERVER_HEALTH_TIMEOUT=3 "$package_dir/install.sh" uninstall --purge-config --purge-data
   fi
   bounded_cleanup 5s rm -rf "$tmp"
+  if (( exit_code == 0 )); then
+    publish_progress "acceptance and cleanup complete" success
+  else
+    publish_progress "acceptance failed; cleanup complete" error
+  fi
 }
 trap cleanup EXIT
 trap 'exit 143' INT TERM
