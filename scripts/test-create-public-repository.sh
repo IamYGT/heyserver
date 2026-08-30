@@ -11,12 +11,19 @@ mkdir -p "$source_tree"
 # Seed the private fixture from the canonical committed tree so its public
 # documentation and Telegram portability files cannot drift from the exporter.
 git -C "$repo_root" archive --format=tar HEAD | tar -xf - -C "$source_tree"
+# Exercise the creator from the working tree so this focused test covers the
+# candidate change before it is committed.
+install -m 0755 "$repo_root/scripts/create-public-repository.sh" \
+  "$source_tree/scripts/create-public-repository.sh"
 
 git -C "$source_tree" init -q --initial-branch=main
 git -C "$source_tree" config user.name "Private Fixture"
 git -C "$source_tree" config user.email "private-fixture@example.com"
 git -C "$source_tree" add .
-git -C "$source_tree" commit -qm "seed private fixture"
+git -C "$source_tree" -c maintenance.auto=false commit -qm "seed private fixture"
+
+grep -Eq '^git -C "\$snapshot".*-c maintenance\.auto=false' \
+  "$source_tree/scripts/create-public-repository.sh"
 
 printf '%s\n' dirty >>"$source_tree/README.md"
 if "$source_tree/scripts/create-public-repository.sh" "$destination" \

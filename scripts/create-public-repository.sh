@@ -107,7 +107,8 @@ git -C "$snapshot" init -q --initial-branch=main
 git -C "$snapshot" config user.name "$author_name"
 git -C "$snapshot" config user.email "$author_email"
 git -C "$snapshot" add --all
-git -C "$snapshot" -c commit.gpgsign=false commit -qm "Publish HServer community source"
+git -C "$snapshot" -c commit.gpgsign=false -c maintenance.auto=false \
+  commit -qm "Publish HServer community source"
 
 if [[ $(git -C "$snapshot" rev-list --all --count) != 1 ||
       $(git -C "$snapshot" rev-list --max-parents=0 --all --count) != 1 ]]; then
