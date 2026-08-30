@@ -22,8 +22,8 @@ is pre-1.0; public release acceptance remains in progress.
 
 ### Fixed
 
-- Managed-agent lifecycle acceptance now submits canonical onboarding step 5
-  instead of obsolete step 6, matching the API's allowed 0–5 range.
+- Native and managed-agent lifecycle acceptance now submit canonical onboarding
+  step 5 instead of obsolete step 6, matching the API's allowed 0–5 range.
 
 ## [0.9.5] — 2026-08-30
 
