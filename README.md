@@ -82,14 +82,40 @@ cancellation at `05:15 UTC` followed by a force-cancel accepted with HTTP 202
 at `05:17:32 UTC` because runner finalization stalled. No `v0.9.8` GitHub
 Release exists. Its immutable tag and
 workflow are disqualified evidence; do not delete or reuse `v0.9.8`. The next
-immutable replacement candidate is `v0.9.9`.
+immutable replacement candidate after `v0.9.8` was `v0.9.9`.
 Source fix `c97ced79` preserves the signer fail-closed contract, explicitly
 rotates the native upgrade-feed signature, and locks the static gate call
 ordering that disqualified `v0.9.8`.
-`v0.9.9` remains pending acceptance; its tag, GitHub Release, clean-host
-acceptance, and live rollout are not claimed. Public PR #13 and the green
-protected-main CI are source/merge evidence only. The live `v0.9.3` rollout is
-not the current source.
+The annotated public `v0.9.9` tag object is
+`926b364c02c6268463ee74b229c9c2587fbeb766` and resolves to public protected
+`main` commit `90c17083052c00a7231ca254badc6fde192b0207` with exact tree
+`49760b52710058f81247ceebad9defacab84f02d`. Tagged run `#33297465693` ended
+`completed/cancelled` and is immutable disqualified evidence. Nineteen jobs
+succeeded, including provenance, network isolation, and `Native Lifecycle`
+amd64 job `#99220085250` and arm64 job `#99220085229`. Managed arm64 job
+`#99220085238` failed at `2026-08-30T07:42:12Z` with this check annotation:
+
+> The hosted runner lost communication with the server. Anything in your
+> workflow that terminates the runner process, starves it for CPU/Memory, or
+> blocks its network access can cause this error.
+
+Managed amd64 job `#99220085198` remained `in_progress` for more than 62
+minutes. Normal cancellation was requested at `2026-08-30T07:49:54Z`;
+force-cancel was accepted with HTTP `202` at `2026-08-30T07:54:23Z`; the job
+completed/cancelled at `2026-08-30T07:54:55Z`. The overall run was updated to
+`completed/cancelled` at `2026-08-30T07:55:02Z`. No `v0.9.9` GitHub Release
+exists. Do not delete or reuse its immutable tag. The next immutable replacement
+candidate is `v0.9.10`.
+
+Private source fix `b547b3d4` sets `RuntimeMaxSec` to 10 minutes. Private source
+fix `bf2f9f7f` adds progress markers, bounded polling, CLI waits, TERM cleanup,
+and caps script/job timeouts at 25 minutes/30 minutes. These are source
+evidence only; no public PR, public tag, GitHub Release, clean-host acceptance,
+or live rollout is claimed for `v0.9.10`.
+
+Public PR #13 and the green protected-main CI remain source/merge evidence
+only. The live `v0.9.3` rollout is not the current source; source or release
+evidence does not imply a live deployment.
 
 ## Architecture
 

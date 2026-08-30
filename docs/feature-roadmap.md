@@ -114,15 +114,41 @@ cancellation at `05:15 UTC` followed by a force-cancel accepted with HTTP 202
 at `05:17:32 UTC` because runner finalization stalled. No `v0.9.8` GitHub
 Release exists. Its immutable tag and
 workflow are disqualified evidence; do not delete or reuse `v0.9.8`. The next
-immutable replacement candidate is `v0.9.9`.
+immutable replacement candidate after `v0.9.8` was
+`v0.9.9`.
 Source fix `c97ced79` preserves the signer fail-closed contract, explicitly
 rotates the native upgrade-feed signature, and locks the static gate call
 ordering that disqualified `v0.9.8`.
-`v0.9.9` remains pending acceptance; its tag, GitHub Release, clean-host
-acceptance, and live rollout are not claimed. Public PR #13 and the green
-protected-main CI are source/merge evidence only. The live `v0.9.3` rollout is
-not the current source. Source and release evidence do not imply a live
-deployment.
+The annotated public `v0.9.9` tag object is
+`926b364c02c6268463ee74b229c9c2587fbeb766` and resolves to public protected
+`main` commit `90c17083052c00a7231ca254badc6fde192b0207` with exact tree
+`49760b52710058f81247ceebad9defacab84f02d`. Tagged run `#33297465693` ended
+`completed/cancelled` and is immutable disqualified evidence. Nineteen jobs
+succeeded, including provenance, network isolation, and `Native Lifecycle`
+amd64 job `#99220085250` and arm64 job `#99220085229`. Managed arm64 job
+`#99220085238` failed at `2026-08-30T07:42:12Z` with this check annotation:
+
+> The hosted runner lost communication with the server. Anything in your
+> workflow that terminates the runner process, starves it for CPU/Memory, or
+> blocks its network access can cause this error.
+
+Managed amd64 job `#99220085198` remained `in_progress` for more than 62
+minutes. Normal cancellation was requested at `2026-08-30T07:49:54Z`;
+force-cancel was accepted with HTTP `202` at `2026-08-30T07:54:23Z`; the job
+completed/cancelled at `2026-08-30T07:54:55Z`. The overall run was updated to
+`completed/cancelled` at `2026-08-30T07:55:02Z`. No `v0.9.9` GitHub Release
+exists. Do not delete or reuse its immutable tag. The next immutable replacement
+candidate is `v0.9.10`.
+
+Private source fix `b547b3d4` sets `RuntimeMaxSec` to 10 minutes. Private source
+fix `bf2f9f7f` adds progress markers, bounded polling, CLI waits, TERM cleanup,
+and caps script/job timeouts at 25 minutes/30 minutes. These are source
+evidence only; no public PR, public tag, GitHub Release, clean-host acceptance,
+or live rollout is claimed for `v0.9.10`.
+
+Public PR #13 and the green protected-main CI remain source/merge evidence
+only. The live `v0.9.3` rollout is not the current source; source or release
+evidence does not imply a live deployment.
 
 ## v1.0 release gates
 
@@ -241,21 +267,44 @@ These are release requirements, not optional ideas.
    `2026-08-30T05:20:10Z` after normal cancellation at `05:15 UTC` followed by
    a force-cancel accepted with HTTP 202 at `05:17:32 UTC` because runner
    finalization stalled. No `v0.9.8` GitHub Release exists; do not delete or
-   reuse its immutable tag, which remains disqualified evidence. The next
-   immutable replacement candidate is `v0.9.9`. Public PR #13 and its
+   reuse its immutable tag, which remains disqualified evidence. The annotated
+   public `v0.9.9` tag object is
+   `926b364c02c6268463ee74b229c9c2587fbeb766` and resolves to public protected
+   `main` commit `90c17083052c00a7231ca254badc6fde192b0207` with exact tree
+   `49760b52710058f81247ceebad9defacab84f02d`. Tagged run `#33297465693` ended
+   `completed/cancelled` and is immutable disqualified evidence. Nineteen jobs
+   succeeded, including provenance, network isolation, and `Native Lifecycle`
+   amd64 job `#99220085250` and arm64 job `#99220085229`. Managed arm64 job
+   `#99220085238` failed at `2026-08-30T07:42:12Z` with this check annotation:
+
+   > The hosted runner lost communication with the server. Anything in your
+   > workflow that terminates the runner process, starves it for CPU/Memory, or
+   > blocks its network access can cause this error.
+
+   Managed amd64 job `#99220085198` remained `in_progress` for more than 62
+   minutes. Normal cancellation was requested at `2026-08-30T07:49:54Z`;
+   force-cancel was accepted with HTTP `202` at `2026-08-30T07:54:23Z`; the job
+   completed/cancelled at `2026-08-30T07:54:55Z`. The overall run was updated to
+   `completed/cancelled` at `2026-08-30T07:55:02Z`. No `v0.9.9` GitHub Release
+   exists. Do not delete or reuse its immutable tag. The next immutable
+   replacement candidate is `v0.9.10`.
+
+   Private source fix `b547b3d4` sets `RuntimeMaxSec` to 10 minutes. Private
+   source fix `bf2f9f7f` adds progress markers, bounded polling, CLI waits, TERM
+   cleanup, and caps script/job timeouts at 25 minutes/30 minutes. These are
+   source evidence only; no public PR, public tag, GitHub Release, clean-host
+   acceptance, or live rollout is claimed for `v0.9.10`. Public PR #13 and its
    14/14-success CI run `#33295933393` merged at `2026-08-30T06:07:31Z` as
-   protected `main` commit
-   `bf67c80c9b383d28a4eefd1d75a014b41bd00f45` (exact tree
+   protected `main` commit `bf67c80c9b383d28a4eefd1d75a014b41bd00f45` (exact tree
    `bb838be28a9cb23897e943250e1c69ce9e71d138`). Protected-main CI
    `#33296189213` completed/success with 14/14 checks, including the exact
    cleanup test and both architecture release-package jobs. The prior main run
    `#33294999297` failed only its `EXIT cleanup` race from Git 2.55 detached
    auto-maintenance; private fix
    `aa10cb7b08fa98695ebdea7b95bfb2fb3a4835bd` uses command-scoped
-   `maintenance.auto=false`. `v0.9.9` remains pending acceptance; its tag,
-   GitHub Release, clean-host acceptance, and live rollout are not claimed. The
-   live `v0.9.3` rollout is not the current source, and source or release
-   evidence does not imply a live deployment.
+   `maintenance.auto=false`. These are source/merge and protected-main CI
+   evidence only. The live `v0.9.3` rollout is not the current source, and source
+   or release evidence does not imply a live deployment.
 
 3. **Clean public history**
 
@@ -276,9 +325,18 @@ These are release requirements, not optional ideas.
    `bootstrap-install.sh.sig` against the configured release signer before
    privilege entry. The failed public `v0.9.5`, disqualified `v0.9.6`,
    disqualified `v0.9.7`, and disqualified `v0.9.8` tag/runs remain historical
-   evidence only; do not delete or reuse the immutable `v0.9.8` tag. The next
-   immutable replacement candidate is `v0.9.9`. Tagged publication, GitHub
-   Release publication, lifecycle/provenance acceptance, clean independent-VM
+   evidence only; do not delete or reuse the immutable `v0.9.8` tag. The
+   annotated public `v0.9.9` tag object
+   `926b364c02c6268463ee74b229c9c2587fbeb766` resolves to public protected
+   `main` commit `90c17083052c00a7231ca254badc6fde192b0207` with exact tree
+   `49760b52710058f81247ceebad9defacab84f02d`; tagged run `#33297465693` is
+   immutable disqualified evidence and no `v0.9.9` GitHub Release exists. The
+   next immutable replacement candidate is `v0.9.10`. Private fixes `b547b3d4`
+   (10-minute `RuntimeMaxSec`) and `bf2f9f7f` (progress markers, bounded
+   polling, CLI waits, TERM cleanup, 25-minute script/30-minute job limits) are
+   source evidence only; no public PR, tag, GitHub Release, clean-host
+   acceptance, or live rollout is claimed. Tagged publication, GitHub Release
+   publication, lifecycle/provenance acceptance, clean independent-VM
    acceptance, live rollout, and the independently authenticated installer
    anchor are distinct public-launch gates. Their
    authoritative evidence is the tagged workflow, published release, and
