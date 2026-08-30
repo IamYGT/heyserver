@@ -94,7 +94,7 @@ func TestAgentUpdateUpgradeStagesVerifiedReleaseAndSchedulesFixedUnit(t *testing
 	if status.Operation != "upgrade" || status.OperationStatus != agentUpdateScheduled || status.OperationVersion != "v1.2.3" {
 		t.Fatalf("unexpected scheduled status: %#v", status)
 	}
-	if len(runner.calls) != 1 || runner.calls[0][0] != "/usr/bin/systemd-run" || !containsArgument(runner.calls[0], "--unit=hserver-agent-lifecycle") || !containsArgument(runner.calls[0], "--property=RuntimeMaxSec=10min") {
+	if len(runner.calls) != 1 || runner.calls[0][0] != "/usr/bin/systemd-run" || !containsArgument(runner.calls[0], "--unit=hserver-agent-lifecycle") || !containsArgument(runner.calls[0], "--property=RuntimeMaxSec=3min") {
 		t.Fatalf("systemd-run call = %#v", runner.calls)
 	}
 	if containsSubstring(runner.calls[0], server.URL) {
@@ -263,7 +263,7 @@ func TestAgentUpdateRollbackRequiresVerifiedSnapshotAndUsesLocalInstaller(t *tes
 	if !status.RollbackAvailable || status.Operation != "rollback" || status.OperationStatus != agentUpdateScheduled {
 		t.Fatalf("unexpected rollback status: %#v", status)
 	}
-	if len(runner.calls) != 1 || !containsArgument(runner.calls[0], installer) || !containsArgument(runner.calls[0], "--property=RuntimeMaxSec=10min") || containsSubstring(runner.calls[0], "release.tar.gz") {
+	if len(runner.calls) != 1 || !containsArgument(runner.calls[0], installer) || !containsArgument(runner.calls[0], "--property=RuntimeMaxSec=3min") || containsSubstring(runner.calls[0], "release.tar.gz") {
 		t.Fatalf("rollback schedule = %#v", runner.calls)
 	}
 }

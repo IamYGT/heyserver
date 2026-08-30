@@ -36,7 +36,7 @@ const (
 	maxAgentInstallerBytes      = int64(2 << 20)
 	maxAgentVersionBytes        = int64(128)
 	// Bound detached installers so a hung lifecycle operation cannot run indefinitely.
-	agentLifecycleRuntimeMax = "10min"
+	agentLifecycleRuntimeMax = "3min"
 )
 
 var (
