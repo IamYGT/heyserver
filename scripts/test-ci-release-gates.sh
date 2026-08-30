@@ -398,10 +398,14 @@ for required in (
     'name: Managed Agent Lifecycle (${{ matrix.arch }})',
     "runner: ubuntu-24.04",
     "runner: ubuntu-24.04-arm",
-    "timeout-minutes: 30",
+    "timeout-minutes: 25",
+    "github.event_name == 'workflow_dispatch'",
     "HSERVER_ACCEPT_DISPOSABLE_HOST=1",
-    "sudo timeout --signal=TERM --kill-after=30s 25m env",
+    "sudo timeout --signal=TERM --kill-after=30s 18m env",
     "./scripts/test-native-managed-agent-lifecycle.sh",
+    "Collect managed-agent lifecycle diagnostics",
+    "Upload managed-agent lifecycle diagnostics",
+    "managed-agent-lifecycle-diagnostics-${{ matrix.arch }}",
     "binutils util-linux",
 ):
     if required not in managed:

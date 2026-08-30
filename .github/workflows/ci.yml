@@ -6,6 +6,13 @@ on:
     tags: ['v*.*.*']
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      managed_lifecycle_version:
+        description: Stable synthetic version for managed-agent lifecycle diagnostics
+        required: true
+        default: v0.0.0
+        type: string
 
 env:
   GO_VERSION: '1.26'
@@ -338,9 +345,13 @@ jobs:
 
       - name: Determine release version
         id: version
+        env:
+          MANUAL_VERSION: ${{ inputs.managed_lifecycle_version }}
         run: |
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             BUILD_VERSION="$GITHUB_REF_NAME"
+          elif [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]]; then
+            BUILD_VERSION="$MANUAL_VERSION"
           else
             BUILD_VERSION="ci-$(git rev-parse --short=12 HEAD)"
           fi
@@ -546,7 +557,7 @@ jobs:
   # ─── Release: Real hub-to-systemd managed-agent lifecycle ──────────────────
   managed-agent-acceptance:
     name: Managed Agent Lifecycle (${{ matrix.arch }})
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
     needs: [release-build]
     strategy:
       fail-fast: false
@@ -557,9 +568,8 @@ jobs:
           - arch: arm64
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.runner }}
-    # The script has a 25-minute TERM/kill-after deadline; keep a separate
-    # job timeout so GitHub cancellation does not bypass its cleanup trap.
-    timeout-minutes: 30
+    # Leave time after the script deadline for bounded cleanup and diagnostics.
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
 
@@ -580,7 +590,7 @@ jobs:
       - name: Build the next managed-agent version
         id: next
         env:
-          CURRENT_VERSION: ${{ github.ref_name }}
+          CURRENT_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.managed_lifecycle_version || github.ref_name }}
           GOARCH: ${{ matrix.arch }}
         run: |
           NEXT_VERSION=$(python3 -c 'import re,sys; m=re.fullmatch(r"v?(\d+)\.(\d+)\.(\d+)", sys.argv[1]); assert m, "tag is not stable"; print(f"v{m[1]}.{m[2]}.{int(m[3])+1}")' "$CURRENT_VERSION")
@@ -592,11 +602,11 @@ jobs:
 
       - name: Exercise signed managed-agent lifecycle
         env:
-          BUILD_VERSION: ${{ github.ref_name }}
+          BUILD_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.managed_lifecycle_version || github.ref_name }}
           NEXT_VERSION: ${{ steps.next.outputs.version }}
           GOARCH: ${{ matrix.arch }}
         run: |
-          sudo timeout --signal=TERM --kill-after=30s 25m env \
+          sudo timeout --signal=TERM --kill-after=30s 18m env \
             CI=true \
             HSERVER_ACCEPT_DISPOSABLE_HOST=1 \
             ./scripts/test-native-managed-agent-lifecycle.sh \
@@ -606,6 +616,30 @@ jobs:
               "dist/hserver-panel-${BUILD_VERSION}-linux-${GOARCH}.tar.gz.sha256" \
               "$NEXT_VERSION" \
               "bin/hserver-agent-acceptance-${GOARCH}"
+
+      - name: Collect managed-agent lifecycle diagnostics
+        if: always()
+        env:
+          GOARCH: ${{ matrix.arch }}
+        run: |
+          diagnostics="$RUNNER_TEMP/managed-agent-lifecycle-${GOARCH}"
+          mkdir -p "$diagnostics"
+          for unit in hserver hserver-agent hserver-agent-lifecycle.timer hserver-agent-lifecycle.service; do
+            sudo timeout 15s systemctl show "$unit" --no-pager \
+              --property=Id,LoadState,ActiveState,SubState,Result,ExecMainCode,ExecMainStatus,StateChangeTimestamp \
+              >"$diagnostics/${unit}.show.txt" 2>&1 || true
+            sudo timeout 15s journalctl -u "$unit" --no-pager --output=short-iso -n 500 \
+              >"$diagnostics/${unit}.journal.txt" 2>&1 || true
+          done
+
+      - name: Upload managed-agent lifecycle diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: managed-agent-lifecycle-diagnostics-${{ matrix.arch }}
+          path: ${{ runner.temp }}/managed-agent-lifecycle-${{ matrix.arch }}/
+          if-no-files-found: error
+          retention-days: 7
 
   # ─── Release: Outbound-only managed-agent network boundary ────────────────
   network-isolation-acceptance:
