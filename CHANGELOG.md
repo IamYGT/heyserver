@@ -10,17 +10,25 @@ is pre-1.0; public release acceptance remains in progress.
 
 ### Changed
 
-- `v0.9.9` is the next immutable replacement candidate after the public
-  `v0.9.8` tag was disqualified. Public PR, tag, GitHub Release, clean-host
-  acceptance, and live rollout for `v0.9.9` are not claimed; its acceptance
-  remains pending and these are separate release gates.
-- The current fully green public main CI run is `#33293045279`; this source
-  result is distinct from the disqualified `v0.9.8` tagged workflow and does
-  not establish a public release or rollout.
-- The current source fix `c97ced79` preserves the signer fail-closed contract,
-  explicitly unlinks the old fixture signature before rotating the upgrade
-  feed signature, and locks the static gate call ordering. This is source
-  evidence only and does not establish public `v0.9.9` release evidence.
+- Source fix `c97ced79` preserves the signer fail-closed contract, explicitly
+  rotates the native upgrade-feed signature, and locks the static gate call
+  ordering that disqualified `v0.9.8`.
+- Private fix `aa10cb7b08fa98695ebdea7b95bfb2fb3a4835bd` addresses the prior
+  protected-main run `#33294999297`, whose only failure was an `EXIT cleanup`
+  race caused by Git 2.55 detached auto-maintenance. The repair uses
+  command-scoped `maintenance.auto=false`.
+- Public [PR #13](https://github.com/IamYGT/heyserver/pull/13) has head
+  `1fcb2319160696e21fb25cd6b52c21f69cf0e3ee`; its CI run `#33295933393`
+  completed with 14/14 checks successful. It merged at
+  `2026-08-30T06:07:31Z` as protected `main` commit
+  `bf67c80c9b383d28a4eefd1d75a014b41bd00f45` with exact tree
+  `bb838be28a9cb23897e943250e1c69ce9e71d138`.
+- Protected-main CI run `#33296189213` completed/success with 14/14 checks;
+  the exact cleanup test and `Release Package (amd64)`/
+  `Release Package (arm64)` jobs succeeded.
+- The `v0.9.9` tag, GitHub Release, clean-host acceptance, and live rollout
+  remain unclaimed. These release gates are still pending even though the
+  public PR and protected-main CI evidence are green.
 
 ## [0.9.8] — disqualified tagged candidate
 

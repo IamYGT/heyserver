@@ -27,10 +27,22 @@ cannot provide a download URL, checksum, path, command, or systemd argument.
 The project is currently **pre-1.0**. Its canonical public repository is
 [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver). Immutable public
 source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the first
-fully green public main CI matrix run `#33283277809`; the current fully green
-public main CI run recorded on 2026-08-30 is `#33293045279`. Branch protection
-was enabled after these runs and is currently active. The initial active signer
-is prepared in private commit `df0a5070`, and the
+fully green public main CI matrix run `#33283277809`. Public
+[PR #13](https://github.com/IamYGT/heyserver/pull/13) has head
+`1fcb2319160696e21fb25cd6b52c21f69cf0e3ee`; its CI run
+`#33295933393` completed with 14/14 checks successful. It merged at
+`2026-08-30T06:07:31Z` as protected `main` commit
+`bf67c80c9b383d28a4eefd1d75a014b41bd00f45` with exact tree
+`bb838be28a9cb23897e943250e1c69ce9e71d138`. The prior protected-main run
+`#33294999297` failed only its `EXIT cleanup` race, caused by Git 2.55
+detached auto-maintenance; private fix
+`aa10cb7b08fa98695ebdea7b95bfb2fb3a4835bd`
+uses command-scoped `maintenance.auto=false`. Protected-main CI run
+`#33296189213` completed/success with 14/14 checks, including the exact cleanup
+test and successful `Release Package (amd64)` and `Release Package (arm64)`
+jobs.
+Branch protection was enabled after these runs and is currently active. The
+initial active signer is prepared in private commit `df0a5070`, and the
 `HSERVER_RELEASE_SIGNING_KEY` Actions secret is configured; public signer PR #7
 was merged at protected `main` commit `b2af1591` on 2026-08-30. The public
 `v0.9.5` tag points to protected `main` commit
@@ -71,11 +83,13 @@ at `05:17:32 UTC` because runner finalization stalled. No `v0.9.8` GitHub
 Release exists. Its immutable tag and
 workflow are disqualified evidence; do not delete or reuse `v0.9.8`. The next
 immutable replacement candidate is `v0.9.9`.
-The current source fix `c97ced79` preserves the signer fail-closed contract,
-explicitly unlinks the old fixture signature before rotating the upgrade feed
-signature, and locks the static gate call ordering. `v0.9.9` remains pending
-acceptance; no public PR, tag, GitHub Release, clean-host acceptance, or live
-rollout is claimed for it. The live `v0.9.3` rollout is not the current source.
+Source fix `c97ced79` preserves the signer fail-closed contract, explicitly
+rotates the native upgrade-feed signature, and locks the static gate call
+ordering that disqualified `v0.9.8`.
+`v0.9.9` remains pending acceptance; its tag, GitHub Release, clean-host
+acceptance, and live rollout are not claimed. Public PR #13 and the green
+protected-main CI are source/merge evidence only. The live `v0.9.3` rollout is
+not the current source.
 
 ## Architecture
 
