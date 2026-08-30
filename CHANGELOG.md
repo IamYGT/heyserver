@@ -6,6 +6,24 @@ is pre-1.0; public release acceptance remains in progress.
 
 ## [Unreleased]
 
+## [0.9.6] — 2026-08-30
+
+### Changed
+
+- The next immutable patch candidate is `v0.9.6`; it is not tagged or
+  released. The public `v0.9.5` tag points to protected `main` commit
+  `b2af1591f7a848acd71bbe54bc4f70fbffe99373`, but tagged run `#33285788628`
+  failed both `Managed Agent Lifecycle` jobs because the lifecycle fixture
+  posted onboarding step 6 while the canonical maximum is step 5. The tag and
+  run remain historical failed-release evidence; no successful `v0.9.5` or
+  `v0.9.6` release, clean independent-VM acceptance, or live rollout is
+  claimed.
+
+### Fixed
+
+- Managed-agent lifecycle acceptance now submits canonical onboarding step 5
+  instead of obsolete step 6, matching the API's allowed 0–5 range.
+
 ## [0.9.5] — 2026-08-30
 
 ### Added
@@ -50,12 +68,17 @@ is pre-1.0; public release acceptance remains in progress.
   fully green public main CI run is `#33283728373`. Branch protection was enabled
   after these runs and is currently active. The initial active signer is
   prepared in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY`
-  Actions secret is configured; public signer PR #7 remains pending. The first
-  signed release,
-  version tag, GitHub Release, tagged lifecycle/provenance acceptance, clean
-  independent-VM acceptance, and live rollout remain pending. The live
-  `v0.9.3` rollout is not the current source, and these source results do not
-  imply a live deployment or public release. Earlier failed runs
+  Actions secret is configured; public signer PR #7 remains pending. The public
+  `v0.9.5` tag points to protected `main` commit
+  `b2af1591f7a848acd71bbe54bc4f70fbffe99373`, but tagged run `#33285788628`
+  failed both `Managed Agent Lifecycle` jobs because the lifecycle fixture
+  posted onboarding step 6 while the canonical maximum is step 5. The tag and
+  run remain historical failed-release evidence. The first successful signed
+  release, GitHub Release, tagged lifecycle/provenance acceptance, clean
+  independent-VM acceptance, and live rollout remain pending. The next
+  immutable patch candidate is `v0.9.6`; no release or rollout is claimed for
+  it. The live `v0.9.3` rollout is not the current source, and these source
+  results do not imply a live deployment or public release. Earlier failed runs
   `#33251833442` and `#33281342435` are historical CI evidence only.
 
 ## [0.9.4] — 2026-08-29
