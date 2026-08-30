@@ -19,12 +19,13 @@ is pre-1.0; public release acceptance remains in progress.
   idempotent no-op for an already active mapping, and bounded 400/409/422/502/
   504 failure mapping. Arbitrary Nginx/upstream input is excluded; OpenAPI
   contract revision 71 now covers 443 routes and 321 schemas.
-- Full amd64 public-source acceptance now passes from source HEAD `fd227828`,
-  including the clean Git-free candidate build and its 92 frontend files, 489
-  tests, and 10 route tests.
+- Historical amd64 public-source acceptance from source HEAD `fd227828` remains
+  recorded as prior validation evidence; it is not current release or rollout
+  evidence.
 - The canonical public repository is now
-  [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially published
-  at public HEAD `53df8ba`; the private and public trees match at `3719df8`.
+  [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), with current public
+  HEAD `adaccb23adf9720141d721970590de3a82fd17b5`; it was initially published
+  at `53df8ba` with private/public tree parity `3719df8`.
 - Docker quick-evaluation documentation now covers first login: read
   `HSERVER_ADMIN_EMAIL` and the generated `HSERVER_ADMIN_PASS` locally from the
   mode-`0600` `.env`, open `http://localhost:3085`, and complete onboarding;
@@ -36,12 +37,13 @@ is pre-1.0; public release acceptance remains in progress.
 
 ### Changed
 
-- Canonical public repository selection and publication are complete. Latest CI
-  run `#33251833442` is red, and no tag, release, or release signer exists yet;
-  signer selection/ceremony, the first signed release, green CI, clean
-  disposable-VM acceptance, and live rollout remain pending. The live `v0.9.3`
-  rollout is not the current source, and these source results do not imply a
-  live deployment or public release.
+- Canonical public repository selection and publication are complete. The first
+  fully green protected CI matrix run was `#33283277809`. No tag, release, or
+  release signer exists yet; signer selection/ceremony, the first signed
+  release, clean disposable-VM acceptance, and live rollout remain pending. The
+  live `v0.9.3` rollout is not the current source, and these source results do
+  not imply a live deployment or public release. Earlier failed runs
+  `#33251833442` and `#33281342435` are historical CI evidence only.
 
 ## [0.9.4] — 2026-08-29
 

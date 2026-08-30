@@ -24,8 +24,12 @@ requires and verifies the manifest's adjacent detached signature before it
 accepts artifact metadata. The hub can request only an exact stable version or rollback; it
 cannot provide a download URL, checksum, path, command, or systemd argument.
 
-The project is currently **pre-1.0**. Its distribution is being converted from
-one production installation into a provider-neutral community project.
+The project is currently **pre-1.0**. Its canonical public repository is
+[`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), with current public
+HEAD `adaccb23adf9720141d721970590de3a82fd17b5`. The first fully green
+protected CI matrix run was `#33283277809`. No tag, release, or release signer
+exists yet; signer selection/ceremony, the first signed release, clean
+disposable-VM acceptance, and live rollout remain pending.
 
 ## Architecture
 

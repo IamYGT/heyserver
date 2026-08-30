@@ -12,12 +12,17 @@ guest-time-safe CPU accounting. The TUI consumer and OpenAPI contract revision
 71 (443 routes, 321 schemas) are complete, and combined metrics acceptance is
 complete. Canonical public repository selection and publication are complete at
 [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially published
-at public HEAD `53df8ba`; the private and public trees match at `3719df8`.
-Latest CI run `#33251833442` is red, and no tag, release, or release signer
-exists yet. Signer selection/ceremony, the first signed release, green CI,
-clean disposable-VM acceptance, and local/Contabo live rollout remain pending.
+at `53df8ba`; current public HEAD is
+`adaccb23adf9720141d721970590de3a82fd17b5`, with initial private/public tree
+parity at `3719df8`. The first fully green protected CI matrix run was
+`#33283277809`. No tag, release, or release signer exists yet. Signer
+selection/ceremony, the first signed release, clean disposable-VM acceptance,
+and local/Contabo live rollout remain pending.
 The live `v0.9.3` rollout is not the current source; this status does not claim
 live deployment or a public release.
+
+Historical CI failures `#33251833442` and `#33281342435` preceded the first
+fully green run and are retained only as historical evidence.
 
 ## 1. Export the audited tree
 
@@ -76,7 +81,9 @@ workflow.
 The one-time public-history creation and publication are complete. The
 canonical public repository is
 [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially published
-at public HEAD `53df8ba`, with private/public tree parity `3719df8`. The
+at initial public HEAD `53df8ba`, with current public HEAD
+`adaccb23adf9720141d721970590de3a82fd17b5` and private/public tree parity
+`3719df8`. The
 commands below document the one-time staging procedure that produced that
 history; their `/tmp` destination is disposable and must not be treated as a
 canonical checkout or permanent publication workflow.
@@ -128,8 +135,9 @@ pull-request refs into the public repository.
   active signer or the Actions secret derives a different public key;
 - use the canonical public repository
   [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially published
-  at public HEAD `53df8ba`, with private/public tree parity `3719df8`; repository
-  selection and publication are complete;
+  at initial public HEAD `53df8ba`, with current public HEAD
+  `adaccb23adf9720141d721970590de3a82fd17b5` and private/public tree parity
+  `3719df8`; repository selection and publication are complete;
 - after signer selection and ceremony, publish the immutable installer commit
   plus installer digest and signer fingerprint through an independently
   authenticated channel. A checksum adjacent to a mutable release asset is a
