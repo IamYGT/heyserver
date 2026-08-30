@@ -35,6 +35,8 @@ const (
 	maxAgentBinaryBytes         = int64(256 << 20)
 	maxAgentInstallerBytes      = int64(2 << 20)
 	maxAgentVersionBytes        = int64(128)
+	// Bound detached installers so a hung lifecycle operation cannot run indefinitely.
+	agentLifecycleRuntimeMax = "10min"
 )
 
 var (
@@ -426,6 +428,7 @@ func (c *agentUpdateController) schedule(ctx context.Context, operation agentUpd
 	}
 	args := []string{
 		"--collect", "--quiet", "--unit=hserver-agent-lifecycle", "--on-active=3s", "--timer-property=AccuracySec=1s",
+		"--property=RuntimeMaxSec=" + agentLifecycleRuntimeMax,
 		"/bin/sh", runnerPath,
 		filepath.Join(stageDir, "status"), filepath.Join(stageDir, "status-detail"), filepath.Join(stageDir, "updated-at"),
 		installer, operation.Action,

@@ -6,29 +6,42 @@ is pre-1.0; public release acceptance remains in progress.
 
 ## [Unreleased]
 
-## [0.9.9] — pending acceptance
+## [0.9.10] — pending acceptance
 
 ### Changed
 
-- Source fix `c97ced79` preserves the signer fail-closed contract, explicitly
-  rotates the native upgrade-feed signature, and locks the static gate call
-  ordering that disqualified `v0.9.8`.
-- Private fix `aa10cb7b08fa98695ebdea7b95bfb2fb3a4835bd` addresses the prior
-  protected-main run `#33294999297`, whose only failure was an `EXIT cleanup`
-  race caused by Git 2.55 detached auto-maintenance. The repair uses
-  command-scoped `maintenance.auto=false`.
-- Public [PR #13](https://github.com/IamYGT/heyserver/pull/13) has head
-  `1fcb2319160696e21fb25cd6b52c21f69cf0e3ee`; its CI run `#33295933393`
-  completed with 14/14 checks successful. It merged at
-  `2026-08-30T06:07:31Z` as protected `main` commit
-  `bf67c80c9b383d28a4eefd1d75a014b41bd00f45` with exact tree
-  `bb838be28a9cb23897e943250e1c69ce9e71d138`.
-- Protected-main CI run `#33296189213` completed/success with 14/14 checks;
-  the exact cleanup test and `Release Package (amd64)`/
-  `Release Package (arm64)` jobs succeeded.
-- The `v0.9.9` tag, GitHub Release, clean-host acceptance, and live rollout
-  remain unclaimed. These release gates are still pending even though the
-  public PR and protected-main CI evidence are green.
+- The next immutable replacement candidate is `v0.9.10`. Private source fix
+  `b547b3d4` sets `RuntimeMaxSec` to 10 minutes. Private source fix
+  `bf2f9f7f` adds progress markers, bounded polling, CLI waits, TERM cleanup,
+  and caps script/job timeouts at 25 minutes/30 minutes.
+- These commits are source evidence only. No public PR, public tag, GitHub
+  Release, clean-host acceptance, or live rollout is claimed for `v0.9.10`.
+
+## [0.9.9] — disqualified tagged candidate
+
+### Changed
+
+- The annotated public `v0.9.9` tag object is
+  `926b364c02c6268463ee74b229c9c2587fbeb766` and resolves to public protected
+  `main` commit `90c17083052c00a7231ca254badc6fde192b0207` with exact tree
+  `49760b52710058f81247ceebad9defacab84f02d`. Tagged run `#33297465693`
+  ended `completed/cancelled` and is immutable disqualified evidence.
+- Nineteen jobs succeeded, including provenance, network isolation, and
+  `Native Lifecycle` amd64 job `#99220085250` and arm64 job `#99220085229`.
+  Managed arm64 job `#99220085238` failed at `2026-08-30T07:42:12Z` with this
+  check annotation:
+
+  > The hosted runner lost communication with the server. Anything in your
+  > workflow that terminates the runner process, starves it for CPU/Memory, or
+  > blocks its network access can cause this error.
+
+- Managed amd64 job `#99220085198` remained `in_progress` for more than 62
+  minutes. Normal cancellation was requested at `2026-08-30T07:49:54Z`;
+  force-cancel was accepted with HTTP `202` at `2026-08-30T07:54:23Z`; the job
+  completed/cancelled at `2026-08-30T07:54:55Z`. The overall run was updated
+  to `completed/cancelled` at `2026-08-30T07:55:02Z`.
+- No `v0.9.9` GitHub Release exists. Do not delete or reuse its immutable tag.
+  The next immutable replacement candidate is `v0.9.10`.
 
 ## [0.9.8] — disqualified tagged candidate
 
@@ -49,7 +62,8 @@ is pre-1.0; public release acceptance remains in progress.
   finalization stalled.
 - No `v0.9.8` GitHub Release exists. Its immutable tag and workflow remain
   disqualified evidence; do not delete or reuse `v0.9.8`. The next immutable
-  replacement candidate is `v0.9.9`.
+  replacement candidate after `v0.9.8` was `v0.9.9`; its disqualification and
+  the next `v0.9.10` candidate are recorded above.
 
 ### Fixed
 
