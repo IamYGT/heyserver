@@ -27,8 +27,9 @@ is pre-1.0; public release acceptance remains in progress.
 - The canonical public repository is now
   [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver); immutable public
   source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the first
-  fully green protected main CI matrix run `#33283277809`. The current green
-  protected main run is `#33283728373`. It was initially published at
+  fully green public main CI matrix run `#33283277809`. The current fully green
+  public main CI run is `#33283728373`. Branch protection was enabled after
+  these runs and is currently active. It was initially published at
   `53df8ba` with private/public tree parity `3719df8`.
 - The initial active release signer is prepared in private commit `df0a5070`,
   and the `HSERVER_RELEASE_SIGNING_KEY` Actions secret is configured; public
@@ -44,12 +45,13 @@ is pre-1.0; public release acceptance remains in progress.
 
 ### Changed
 
-- Canonical public repository selection and publication are complete, and main
-  branch protection is complete. The first fully green protected main CI matrix
-  run was `#33283277809`; the current green protected main run is
-  `#33283728373`. The initial active signer is prepared in private commit
-  `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY` Actions secret is
-  configured; public signer PR #7 remains pending. The first signed release,
+- Canonical public repository selection and publication are complete. The
+  first fully green public main CI matrix run was `#33283277809`; the current
+  fully green public main CI run is `#33283728373`. Branch protection was enabled
+  after these runs and is currently active. The initial active signer is
+  prepared in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY`
+  Actions secret is configured; public signer PR #7 remains pending. The first
+  signed release,
   version tag, GitHub Release, tagged lifecycle/provenance acceptance, clean
   independent-VM acceptance, and live rollout remain pending. The live
   `v0.9.3` rollout is not the current source, and these source results do not

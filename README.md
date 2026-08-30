@@ -27,10 +27,10 @@ cannot provide a download URL, checksum, path, command, or systemd argument.
 The project is currently **pre-1.0**. Its canonical public repository is
 [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver). Immutable public
 source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the first
-fully green protected main CI matrix run `#33283277809`; the current green
-protected main run recorded on 2026-08-30 is `#33283728373`. Main branch
-protection is complete. The
-initial active signer is prepared in private commit `df0a5070`, and the
+fully green public main CI matrix run `#33283277809`; the current fully green
+public main CI run recorded on 2026-08-30 is `#33283728373`. Branch protection
+was enabled after these runs and is currently active. The initial active signer
+is prepared in private commit `df0a5070`, and the
 `HSERVER_RELEASE_SIGNING_KEY` Actions secret is configured; public signer PR #7,
 the first signed release, version tag, GitHub Release, tagged
 lifecycle/provenance acceptance, clean independent-VM acceptance, and live

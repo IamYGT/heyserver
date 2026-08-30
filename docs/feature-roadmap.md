@@ -62,14 +62,15 @@ selection and publication are complete at
 [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially published
 at `53df8ba`, with private/public tree parity `3719df8`. Immutable public
 source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the first
-fully green protected main CI matrix run `#33283277809`; the current green
-protected main run is `#33283728373` (2026-08-30). Main branch protection is
-complete. The initial active signer is prepared in private commit `df0a5070`,
-and the `HSERVER_RELEASE_SIGNING_KEY` Actions secret is configured; public
-signer PR #7, the first signed release, version tag, GitHub Release, tagged
-lifecycle/provenance acceptance, clean independent-VM acceptance, and
-local/Contabo live rollout remain open. The live `v0.9.3` rollout is not the
-current source. This records source and acceptance progress only; it is not
+fully green public main CI matrix run `#33283277809`; the current fully green
+public main CI run is `#33283728373` (2026-08-30). Branch protection was enabled
+after these runs and is currently active. The initial active signer is prepared
+in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY` Actions
+secret is configured; public signer PR #7, the first signed release, version
+tag, GitHub Release, tagged lifecycle/provenance acceptance, clean
+independent-VM acceptance, and local/Contabo live rollout remain open. The live
+`v0.9.3` rollout is not the current source. This records source and acceptance
+progress only; it is not
 evidence of live deployment or a public release.
 
 ## v1.0 release gates
@@ -139,12 +140,12 @@ These are release requirements, not optional ideas.
    [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially
    published at `53df8ba`, with private/public tree parity `3719df8`. Immutable
    public source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the
-   first fully green protected main CI matrix run `#33283277809`; the current
-   green protected main run is `#33283728373` (2026-08-30). Main branch
-   protection is complete. The initial active signer is prepared in private
-   commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY` Actions secret is
-   configured; public signer PR #7, the first signed release, version tag,
-   GitHub Release, tagged lifecycle/provenance acceptance, clean
+   first fully green public main CI matrix run `#33283277809`; the current fully
+   green public main CI run is `#33283728373` (2026-08-30). Branch protection was
+   enabled after these runs and is currently active. The initial active signer is
+   prepared in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY`
+   Actions secret is configured; public signer PR #7, the first signed release,
+   version tag, GitHub Release, tagged lifecycle/provenance acceptance, clean
    independent-VM acceptance, and local/Contabo live rollout remain open. The
    live `v0.9.3` rollout is not the current source, and no live deployment or
    public release is claimed here.
