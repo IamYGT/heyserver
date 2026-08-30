@@ -82,9 +82,12 @@ GitHub Release exists. The public `v0.9.7` tag points to protected public
 `main` commit `5c5bcf053b333f657ef011078f32ed54126946e6`, but tagged workflow
 `#33291179584` is immutable disqualified evidence: both `Native Lifecycle` jobs
 returned file-backup HTTP 400 because the fixture lacked an explicit temporary
-vhosts root, and the `Managed Agent Lifecycle` arm64 runner log failed
-`agent release archive contains an invalid path`. API job/run records may
-remain stale `in_progress`; no successful `v0.9.7` GitHub Release exists.
+vhosts root. The `Managed Agent Lifecycle` jobs were cancelled; their arm64
+runner log preserved `agent release archive contains an invalid path`. The
+workflow reached terminal `completed/cancelled` at
+`2026-08-30T04:27:26Z` after normal cancellation followed by a force-cancel
+because runner finalization stalled. No successful `v0.9.7` GitHub Release
+exists.
 `v0.9.8` is the next immutable replacement candidate. No public PR, tag,
 release, clean independent-VM acceptance, or live rollout is claimed for
 `v0.9.8`. Private source fixes now explicitly configure the native temporary
@@ -179,10 +182,12 @@ These are release requirements, not optional ideas.
    `5c5bcf053b333f657ef011078f32ed54126946e6`, but tagged workflow
    `#33291179584` is immutable disqualified evidence: both `Native Lifecycle`
    jobs returned file-backup HTTP 400 because the fixture lacked an explicit
-   temporary vhosts root, and the `Managed Agent Lifecycle` arm64 runner log
-   failed with `agent release archive contains an invalid path`. API job/run
-   records may remain stale `in_progress`; no successful `v0.9.7` GitHub
-   Release exists. `v0.9.8` is the next immutable replacement candidate. No
+   temporary vhosts root. The `Managed Agent Lifecycle` jobs were cancelled;
+   their arm64 runner log preserved `agent release archive contains an invalid
+   path`. The workflow reached terminal `completed/cancelled` at
+   `2026-08-30T04:27:26Z` after normal cancellation followed by a force-cancel
+   because runner finalization stalled. No successful `v0.9.7` GitHub Release
+   exists. `v0.9.8` is the next immutable replacement candidate. No
    public PR, tag, release, clean independent-VM acceptance, or live rollout
    is claimed for `v0.9.8`. Private source fixes now explicitly configure the
    native temporary vhosts root and accept canonical tar `TypeDir` entries with

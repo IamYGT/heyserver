@@ -15,9 +15,12 @@ is pre-1.0; public release acceptance remains in progress.
   `5c5bcf053b333f657ef011078f32ed54126946e6` and tagged workflow
   `#33291179584` were disqualified. Both `Native Lifecycle` jobs returned
   file-backup HTTP 400 because the fixture lacked an explicit temporary vhosts
-  root, and the `Managed Agent Lifecycle` arm64 runner log failed with
-  `agent release archive contains an invalid path`. API job/run records may
-  remain stale `in_progress`; no successful `v0.9.7` GitHub Release exists.
+  root. The `Managed Agent Lifecycle` jobs were cancelled; their arm64 runner
+  log preserved `agent release archive contains an invalid path`. The workflow
+  reached terminal `completed/cancelled` at
+  `2026-08-30T04:27:26Z` after normal cancellation followed by a force-cancel
+  because runner finalization stalled. No successful `v0.9.7` GitHub Release
+  exists.
   Public publication, signed assets, independent clean-host acceptance,
   provider-network receipt, and live rollout for `v0.9.8` remain pending and
   are separate release gates. No public PR, tag, release, clean-host result,
@@ -38,9 +41,11 @@ is pre-1.0; public release acceptance remains in progress.
   `5c5bcf053b333f657ef011078f32ed54126946e6`, but tagged workflow
   `#33291179584` is immutable disqualified evidence. Both `Native Lifecycle`
   jobs returned file-backup HTTP 400 because the fixture lacked an explicit
-  temporary vhosts root, and the `Managed Agent Lifecycle` arm64 runner log
-  failed with `agent release archive contains an invalid path`. API job/run
-  records may remain stale `in_progress`; no successful `v0.9.7` GitHub Release
+  temporary vhosts root. The `Managed Agent Lifecycle` jobs were cancelled;
+  their arm64 runner log preserved `agent release archive contains an invalid
+  path`. The workflow reached terminal `completed/cancelled` at
+  `2026-08-30T04:27:26Z` after normal cancellation followed by a force-cancel
+  because runner finalization stalled. No successful `v0.9.7` GitHub Release
   exists. The tag and workflow remain failed-release evidence only.
 
 ### Fixed
