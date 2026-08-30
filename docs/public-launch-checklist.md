@@ -12,11 +12,15 @@ guest-time-safe CPU accounting. The TUI consumer and OpenAPI contract revision
 71 (443 routes, 321 schemas) are complete, and combined metrics acceptance is
 complete. Canonical public repository selection and publication are complete at
 [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially published
-at `53df8ba`, with initial private/public tree parity at `3719df8`. Public
-source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the first fully
-green main CI matrix run, `#33283277809`. No tag, release, or release signer
-exists yet. Signer selection/ceremony, the first signed release, clean
-disposable-VM acceptance, and local/Contabo live rollout remain pending.
+at `53df8ba`, with initial private/public tree parity at `3719df8`. Immutable
+public source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the
+first fully green protected main CI matrix run `#33283277809`; the current
+green protected main run is `#33283728373` (2026-08-30). Main branch protection
+is complete. The initial active signer is prepared in private commit `df0a5070`,
+and the `HSERVER_RELEASE_SIGNING_KEY` Actions secret is configured; public
+signer PR #7, the first signed release, version tag, GitHub Release, tagged
+lifecycle/provenance acceptance, clean independent-VM acceptance, and
+local/Contabo live rollout remain pending.
 The live `v0.9.3` rollout is not the current source; this status does not claim
 live deployment or a public release.
 
@@ -80,7 +84,9 @@ workflow.
 The one-time public-history creation and publication are complete. The
 canonical public repository is
 [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially published
-at initial public HEAD `53df8ba`, with private/public tree parity `3719df8`. The
+at `53df8ba`, with private/public tree parity `3719df8`; immutable public source
+commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the first fully green
+protected main CI matrix run `#33283277809`. The
 commands below document the one-time staging procedure that produced that
 history; their `/tmp` destination is disposable and must not be treated as a
 canonical checkout or permanent publication workflow.
@@ -111,7 +117,8 @@ pull-request refs into the public repository.
 
 ## 3. Configure the public repository
 
-- protect `main` and require the lint, test, frontend build, Go build,
+- `main` branch protection is complete, with the required lint, test, frontend
+  build, Go build,
   `Database Restore (PostgreSQL)`, `Database Restore (MariaDB)`,
   `Docker Quick Evaluation`, `Public Source Snapshot (amd64)`,
   `Public Source Snapshot (arm64)`,
@@ -123,18 +130,19 @@ pull-request refs into the public repository.
   links;
 - allow releases only from version tags created from protected `main`; the
   release provenance job verifies the live protected branch and tag ancestry;
-- generate the release Ed25519 key outside Git, store only its private PEM in
-  the protected `HSERVER_RELEASE_SIGNING_KEY` Actions secret, calculate SHA-256
-  over the decoded raw 32-byte public key, and record the key plus fingerprint
-  as an `active` signer in `trust/release-signers.json` through protected review;
-- keep the checked-in canonical trust store empty until that operator key
-  ceremony is complete. Tagged staging deliberately fails when it has no
-  active signer or the Actions secret derives a different public key;
+- keep the release Ed25519 private key outside Git. The initial active signer is
+  prepared in private commit `df0a5070`, and the `HSERVER_RELEASE_SIGNING_KEY`
+  Actions secret is configured; public signer PR #7 remains pending through
+  protected review before tagged staging;
+- require the configured key and the publicly reviewed signer from PR #7 to
+  match before tagged staging; staging remains gated until that publication is
+  complete;
 - use the canonical public repository
   [`IamYGT/heyserver`](https://github.com/IamYGT/heyserver), initially published
-  at initial public HEAD `53df8ba`, with private/public tree parity `3719df8`;
-  repository selection and publication are complete;
-- after signer selection and ceremony, publish the immutable installer commit
+  at `53df8ba`, with private/public tree parity `3719df8`; the immutable public
+  source commit associated with the first fully green protected main CI matrix
+  run is `adaccb23adf9720141d721970590de3a82fd17b5`;
+- after public signer PR #7 is merged, publish the immutable installer commit
   plus installer digest and signer fingerprint through an independently
   authenticated channel. A checksum adjacent to a mutable release asset is a
   convenience integrity check, not signer identity;
@@ -142,6 +150,10 @@ pull-request refs into the public repository.
   release signing key signs public metadata only and grants no server access.
 
 ## 4. Release an installation candidate
+
+The first fully green protected main CI matrix run does not create a release.
+Version-tag creation, GitHub Release publication, tagged lifecycle/provenance
+acceptance, clean independent-VM acceptance, and live rollout remain pending.
 
 Create the installation candidate from an exact, previously unused stable
 SemVer tag in the designated public repository. Build it from the exact commit
