@@ -505,7 +505,20 @@ cmp -s "$root_dir/scripts/hserver-install.sh" "$tmp/root/usr/local/libexec/hserv
 cmp -s "$root_dir/scripts/hserver-doctor.sh" "$tmp/root/usr/local/libexec/hserver-doctor"
 [ -n "$(find "$tmp/root/var/lib/hserver/releases" -type f -name hserver-panel -print -quit)" ]
 [ -n "$(find "$tmp/root/var/lib/hserver/releases" -type f -name hserverctl -print -quit)" ]
-upgrade_manifest=$(find "$tmp/root/var/lib/hserver/releases" -type f -name manifest.env -path '*-pre-upgrade*' -print -quit)
+releases_dir=$tmp/root/var/lib/hserver/releases
+upgrade_marker=$releases_dir/latest-pre-upgrade
+[ -f "$upgrade_marker" ]
+upgrade_snapshot=$(cat "$upgrade_marker")
+case "$upgrade_snapshot" in
+  "$releases_dir"/*) ;;
+  *)
+    printf '%s\n' 'latest-pre-upgrade marker points outside the releases directory' >&2
+    exit 1
+    ;;
+esac
+[ -d "$upgrade_snapshot" ]
+upgrade_manifest=$upgrade_snapshot/manifest.env
+[ -f "$upgrade_manifest" ]
 grep -q '^SERVICE_WAS_ACTIVE=1$' "$upgrade_manifest"
 grep -q '^SERVICE_WAS_ENABLED=1$' "$upgrade_manifest"
 grep -q '^CLI_WAS_PRESENT=1$' "$upgrade_manifest"
@@ -515,8 +528,6 @@ grep -q '^NGINX_SNIPPETS_WERE_PRESENT=1$' "$upgrade_manifest"
 grep -q '^LIFECYCLE_ASSETS_DIR_WAS_PRESENT=1$' "$upgrade_manifest"
 grep -q '^LIFECYCLE_SNIPPETS_DIR_WAS_PRESENT=1$' "$upgrade_manifest"
 grep -q '^LIFECYCLE_SNIPPETS_WERE_PRESENT=1$' "$upgrade_manifest"
-upgrade_snapshot=$(dirname "$upgrade_manifest")
-[ "$(cat "$tmp/root/var/lib/hserver/releases/latest-pre-upgrade")" = "$upgrade_snapshot" ]
 
 printf '%s\n' changed-after-upgrade >"$tmp/root/etc/nginx/snippets/hserver-security-headers.conf"
 
