@@ -35,10 +35,10 @@ for required in \
   }
 done
 for required in \
-  'Install a published archive through the signed' \
-  'it is not the public release installation path'; do
+  '[installation guide](docs/installation-guide.md)' \
+  'signed public bootstrap'; do
   grep -Fq -- "$required" "$readme" || {
-    printf 'README is missing signed-install contract: %s\n' "$required" >&2
+    printf 'README is missing concise signed-install handoff: %s\n' "$required" >&2
     exit 1
   }
 done
