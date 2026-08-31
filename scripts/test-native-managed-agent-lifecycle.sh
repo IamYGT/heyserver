@@ -21,6 +21,7 @@ checksum=$4
 upgrade_version=$5
 upgrade_agent=$6
 root_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+status_context=${HSERVER_ACCEPTANCE_STATUS_CONTEXT:-ci/managed-lifecycle-progress/$arch}
 
 # The managed status endpoint waits up to 45 seconds for the agent task. Keep
 # each client request just above that server deadline, while bounding retries
@@ -41,13 +42,13 @@ publish_progress() {
     return
   fi
   local payload
-  payload=$(python3 - "$state" "$arch" "$description" <<'PY'
+  payload=$(python3 - "$state" "$status_context" "$description" <<'PY'
 import json
 import sys
 
 print(json.dumps({
     "state": sys.argv[1],
-    "context": f"ci/managed-lifecycle-progress/{sys.argv[2]}",
+    "context": sys.argv[2],
     "description": sys.argv[3][:140],
 }))
 PY
