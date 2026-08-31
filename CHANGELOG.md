@@ -14,6 +14,9 @@ is pre-1.0; public release acceptance remains in progress.
   acceptance now bounds cleanup and uninstall operations, leaves time for
   diagnostics, uploads systemd evidence on every outcome, and supports a
   non-release manual diagnostic run.
+- Tagged publication requires successful run-scoped amd64 and arm64 managed
+  lifecycle receipts from the exact release commit before assets can be
+  published.
 - No `v0.9.11` public tag, GitHub Release, clean-host acceptance, or live
   rollout is claimed yet.
 
