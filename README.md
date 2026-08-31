@@ -179,7 +179,7 @@ managed node. See [Agent Hub contract](docs/agent-hub-contract.md) and
 
 Required toolchains match CI:
 
-- Go version declared by the root `go.mod`
+- Go 1.26.1 or newer (the minimum declared by the root `go.mod`)
 - Node.js 24
 - npm, Git, Make, Python 3, and a C compiler for CGO
 
