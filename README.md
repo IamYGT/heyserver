@@ -1,3 +1,14 @@
+<p align="center">
+  <img src="docs/images/heyserver-social-preview.png" alt="Heyserver — Manage Linux. Don't just monitor it." width="100%">
+</p>
+
+<p align="center">
+  <a href="https://github.com/IamYGT/heyserver/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/IamYGT/heyserver/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/IamYGT/heyserver/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/IamYGT/heyserver"></a>
+  <a href="LICENSE"><img alt="Apache License 2.0" src="https://img.shields.io/github/license/IamYGT/heyserver"></a>
+  <a href="https://github.com/IamYGT/heyserver/discussions"><img alt="GitHub Discussions" src="https://img.shields.io/badge/GitHub-Discussions-8250df?logo=github"></a>
+</p>
+
 # Heyserver
 
 Heyserver is an open-source, self-hosted Linux server management panel. It pairs
@@ -12,6 +23,9 @@ without exposing inbound agent ports.
 
 > Heyserver is pre-1.0. Review release notes and keep a tested backup before
 > upgrading production installations.
+
+If Heyserver is useful to you, [star the repository](https://github.com/IamYGT/heyserver)
+and join [Discussions](https://github.com/IamYGT/heyserver/discussions) to shape the roadmap.
 
 The public brand is **Heyserver**. Existing technical identifiers—including
 `hserverctl`, the `hserver` systemd service, `HSERVER_*` settings, and
