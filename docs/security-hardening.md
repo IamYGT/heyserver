@@ -31,7 +31,7 @@ file name, or package alone is not evidence that an integration is healthy.
 
 ## Remote-server boundary
 
-Remote operations use enrolled HServer agents. The hub sends versioned task IDs
+Remote operations use enrolled Heyserver agents. The hub sends versioned task IDs
 and bounded parameters; it does not send arbitrary shell commands. Each agent
 advertises its observed and mutable capabilities, keeps executable paths and
 deploy arguments local, and refuses undeclared work.

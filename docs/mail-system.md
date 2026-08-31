@@ -1,12 +1,12 @@
 # Mail Integration
 
-HServer can manage a configured Stalwart Mail Server without making mail a core
+Heyserver can manage a configured Stalwart Mail Server without making mail a core
 runtime dependency. A fresh installation must show the integration as **not
 configured** until working credentials and an endpoint are supplied.
 
 ## Configuration
 
-Use the protected HServer environment file:
+Use the protected Heyserver environment file:
 
 ```env
 STALWART_URL=

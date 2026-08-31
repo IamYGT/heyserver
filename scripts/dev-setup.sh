@@ -74,7 +74,7 @@ version_at_least() {
   (( actual_patch >= required_patch ))
 }
 
-printf 'HServer contributor environment\n\n'
+printf 'Heyserver contributor environment\n\n'
 
 if command -v go >/dev/null 2>&1; then
   go_output=$(go version 2>/dev/null || true)

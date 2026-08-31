@@ -2,9 +2,9 @@
 
 ## Overview
 
-HServer exposes two independent DNS backends. `/dns` manages a BIND 9 server
+Heyserver exposes two independent DNS backends. `/dns` manages a BIND 9 server
 on the same host as the native panel; `/cloudflare` manages an optional remote
-Cloudflare account. Neither backend is required by the core panel, and HServer
+Cloudflare account. Neither backend is required by the core panel, and Heyserver
 does not copy or synchronise zones between them.
 
 | Backend | Scope | Service layer |
@@ -14,14 +14,14 @@ does not copy or synchronise zones between them.
 
 ## BIND installation boundary
 
-HServer observes the distribution-provided BIND installation. Detection never
+Heyserver observes the distribution-provided BIND installation. Detection never
 installs packages, starts a unit, creates a zone, or replaces configuration.
 
 | Requirement | Default |
 | --- | --- |
 | Server executable | `named` |
 | Zone declarations | `/etc/bind/named.conf.local` |
-| HServer-created zone files | `/etc/bind/zones/db.<domain>` |
+| Heyserver-created zone files | `/etc/bind/zones/db.<domain>` |
 | Configuration checker | `named-checkconf` |
 | Zone checker | `named-checkzone` |
 | Runtime reload client | `rndc` |
@@ -105,7 +105,7 @@ also change `named.conf.local`:
 - a commit, reload, or cleanup failure restores both the previous configuration
   and zone file, followed by one rollback reload when runtime state changed.
 
-HServer serializes local BIND mutations so two panel requests cannot overwrite
+Heyserver serializes local BIND mutations so two panel requests cannot overwrite
 each other's snapshots. Zone create/delete also writes a durable versioned
 journal before the first file mutation. The protected journal lives at
 `${HSERVER_DATA_DIR}/bind/lifecycle-transaction.json`; its directory is mode
@@ -113,7 +113,7 @@ journal before the first file mutation. The protected journal lives at
 contain the original BIND configuration. Keep the whole data directory private
 and include it in installation backups.
 
-On startup, HServer examines that journal before the HTTP router starts:
+On startup, Heyserver examines that journal before the HTTP router starts:
 
 - a transaction already marked `reloaded` is finalized without undoing the
   applied change;
@@ -125,12 +125,12 @@ On startup, HServer examines that journal before the HTTP router starts:
   every BIND mutation.
 
 Do not delete or edit a pending journal manually. Repair BIND validation or
-`rndc reload`, then restart HServer so the same recovery pass can finish.
+`rndc reload`, then restart Heyserver so the same recovery pass can finish.
 
 ## SOA serials
 
 The SOA editor exposes primary nameserver, responsible mailbox, refresh, retry,
-expire, and minimum TTL. HServer increments an existing date-style serial when
+expire, and minimum TTL. Heyserver increments an existing date-style serial when
 possible; otherwise it uses a monotonically increasing Unix-style value.
 
 ## Propagation lookup

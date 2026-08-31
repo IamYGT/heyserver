@@ -84,9 +84,9 @@ func presentCLIError(err error) error {
 func runWithInput(ctx context.Context, args []string, stdin io.Reader, stdout, stderr io.Writer, getenv func(string) string) error {
 	global := flag.NewFlagSet("hserverctl", flag.ContinueOnError)
 	global.SetOutput(io.Discard)
-	server := global.String("server", envDefault(getenv("HSERVER_URL"), defaultServerURL), "HServer base URL")
+	server := global.String("server", envDefault(getenv("HSERVER_URL"), defaultServerURL), "Heyserver base URL")
 	tokenFile := global.String("token-file", defaultTokenFile(getenv), "protected bearer-token file")
-	contextName := global.String("context", strings.TrimSpace(getenv("HSERVER_CONTEXT")), "named HServer context")
+	contextName := global.String("context", strings.TrimSpace(getenv("HSERVER_CONTEXT")), "named Heyserver context")
 	timeout := global.Duration("timeout", 30*time.Second, "request timeout")
 	if err := global.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
@@ -531,7 +531,7 @@ func authenticateWithInput(ctx context.Context, client *apiClient, email, passwo
 			return "", fmt.Errorf("read password file: %w", err)
 		}
 	} else {
-		password, err = readInteractiveSecret(input, promptOut, "HServer password: ", "--password-file", 8<<10)
+		password, err = readInteractiveSecret(input, promptOut, "Heyserver password: ", "--password-file", 8<<10)
 		if err != nil {
 			return "", err
 		}
@@ -588,9 +588,9 @@ func runLogout(args []string, tokenFile, environmentToken string, out io.Writer)
 		return err
 	}
 	if removed {
-		fmt.Fprintf(out, "Removed stored HServer token from %s\n", tokenFile)
+		fmt.Fprintf(out, "Removed stored Heyserver token from %s\n", tokenFile)
 	} else {
-		fmt.Fprintf(out, "No stored HServer token found at %s\n", tokenFile)
+		fmt.Fprintf(out, "No stored Heyserver token found at %s\n", tokenFile)
 	}
 	if strings.TrimSpace(environmentToken) != "" {
 		fmt.Fprintln(out, "HSERVER_TOKEN remains active in this environment; unset it to end that session.")
@@ -1026,7 +1026,7 @@ func writeUsage(out io.Writer) {
 	fmt.Fprint(out, `Usage: hserverctl [global flags] COMMAND
 
 Global flags (must precede COMMAND):
-  --server URL       HServer base URL (HSERVER_URL; default http://127.0.0.1:3085)
+  --server URL       Heyserver base URL (HSERVER_URL; default http://127.0.0.1:3085)
   --token-file PATH  protected token file (HSERVER_TOKEN_FILE; default user config path)
   --context NAME     named server context (HSERVER_CONTEXT; default active context)
   --timeout DURATION request timeout (default 30s)
@@ -1254,11 +1254,11 @@ func cliHelpFlagDescription(name string) string {
 	case "signal":
 		return "process signal: term or kill"
 	case "server":
-		return "HServer base URL"
+		return "Heyserver base URL"
 	case "token-file":
 		return "protected bearer-token file"
 	case "context":
-		return "named HServer context"
+		return "named Heyserver context"
 	case "timeout":
 		return "request timeout"
 	case "format":

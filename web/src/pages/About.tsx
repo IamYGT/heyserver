@@ -235,7 +235,7 @@ export default function About() {
       void queryClient.invalidateQueries({ queryKey: ['health'] })
       void queryClient.invalidateQueries({ queryKey: ['release-update'] })
     } else if (status === 'failed') {
-      toast.error(`${displayReleaseVersion(releaseStage.version)} upgrade failed; inspect the HServer service journal`)
+      toast.error(`${displayReleaseVersion(releaseStage.version)} upgrade failed; inspect the Heyserver service journal`)
     }
   }, [queryClient, releaseStage])
 
@@ -252,7 +252,7 @@ export default function About() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-white">About</h1>
-          <p className="text-zinc-400 text-sm mt-1">HServer Panel — system information and build details</p>
+          <p className="text-zinc-400 text-sm mt-1">Heyserver Panel — system information and build details</p>
         </div>
         <Button
           variant="outline"
@@ -273,7 +273,7 @@ export default function About() {
             <Server className="w-7 h-7 text-blue-400" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-white">HServer Panel</h2>
+            <h2 className="text-xl font-semibold text-white">Heyserver Panel</h2>
             <p className="text-zinc-400 text-sm mt-0.5">
               Self-hosted server management — single control-plane binary with optional host integrations
             </p>
@@ -370,7 +370,7 @@ export default function About() {
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-xs leading-relaxed text-zinc-400">
                       {canManage
-                        ? 'Stage downloads the archive on this server, verifies its declared size and SHA-256, rejects unsafe tar paths, and confirms the ELF architecture. It does not restart HServer.'
+                        ? 'Stage downloads the archive on this server, verifies its declared size and SHA-256, rejects unsafe tar paths, and confirms the ELF architecture. It does not restart Heyserver.'
                         : 'An administrator can download and verify this release on the server before installation.'}
                     </p>
                     <div className="flex shrink-0 flex-wrap gap-2">
@@ -394,7 +394,7 @@ export default function About() {
                           onChange={(event) => setUpgradeConfirmed(event.target.checked)}
                           className="mt-0.5 size-4 rounded border-zinc-600 bg-zinc-900 accent-blue-500"
                         />
-                        <span>I understand that HServer will restart, may be briefly unavailable, and the packaged installer will automatically restore the previous binary and database snapshot if the new release fails its health check.</span>
+                        <span>I understand that Heyserver will restart, may be briefly unavailable, and the packaged installer will automatically restore the previous binary and database snapshot if the new release fails its health check.</span>
                       </label>
                       <div className="flex justify-end">
                         <Button
@@ -403,7 +403,7 @@ export default function About() {
                           disabled={!upgradeConfirmed || installMutation.isPending || !signedManifestReady}
                           onClick={() => {
                             if (!upgradeConfirmed) return
-                            if (!window.confirm(`Install ${displayReleaseVersion(matchingStage.version)} now? HServer will restart.`)) return
+                            if (!window.confirm(`Install ${displayReleaseVersion(matchingStage.version)} now? Heyserver will restart.`)) return
                             installMutation.mutate(matchingStage)
                           }}
                         >

@@ -1,9 +1,9 @@
-# HServer Extension Boundary v1
+# Heyserver Extension Boundary v1
 
-HServer v1 accepts provider integrations and new server-management capabilities
+Heyserver v1 accepts provider integrations and new server-management capabilities
 as reviewed, in-tree source contributions. They are compiled into the panel,
 agent, CLI, and web bundle and travel through the normal versioned release
-lifecycle. HServer does **not** load arbitrary Go plugins, executable hooks,
+lifecycle. Heyserver does **not** load arbitrary Go plugins, executable hooks,
 shell fragments, remote UI bundles, or third-party binaries at runtime.
 
 This boundary lets community contributors extend a self-hosted installation

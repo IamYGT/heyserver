@@ -33,7 +33,7 @@ type Config struct {
 	PHPBinaryRoot       string   // PHP-FPM binary root (HSERVER_PHP_BINARY_ROOT)
 	NginxSitesAvailable string   // native Nginx config root (HSERVER_NGINX_SITES_AVAILABLE)
 	NginxSitesEnabled   string   // native Nginx enabled-site root (HSERVER_NGINX_SITES_ENABLED)
-	NginxSnippetsDir    string   // HServer-managed Nginx include root (HSERVER_NGINX_SNIPPETS_DIR)
+	NginxSnippetsDir    string   // Heyserver-managed Nginx include root (HSERVER_NGINX_SNIPPETS_DIR)
 	CertbotBin          string   // Certbot command or absolute path (HSERVER_CERTBOT_BIN)
 	CertbotConfigDir    string   // Certbot certificate state root (HSERVER_CERTBOT_CONFIG_DIR)
 	ACMEWebroot         string   // HTTP-01 challenge webroot (HSERVER_ACME_WEBROOT)

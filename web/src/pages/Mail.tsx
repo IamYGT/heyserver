@@ -265,12 +265,12 @@ function OverviewTab() {
     return (
       <DependencyRemediation
         title="Stalwart mail integration is unavailable"
-        summary="HServer could not inspect the configured Stalwart service. Service controls remain paused until detection succeeds."
+        summary="Heyserver could not inspect the configured Stalwart service. Service controls remain paused until detection succeeds."
         state="unavailable"
         steps={[
           <>Verify <code>HSERVER_STALWART_SERVICE</code>, <code>HSERVER_STALWART_CONFIG_PATH</code>, and <code>HSERVER_STALWART_BIN</code>.</>,
-          <>Inspect <code>systemctl status &lt;configured unit&gt;</code> on the HServer host.</>,
-          <>Confirm the configured binary and protected config path are accessible to HServer, then retry detection.</>,
+          <>Inspect <code>systemctl status &lt;configured unit&gt;</code> on the Heyserver host.</>,
+          <>Confirm the configured binary and protected config path are accessible to Heyserver, then retry detection.</>,
         ]}
         error={statusQuery.error.message}
         retry={() => { void statusQuery.refetch() }}
@@ -302,11 +302,11 @@ function OverviewTab() {
       {!statusKnown && (
         <DependencyRemediation
           title="Stalwart service state is unavailable"
-          summary="The overview endpoint responded, but HServer could not determine the configured service state. Start, stop, and restart remain disabled."
+          summary="The overview endpoint responded, but Heyserver could not determine the configured service state. Start, stop, and restart remain disabled."
           state="unavailable"
           steps={[
             <>Verify <code>HSERVER_STALWART_SERVICE</code> names the installed systemd unit.</>,
-            <>Inspect <code>systemctl status &lt;configured unit&gt;</code> and the HServer service logs.</>,
+            <>Inspect <code>systemctl status &lt;configured unit&gt;</code> and the Heyserver service logs.</>,
             <>Correct the service reference or access boundary, then retry detection.</>,
           ]}
           error={statusSource?.error}

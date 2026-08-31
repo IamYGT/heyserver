@@ -263,7 +263,7 @@ func TestRunDoctorSupportsControlSafeTextOutput(t *testing.T) {
 	}
 	text := output.String()
 	for _, expected := range []string{
-		"HServer connection doctor: PASS",
+		"Heyserver connection doctor: PASS",
 		"Panel: ok | version v0.1.0[31m | uptime 42s | commit abc123",
 		"Account: role admin | TOTP enabled",
 		"Fleet: 0 observed | 0 online | 0 offline",
@@ -310,7 +310,7 @@ func TestRunDoctorWritesNewProtectedReportFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(receipt.String(), "Wrote protected HServer doctor report") || strings.Contains(receipt.String(), "doctor-token") || strings.Contains(receipt.String(), "private@example.com") {
+	if !strings.Contains(receipt.String(), "Wrote protected Heyserver doctor report") || strings.Contains(receipt.String(), "doctor-token") || strings.Contains(receipt.String(), "private@example.com") {
 		t.Fatalf("receipt=%q", receipt.String())
 	}
 	info, err := os.Stat(reportPath)
@@ -366,7 +366,7 @@ func TestRunDoctorOutputPreservesFailedReportAndRefusesOverwriteBeforeRequest(t 
 		t.Fatalf("err=%v", err)
 	}
 	data, readErr := os.ReadFile(reportPath)
-	if readErr != nil || !strings.Contains(string(data), "HServer connection doctor: FAIL") || !strings.Contains(string(data), "token expired") {
+	if readErr != nil || !strings.Contains(string(data), "Heyserver connection doctor: FAIL") || !strings.Contains(string(data), "token expired") {
 		t.Fatalf("report=%q readErr=%v", data, readErr)
 	}
 	before := requests.Load()

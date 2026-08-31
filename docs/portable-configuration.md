@@ -1,6 +1,6 @@
 # Portable Configuration Schema v1
 
-HServer portable configuration files move a narrow set of non-secret panel
+Heyserver portable configuration files move a narrow set of non-secret panel
 preferences between self-hosted installations. They are not full backups and
 do not replace the portable panel-state backup and restore workflow.
 

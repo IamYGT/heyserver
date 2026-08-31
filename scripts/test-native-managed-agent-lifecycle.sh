@@ -116,7 +116,7 @@ for path in \
   /etc/systemd/system/hserver.service \
   /etc/systemd/system/hserver-agent.service
 do
-  [[ ! -e "$path" ]] || die "Refusing to overwrite a pre-existing HServer installation: $path"
+  [[ ! -e "$path" ]] || die "Refusing to overwrite a pre-existing Heyserver installation: $path"
 done
 
 assert_port_free() {
@@ -132,7 +132,7 @@ finally:
 PY
 }
 
-assert_port_free 3085 || die "Refusing to use occupied HServer port 3085."
+assert_port_free 3085 || die "Refusing to use occupied Heyserver port 3085."
 assert_port_free 38086 || die "Refusing to use occupied release-feed port 38086."
 [[ -s "$archive" && -s "$checksum" && -s "$upgrade_agent" ]] || die "Release inputs are missing."
 

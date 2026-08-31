@@ -170,9 +170,9 @@ func (c *Checker) Check(ctx context.Context) Result {
 	result.ReleaseNotesURL = manifest.ReleaseNotesURL
 	switch state {
 	case releaseversion.Ahead:
-		result.Message = "A newer HServer release is available."
+		result.Message = "A newer Heyserver release is available."
 	case releaseversion.Current:
-		result.Message = "This HServer release is current."
+		result.Message = "This Heyserver release is current."
 	case releaseversion.Behind:
 		result.Message = "This panel is newer than the configured release manifest."
 	default:

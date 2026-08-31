@@ -35,7 +35,7 @@ const update = {
     sha256: '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
     size_bytes: 1234,
   },
-  message: 'A newer HServer release is available.',
+  message: 'A newer Heyserver release is available.',
   checked_at: '2026-08-26T18:00:00Z',
 }
 
@@ -96,7 +96,7 @@ describe('About release upgrade flow', () => {
     fireEvent.click(await screen.findByRole('button', { name: /stage & verify/i }))
     expect(await screen.findByText('Archive verified and ready')).toBeInTheDocument()
 
-    const confirmation = screen.getByRole('checkbox', { name: /I understand that HServer will restart/i })
+    const confirmation = screen.getByRole('checkbox', { name: /I understand that Heyserver will restart/i })
     fireEvent.click(confirmation)
     fireEvent.click(screen.getByRole('button', { name: /install verified release/i }))
 
@@ -107,7 +107,7 @@ describe('About release upgrade flow', () => {
         confirmed: true,
       })
     })
-    expect(window.confirm).toHaveBeenCalledWith('Install v1.3.0 now? HServer will restart.')
+    expect(window.confirm).toHaveBeenCalledWith('Install v1.3.0 now? Heyserver will restart.')
   })
 
   it('shows the server recovery detail for an interrupted upgrade', async () => {
@@ -139,7 +139,7 @@ describe('About release upgrade flow', () => {
     renderAbout()
 
     expect(await screen.findByText('Signature verification unavailable')).toBeInTheDocument()
-    const confirmation = screen.getByRole('checkbox', { name: /I understand that HServer will restart/i })
+    const confirmation = screen.getByRole('checkbox', { name: /I understand that Heyserver will restart/i })
     fireEvent.click(confirmation)
     const installButton = screen.getByRole('button', { name: /install verified release/i })
     expect(installButton).toBeDisabled()

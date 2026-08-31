@@ -810,7 +810,7 @@ export default function Layout({ children }: LayoutProps) {
   const serviceActionAvailable = localSelected || (selectedNode?.capabilities?.includes('service.action') ?? false)
   const terminalAvailable = localSelected || (selectedNode?.capabilities?.includes('terminal') ?? false)
   const selectedServerLabel = localSelected
-    ? 'HServer'
+    ? 'Heyserver'
     : selectedNode?.name || selectedNode?.hostname || selectedServer
   const {
     data: selectedNodeMemory,
@@ -969,7 +969,7 @@ export default function Layout({ children }: LayoutProps) {
       <Link
         key={item.path}
         to={targetPath}
-        title={localOnly ? `${item.label} currently manages HServer` : undefined}
+        title={localOnly ? `${item.label} currently manages Heyserver` : undefined}
         onClick={() => {
           setSidebarOpen(false)
           if (localOnly) persistServer('local')
@@ -1068,7 +1068,7 @@ export default function Layout({ children }: LayoutProps) {
         </div>
         {(!collapsed || forMobile) && (
           <div className="min-w-0">
-            <span className="text-white font-semibold text-sm">HServer</span>
+            <span className="text-white font-semibold text-sm">Heyserver</span>
             <span className="block text-zinc-500 text-xs">Panel v1.0</span>
           </div>
         )}
@@ -1206,7 +1206,7 @@ export default function Layout({ children }: LayoutProps) {
                 aria-label="Managed server"
                 className="max-w-28 appearance-none bg-transparent pr-4 font-medium text-zinc-200 outline-none sm:max-w-none"
               >
-                <option value="local">HServer</option>
+                <option value="local">Heyserver</option>
                 {!localSelected && !selectedNode && (
                   <option value={selectedServer}>{selectedServer} · Unavailable</option>
                 )}

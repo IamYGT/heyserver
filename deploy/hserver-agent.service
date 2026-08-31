@@ -1,5 +1,5 @@
 [Unit]
-Description=HServer Managed Node Agent
+Description=Heyserver Managed Node Agent
 After=network-online.target
 Wants=network-online.target
 

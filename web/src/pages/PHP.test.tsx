@@ -93,7 +93,7 @@ describe('PHP page inventory truthfulness', () => {
 
     expect(await screen.findByText('PHP-FPM is not installed')).toBeInTheDocument()
     expect(screen.getByText('/etc/php/<VERSION>/fpm')).toBeInTheDocument()
-    expect(screen.getByText(/HServer does not install runtimes automatically/)).toBeInTheDocument()
+    expect(screen.getByText(/Heyserver does not install runtimes automatically/)).toBeInTheDocument()
     expect(screen.queryByRole('tab', { name: 'Pools' })).not.toBeInTheDocument()
   })
 

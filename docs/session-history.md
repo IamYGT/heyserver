@@ -1,4 +1,4 @@
-# HServer development history
+# Heyserver development history
 
 This public history records product milestones without installation inventories,
 accounts, credentials, production domains, IP addresses, or operator-only
@@ -34,14 +34,14 @@ runbooks. Detailed changes remain available in Git history and `CHANGELOG.md`.
 - BIND zone lifecycle transactions gained a protected durable journal, startup
   crash recovery, recovery-aware readiness, and UI guidance that keeps
   mutations locked until recovery succeeds.
-- Remote management moved to the fixed, least-privileged HServer agent task
+- Remote management moved to the fixed, least-privileged Heyserver agent task
   protocol instead of SSH command execution.
 - Public examples use installation-owned values or reserved example domains and
   addresses; secrets and production inventory are excluded from distribution.
 
 ## Current direction
 
-HServer is evolving as a provider-neutral community project that operators can
+Heyserver is evolving as a provider-neutral community project that operators can
 build, install, inspect, extend, upgrade, and roll back on their own servers.
 See `AGENTS.md`, `README.md`, `docs/installation-guide.md`, and
 `docs/agent-hub-contract.md` for the current contracts.

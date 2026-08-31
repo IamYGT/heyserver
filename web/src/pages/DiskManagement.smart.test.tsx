@@ -21,7 +21,7 @@ describe('Root disk SMART readiness', () => {
         healthy: false,
         device: '/dev/md0',
         status: 'UNAVAILABLE',
-        message: 'The root filesystem spans multiple physical disks, so HServer will not choose one arbitrarily.',
+        message: 'The root filesystem spans multiple physical disks, so Heyserver will not choose one arbitrarily.',
       }}
       loading={false}
       error={null}

@@ -379,8 +379,8 @@ type Event struct {
 	Time                        time.Time
 }
 
-var subjectTmpl = template.Must(template.New("s").Parse("[HServer] Alert: {{.Type}} on {{.Host}}"))
-var bodyTmpl = template.Must(template.New("b").Parse("HServer Panel Alert\n====================\nHost   : {{.Host}}\nType   : {{.Type}}\nTarget : {{.Target}}\nValue  : {{printf \"%.2f\" .Value}}\nTime   : {{.Time.Format \"2006-01-02 15:04:05 UTC\"}}\n\n{{.Message}}\n"))
+var subjectTmpl = template.Must(template.New("s").Parse("[Heyserver] Alert: {{.Type}} on {{.Host}}"))
+var bodyTmpl = template.Must(template.New("b").Parse("Heyserver Panel Alert\n====================\nHost   : {{.Host}}\nType   : {{.Type}}\nTarget : {{.Target}}\nValue  : {{printf \"%.2f\" .Value}}\nTime   : {{.Time.Format \"2006-01-02 15:04:05 UTC\"}}\n\n{{.Message}}\n"))
 
 func RenderSubject(e Event) string {
 	var b bytes.Buffer
@@ -411,8 +411,8 @@ func FireManual(channel models.NotificationChannel) error {
 func FireManualWithResult(channel models.NotificationChannel) (DeliveryResult, error) {
 	channel.Enabled = true
 	d := NewDispatcher([]models.NotificationChannel{channel})
-	e := Event{Type: "test", Host: hostname(), Target: "manual test", Message: "This is a test notification from HServer Panel.", Time: time.Now().UTC()}
-	results, err := d.SendWithResults(fmt.Sprintf("[HServer] Test Notification (%d %s)", channel.ID, channel.Name), RenderBody(e))
+	e := Event{Type: "test", Host: hostname(), Target: "manual test", Message: "This is a test notification from Heyserver Panel.", Time: time.Now().UTC()}
+	results, err := d.SendWithResults(fmt.Sprintf("[Heyserver] Test Notification (%d %s)", channel.ID, channel.Name), RenderBody(e))
 	if len(results) == 0 {
 		return DeliveryResult{
 			ChannelID:             channel.ID,

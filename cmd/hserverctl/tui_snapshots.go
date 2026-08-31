@@ -75,7 +75,7 @@ func loadTUISnapshots(ctx context.Context, client *apiClient, target tuiTarget) 
 		return tuiSnapshotState{
 			Supported:          false,
 			DestinationStatus:  "not_configured",
-			DestinationMessage: "Encrypted snapshot repositories are owned by the HServer hub; select the Local server.",
+			DestinationMessage: "Encrypted snapshot repositories are owned by the Heyserver hub; select the Local server.",
 		}, nil
 	}
 	state, err := requestJSON[tuiSnapshotState](ctx, client.withTimeout(3*time.Minute), http.MethodGet, "/api/backups/snapshot/status?refresh=1", nil, true)
@@ -156,7 +156,7 @@ func loadTUISnapshots(ctx context.Context, client *apiClient, target tuiTarget) 
 
 func runTUISnapshotOperation(ctx context.Context, client *apiClient, operation tuiOperation) (string, error) {
 	if !operation.Target.Local {
-		return "", errors.New("encrypted snapshot operations are local to the HServer hub")
+		return "", errors.New("encrypted snapshot operations are local to the Heyserver hub")
 	}
 	switch operation.Action {
 	case "create":

@@ -5,7 +5,7 @@ import DeveloperAPI from './DeveloperAPI'
 
 const contract = {
   openapi: '3.1.0',
-  info: { title: 'HServer API', version: '0.1.0' },
+  info: { title: 'Heyserver API', version: '0.1.0' },
   'x-hserver-contract-version': 4,
   'x-hserver-route-count': 3,
   'x-hserver-schema-count': 30,

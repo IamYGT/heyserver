@@ -2798,7 +2798,7 @@
         "additionalProperties": false,
         "properties": {
           "domain": {
-            "description": "ASCII hostname; HServer trims, lowercases, and removes one trailing dot before persistence.",
+            "description": "ASCII hostname; Heyserver trims, lowercases, and removes one trailing dot before persistence.",
             "maxLength": 254,
             "minLength": 3,
             "pattern": "^(?=.{1,254}$)(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.?$",
@@ -11530,7 +11530,7 @@
       },
       "panelBearer": {
         "bearerFormat": "JWT",
-        "description": "HServer panel JWT supplied by an API client.",
+        "description": "Heyserver panel JWT supplied by an API client.",
         "scheme": "bearer",
         "type": "http"
       },
@@ -11543,8 +11543,8 @@
     }
   },
   "info": {
-    "description": "Generated provider-neutral route, path-parameter, and access-level contract for the self-hosted HServer API. Payload schemas are added incrementally from the curated API reference.",
-    "title": "HServer API",
+    "description": "Generated provider-neutral route, path-parameter, and access-level contract for the self-hosted Heyserver API. Payload schemas are added incrementally from the curated API reference.",
+    "title": "Heyserver API",
     "version": "0.1.0"
   },
   "openapi": "3.1.0",
@@ -13517,7 +13517,7 @@
     },
     "/api/backups/schedules": {
       "delete": {
-        "description": "Delete the exact HServer-managed schedule line previously observed by the client while preserving unrelated crontab entries.",
+        "description": "Delete the exact Heyserver-managed schedule line previously observed by the client while preserving unrelated crontab entries.",
         "operationId": "delete-api-backups-schedules",
         "requestBody": {
           "content": {
@@ -13549,7 +13549,7 @@
                 }
               }
             },
-            "description": "The body is invalid or rawLine is not an HServer-managed schedule target."
+            "description": "The body is invalid or rawLine is not an Heyserver-managed schedule target."
           },
           "404": {
             "content": {
@@ -13597,7 +13597,7 @@
         "x-hserver-access": "Admin"
       },
       "get": {
-        "description": "List HServer-managed backup schedules observed in the panel service user's crontab. Retention values represent artifact counts, not elapsed days.",
+        "description": "List Heyserver-managed backup schedules observed in the panel service user's crontab. Retention values represent artifact counts, not elapsed days.",
         "operationId": "get-api-backups-schedules",
         "responses": {
           "200": {
@@ -13646,7 +13646,7 @@
         "x-hserver-access": "Admin"
       },
       "post": {
-        "description": "Add or replace one HServer-managed backup schedule after validating an exact cron expression or a UI frequency/time pair.",
+        "description": "Add or replace one Heyserver-managed backup schedule after validating an exact cron expression or a UI frequency/time pair.",
         "operationId": "post-api-backups-schedules",
         "requestBody": {
           "content": {
@@ -13831,7 +13831,7 @@
                 }
               }
             },
-            "description": "The selected destination does not support repository purge through HServer."
+            "description": "The selected destination does not support repository purge through Heyserver."
           },
           "503": {
             "content": {
@@ -18057,7 +18057,7 @@
     },
     "/api/deploy/targets/{id}/services": {
       "get": {
-        "description": "Observe every container in one configured local Docker Compose project. An empty project is returned as an array rather than null; HServer never broadens the command outside the persisted project directory and Compose file.",
+        "description": "Observe every container in one configured local Docker Compose project. An empty project is returned as an array rather than null; Heyserver never broadens the command outside the persisted project directory and Compose file.",
         "operationId": "get-api-deploy-targets-id-services",
         "parameters": [
           {
@@ -18474,7 +18474,7 @@
     },
     "/api/deploy/templates": {
       "get": {
-        "description": "Read installation-owned deployment templates from the fixed HServer data directory. The API cannot create templates, select another directory, or return repository credentials. Status distinguishes an absent or empty inventory from invalid or unreadable files.",
+        "description": "Read installation-owned deployment templates from the fixed Heyserver data directory. The API cannot create templates, select another directory, or return repository credentials. Status distinguishes an absent or empty inventory from invalid or unreadable files.",
         "operationId": "get-api-deploy-templates",
         "responses": {
           "200": {
@@ -23843,7 +23843,7 @@
     },
     "/api/nginx/archives": {
       "get": {
-        "description": "List validated HServer-owned local Nginx configuration recovery copies without exposing arbitrary files, archive content, or absolute host paths.",
+        "description": "List validated Heyserver-owned local Nginx configuration recovery copies without exposing arbitrary files, archive content, or absolute host paths.",
         "operationId": "get-api-nginx-archives",
         "responses": {
           "200": {
@@ -23904,7 +23904,7 @@
     },
     "/api/nginx/archives/{archive}/restore": {
       "post": {
-        "description": "Restore one missing disabled local Nginx site configuration from an exact observed HServer archive and SHA-256 checksum. Existing configs are never overwritten, the archive remains retained, the complete configuration is validated, and a rejected candidate is removed. Reload remains explicit.",
+        "description": "Restore one missing disabled local Nginx site configuration from an exact observed Heyserver archive and SHA-256 checksum. Existing configs are never overwritten, the archive remains retained, the complete configuration is validated, and a rejected candidate is removed. Reload remains explicit.",
         "operationId": "post-api-nginx-archives-archive-restore",
         "parameters": [
           {
@@ -23986,7 +23986,7 @@
                 }
               }
             },
-            "description": "Nginx rejected the restored candidate and HServer removed it."
+            "description": "Nginx rejected the restored candidate and Heyserver removed it."
           },
           "503": {
             "content": {
@@ -24026,7 +24026,7 @@
     },
     "/api/nginx/backups": {
       "get": {
-        "description": "List validated HServer-owned local Nginx pre-edit recovery copies without exposing arbitrary files, backup content, or absolute host paths.",
+        "description": "List validated Heyserver-owned local Nginx pre-edit recovery copies without exposing arbitrary files, backup content, or absolute host paths.",
         "operationId": "get-api-nginx-backups",
         "responses": {
           "200": {
@@ -24087,7 +24087,7 @@
     },
     "/api/nginx/backups/{backup}/restore": {
       "post": {
-        "description": "Roll one existing local Nginx configuration back from an exact observed pre-edit backup under separate backup and current-target SHA-256 locks. HServer retains a fresh pre-restore recovery, validates the complete configuration, restores the previous target on rejection, preserves enabled state, and leaves reload explicit.",
+        "description": "Roll one existing local Nginx configuration back from an exact observed pre-edit backup under separate backup and current-target SHA-256 locks. Heyserver retains a fresh pre-restore recovery, validates the complete configuration, restores the previous target on rejection, preserves enabled state, and leaves reload explicit.",
         "operationId": "post-api-nginx-backups-backup-restore",
         "parameters": [
           {
@@ -24283,7 +24283,7 @@
                 }
               }
             },
-            "description": "Nginx rejected the generated candidate and HServer removed it."
+            "description": "Nginx rejected the generated candidate and Heyserver removed it."
           },
           "503": {
             "content": {
@@ -24323,7 +24323,7 @@
     },
     "/api/nginx/configs/{filename}": {
       "delete": {
-        "description": "Archive one disabled regular local Nginx site configuration under an exact observed SHA-256 lock. HServer creates a same-directory recovery copy before removing the config from inventory, validates the complete Nginx configuration, and restores the original on validation failure. The document root is never removed and reload remains explicit.",
+        "description": "Archive one disabled regular local Nginx site configuration under an exact observed SHA-256 lock. Heyserver creates a same-directory recovery copy before removing the config from inventory, validates the complete Nginx configuration, and restores the original on validation failure. The document root is never removed and reload remains explicit.",
         "operationId": "delete-api-nginx-configs-filename",
         "parameters": [
           {
@@ -24654,7 +24654,7 @@
     },
     "/api/nginx/configs/{filename}/state": {
       "put": {
-        "description": "Apply an explicit idempotent enabled state to one local Nginx site configuration. Retries preserve the requested state; HServer only creates or removes an exact managed symlink and refuses foreign entries.",
+        "description": "Apply an explicit idempotent enabled state to one local Nginx site configuration. Retries preserve the requested state; Heyserver only creates or removes an exact managed symlink and refuses foreign entries.",
         "operationId": "put-api-nginx-configs-filename-state",
         "parameters": [
           {
@@ -35087,7 +35087,7 @@
   },
   "servers": [
     {
-      "description": "Current self-hosted HServer installation",
+      "description": "Current self-hosted Heyserver installation",
       "url": "/"
     }
   ],

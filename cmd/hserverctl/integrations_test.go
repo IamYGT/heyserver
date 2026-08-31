@@ -67,7 +67,7 @@ func TestRunIntegrationsListHumanOutputContainsRequiredColumns(t *testing.T) {
 	}
 	text := out.String()
 	for _, fragment := range []string{
-		"HServer integrations catalog (schema v1)",
+		"Heyserver integrations catalog (schema v1)",
 		"Catalog metadata only; it does not probe or report live integration health.",
 		"ID\tNAME\tREQUIREMENT\tTARGETS",
 		"cloudflare.dns\tCloudflare\toptional\tlocal_host",
@@ -220,7 +220,7 @@ func TestRunIntegrationsStatusTextShowsObservationResultsAndUnprobed(t *testing.
 	}
 	text := out.String()
 	for _, fragment := range []string{
-		"HServer integrations status (schema v1)",
+		"Heyserver integrations status (schema v1)",
 		"Observed at (observed_at): 2026-08-28T12:00:00Z",
 		"Target scope: local_host",
 		"Partial: true",

@@ -356,13 +356,13 @@ export default function Cron() {
       {statusQuery.isError && (
         <DependencyRemediation
           title="Cron readiness could not be determined"
-          summary="HServer could not verify the crontab client and cron daemon, so managed Cron inventory and mutations remain paused."
+          summary="Heyserver could not verify the crontab client and cron daemon, so managed Cron inventory and mutations remain paused."
           error={statusQuery.error.message}
           retry={() => { void statusQuery.refetch() }}
           retrying={statusQuery.isFetching}
           steps={[
             <>Verify <code className="text-zinc-100">crontab --version</code> and <code className="text-zinc-100">systemctl status cron</code> on this host.</>,
-            'Confirm the native HServer service can reach systemd and the crontab executable through its configured PATH.',
+            'Confirm the native Heyserver service can reach systemd and the crontab executable through its configured PATH.',
             'Correct the host dependency or service state, then retry detection.',
           ]}
         />
@@ -372,7 +372,7 @@ export default function Cron() {
         <DependencyRemediation
           state="not-configured"
           title="Cron is not installed"
-          summary="Scheduled-task management is unavailable because this host does not provide the crontab executable. HServer will not install packages automatically."
+          summary="Scheduled-task management is unavailable because this host does not provide the crontab executable. Heyserver will not install packages automatically."
           error={cronStatus.error}
           retry={() => { void statusQuery.refetch() }}
           retrying={statusQuery.isFetching}
@@ -388,14 +388,14 @@ export default function Cron() {
         <DependencyRemediation
           state="stopped"
           title="Cron is installed but the daemon is stopped"
-          summary="Existing crontabs remain visible, but HServer pauses mutations because newly scheduled work would not execute."
+          summary="Existing crontabs remain visible, but Heyserver pauses mutations because newly scheduled work would not execute."
           error={cronStatus.error}
           retry={() => { void statusQuery.refetch() }}
           retrying={statusQuery.isFetching}
           steps={[
             <>Inspect the failure with <code className="text-zinc-100">systemctl status cron</code>.</>,
             <>After correcting the cause, run <code className="text-zinc-100">systemctl start cron</code>.</>,
-            'Retry detection. HServer will restore mutation controls after the daemon reports active.',
+            'Retry detection. Heyserver will restore mutation controls after the daemon reports active.',
           ]}
         />
       )}
@@ -403,13 +403,13 @@ export default function Cron() {
       {cronStatus?.installed && cronStatus.state === 'unavailable' && (
         <DependencyRemediation
           title="Cron daemon state is unavailable"
-          summary="The crontab client exists, but HServer cannot prove that scheduled jobs will run, so mutations remain paused."
+          summary="The crontab client exists, but Heyserver cannot prove that scheduled jobs will run, so mutations remain paused."
           error={cronStatus.error}
           retry={() => { void statusQuery.refetch() }}
           retrying={statusQuery.isFetching}
           steps={[
             <>Check <code className="text-zinc-100">systemctl is-active cron</code> directly on the host.</>,
-            'Restore systemd access for the native HServer service without granting an unrelated container host control.',
+            'Restore systemd access for the native Heyserver service without granting an unrelated container host control.',
             'Retry detection after the daemon state becomes observable.',
           ]}
         />

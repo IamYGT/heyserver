@@ -47,7 +47,7 @@ func (request bindSOAMutationRequest) soa() (bindsvc.UpdateSOARequest, error) {
 }
 
 // InitBindService enables durable BIND lifecycle recovery in the configured
-// HServer data directory and attempts recovery before the HTTP router starts.
+// Heyserver data directory and attempts recovery before the HTTP router starts.
 func InitBindService(dataDir string) error {
 	service := bindsvc.NewWithStateDir(dataDir)
 	bindService = service

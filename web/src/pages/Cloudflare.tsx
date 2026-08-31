@@ -960,19 +960,19 @@ export default function Cloudflare() {
                 ? 'Cloudflare is not configured'
                 : 'Cloudflare is unavailable'}
               summary={zoneErrorIsNotConfigured
-                ? 'Add a least-privileged API token before HServer enables zone controls.'
-                : 'HServer could not reach Cloudflare or the configured token cannot access the requested zones. Zone controls remain paused.'}
+                ? 'Add a least-privileged API token before Heyserver enables zone controls.'
+                : 'Heyserver could not reach Cloudflare or the configured token cannot access the requested zones. Zone controls remain paused.'}
               state={zoneErrorIsNotConfigured ? 'not-configured' : 'unavailable'}
               steps={zoneErrorIsNotConfigured
                 ? [
                     <>Create a scoped token with <strong>Zone Read</strong> and <strong>DNS Edit</strong> only for the intended zones.</>,
                     <>Set <code>HSERVER_CF_API_TOKEN</code> in <code>/etc/hserver/hserver.env</code>.</>,
-                    <>Restart HServer, then retry detection. HServer will not create or broaden provider credentials.</>,
+                    <>Restart Heyserver, then retry detection. Heyserver will not create or broaden provider credentials.</>,
                   ]
                 : [
-                    <>Verify outbound HTTPS and DNS connectivity from the HServer host.</>,
+                    <>Verify outbound HTTPS and DNS connectivity from the Heyserver host.</>,
                     <>Check the token scope and zone access without printing the token.</>,
-                    <>Review HServer logs for the provider response, then retry detection.</>,
+                    <>Review Heyserver logs for the provider response, then retry detection.</>,
                   ]}
               error={zonesQuery.error.message}
               retry={() => { void zonesQuery.refetch() }}

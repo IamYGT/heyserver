@@ -125,7 +125,7 @@ func TestRunLogoutRemovesOnlyStoredRegularToken(t *testing.T) {
 	if strings.Contains(out.String(), "secret-token") || strings.Contains(out.String(), "environment-token") {
 		t.Fatalf("token leaked to output: %q", out.String())
 	}
-	if !strings.Contains(out.String(), "Removed stored HServer token") || !strings.Contains(out.String(), "HSERVER_TOKEN remains active") {
+	if !strings.Contains(out.String(), "Removed stored Heyserver token") || !strings.Contains(out.String(), "HSERVER_TOKEN remains active") {
 		t.Fatalf("output = %q", out.String())
 	}
 

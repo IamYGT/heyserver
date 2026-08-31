@@ -1,4 +1,4 @@
-// HServer BIND example. Copy and customize outside the repository.
+// Heyserver BIND example. Copy and customize outside the repository.
 // Never commit real customer zones, addresses, transfer keys, or inventories.
 
 zone "example.com" {

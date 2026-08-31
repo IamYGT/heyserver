@@ -1,4 +1,4 @@
-# HServer Community Roadmap
+# Heyserver Community Roadmap
 
 **Updated:** 2026-08-30
 
@@ -13,7 +13,7 @@ distribution or third-party provider has been certified.
 ## Product boundaries
 
 - The panel runs natively for full control of its local Linux host.
-- Additional servers connect outbound through the HServer agent; the hub does
+- Additional servers connect outbound through the Heyserver agent; the hub does
   not execute local commands while pretending to manage a remote node.
 - Remote mutations require an explicit agent capability and fixed, locally
   configured inputs.

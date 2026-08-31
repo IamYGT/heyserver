@@ -70,7 +70,7 @@ describe('Google Drive dependency states', () => {
     renderSection()
 
     expect(await screen.findByText('rclone kurulumu gerekli')).toBeInTheDocument()
-    expect(screen.getByText(/HServer paketleri otomatik olarak kurmaz/)).toBeInTheDocument()
+    expect(screen.getByText(/Heyserver paketleri otomatik olarak kurmaz/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Google ile bağlan ve izin ver' })).toBeDisabled()
   })
 

@@ -39,7 +39,7 @@ var ErrProjectDomainCleanup = errors.New("project domain cleanup failed")
 
 type projectDomainCommand func(time.Duration, string, ...string) (string, error)
 
-// NginxProjectDomainRuntime writes only HServer-owned HTTP reverse-proxy
+// NginxProjectDomainRuntime writes only Heyserver-owned HTTP reverse-proxy
 // virtual hosts. It tests the complete Nginx configuration before every reload
 // and restores the prior filesystem/runtime state when a step fails.
 type NginxProjectDomainRuntime struct {
@@ -536,7 +536,7 @@ func (runtime *NginxProjectDomainRuntime) configContent(domain models.DeployDoma
 			return "", err
 		}
 		certPath, keyPath := runtime.certificatePaths(domain.Domain)
-		return fmt.Sprintf(`# Managed by HServer project domains. Do not edit manually.
+		return fmt.Sprintf(`# Managed by Heyserver project domains. Do not edit manually.
 # hserver-project-target: %s
 # hserver-project-domain: %s
 server {
@@ -577,7 +577,7 @@ server {
 }
 `, owner, domain.Domain, domain.Domain, runtime.acmeWebroot, domain.Domain, certPath, keyPath, domain.HostPort), nil
 	}
-	return fmt.Sprintf(`# Managed by HServer project domains. Do not edit manually.
+	return fmt.Sprintf(`# Managed by Heyserver project domains. Do not edit manually.
 # hserver-project-target: %s
 # hserver-project-domain: %s
 server {

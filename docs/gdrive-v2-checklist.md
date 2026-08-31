@@ -6,7 +6,7 @@ installation has passed.
 
 ## Prerequisites
 
-- `rclone version` succeeds for the HServer service identity.
+- `rclone version` succeeds for the Heyserver service identity.
 - `HSERVER_GDRIVE_CLIENT_ID` and `HSERVER_GDRIVE_CLIENT_SECRET` are configured
   outside Git.
 - The Google OAuth client contains the installation's exact callback URL:
@@ -52,7 +52,7 @@ working.
 
 ## Failure and recovery checks
 
-- Revoke the OAuth grant and confirm HServer reports provider failure without
+- Revoke the OAuth grant and confirm Heyserver reports provider failure without
   breaking local backups.
 - Temporarily make rclone unavailable and confirm the state is `not configured`
   and the OAuth connection action is disabled.
@@ -65,7 +65,7 @@ working.
 
 ## Acceptance evidence
 
-Record the HServer version, OS and architecture, rclone version, test timestamp,
+Record the Heyserver version, OS and architecture, rclone version, test timestamp,
 backup type, checksum comparison, and resulting job states. Do not record OAuth
 tokens, environment files, Drive file contents, or unrelated server inventory.
 

@@ -61,7 +61,7 @@ git -C "$root_dir" archive --format=tar "$full_commit" | tar -xf - -C "$clean_ro
 install -m 0755 "$root_dir/scripts/go-build-with-frontend.sh" \
   "$clean_root/scripts/go-build-with-frontend.sh"
 git -C "$clean_root" init -q --initial-branch=main
-git -C "$clean_root" config user.name "HServer Metadata Test"
+git -C "$clean_root" config user.name "Heyserver Metadata Test"
 git -C "$clean_root" config user.email "metadata-test@example.com"
 git -C "$clean_root" add .
 git -C "$clean_root" commit -qm "seed build metadata fixture"

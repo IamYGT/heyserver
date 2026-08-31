@@ -47,7 +47,7 @@ export function backupOperationHint(message: string): string {
     return 'Yerel ve Drive boyutları uyuşmuyor. Drive\'daki kopyayı silip yeniden yükleyin.'
   }
   if (m.includes('no refresh token')) {
-    return 'Google hesabınızda myaccount.google.com/permissions → HServer erişimini kaldırın, panelden tekrar bağlanın; izin ekranında tüm kutuları onaylayın.'
+    return 'Google hesabınızda myaccount.google.com/permissions → Heyserver erişimini kaldırın, panelden tekrar bağlanın; izin ekranında tüm kutuları onaylayın.'
   }
   if (m.includes('not connected') || m.includes('oauth')) {
     return 'Google Drive bağlantısını kesip OAuth ile yeniden bağlanın.'

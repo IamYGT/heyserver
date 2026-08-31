@@ -7,7 +7,7 @@ Usage:
   sudo ./restore-db.sh validate BACKUP_FILE
   sudo ./restore-db.sh restore BACKUP_FILE --confirm
 
-Validates and restores an HServer panel-state bundle or a legacy SQLite backup.
+Validates and restores an Heyserver panel-state bundle or a legacy SQLite backup.
 A panel-state bundle restores the database and protected notification channel
 config files together. Restore creates a protected pre-restore recovery bundle,
 returns the service to its previous active or inactive state, and rolls back the
@@ -42,7 +42,7 @@ max_secret_files=${HSERVER_PANEL_BACKUP_MAX_SECRET_FILES:-10000}
   exit 1
 }
 [[ "$data_dir" = /* && "$db_path" = /* && "$secret_dir" = /* && "$recovery_dir" = /* ]] || {
-  printf 'HServer data, database, notification secret, and recovery paths must be absolute.\n' >&2
+  printf 'Heyserver data, database, notification secret, and recovery paths must be absolute.\n' >&2
   exit 1
 }
 
@@ -97,7 +97,7 @@ validate_database() {
   required_tables=$(sqlite3 -batch "$candidate" \
     "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name IN ('schema_migrations','users');")
   [[ "$required_tables" == "2" ]] || {
-    printf 'Backup is valid SQLite but not an HServer database.\n' >&2
+    printf 'Backup is valid SQLite but not an Heyserver database.\n' >&2
     return 1
   }
 }
@@ -370,9 +370,9 @@ case "$command_name" in
   validate)
     [[ $# -eq 2 ]] || usage
     if [[ "$source_kind" == bundle ]]; then
-      printf 'HServer panel-state bundle validation passed: %s\n' "$backup_file"
+      printf 'Heyserver panel-state bundle validation passed: %s\n' "$backup_file"
     else
-      printf 'HServer legacy database backup validation passed: %s\n' "$backup_file"
+      printf 'Heyserver legacy database backup validation passed: %s\n' "$backup_file"
     fi
     ;;
   restore)
@@ -385,7 +385,7 @@ case "$command_name" in
       exit 1
     }
     [[ -f "$db_path" && ! -L "$db_path" ]] || {
-      printf 'Installed HServer database not found: %s\n' "$db_path" >&2
+      printf 'Installed Heyserver database not found: %s\n' "$db_path" >&2
       exit 1
     }
     [[ -x "$backup_script" && ! -L "$backup_script" ]] || {
@@ -482,7 +482,7 @@ case "$command_name" in
         restore_in_progress=0
         "$systemctl_bin" start "$service_name"
         wait_ready || {
-          printf 'Restore failed; the recovery state was restored but HServer is still unhealthy.\n' >&2
+          printf 'Restore failed; the recovery state was restored but Heyserver is still unhealthy.\n' >&2
           exit 1
         }
         printf 'Restore failed health activation and was rolled back from: %s\n' "$recovery_file" >&2
@@ -495,7 +495,7 @@ case "$command_name" in
     rollback_file=
     remove_tree "${old_secret_dir:-}" || true
     old_secret_dir=
-    printf 'HServer panel-state restore completed. Recovery bundle: %s\n' "$recovery_file"
+    printf 'Heyserver panel-state restore completed. Recovery bundle: %s\n' "$recovery_file"
     ;;
   *) usage ;;
 esac

@@ -82,7 +82,7 @@ func resolveCLIContext(path, requested string) (*cliContext, error) {
 	}
 	if !exists {
 		if requested != "" {
-			return nil, fmt.Errorf("HServer context %q does not exist; run hserverctl context add", requested)
+			return nil, fmt.Errorf("Heyserver context %q does not exist; run hserverctl context add", requested)
 		}
 		return nil, nil
 	}
@@ -95,7 +95,7 @@ func resolveCLIContext(path, requested string) (*cliContext, error) {
 	}
 	selected, ok := config.Contexts[name]
 	if !ok {
-		return nil, fmt.Errorf("HServer context %q does not exist; run hserverctl context list", name)
+		return nil, fmt.Errorf("Heyserver context %q does not exist; run hserverctl context list", name)
 	}
 	selected.Name = name
 	return &selected, nil
@@ -217,7 +217,7 @@ func contextStatusSelection(config cliContextsConfig, names []string) ([]cliCont
 		}
 		item, ok := config.Contexts[name]
 		if !ok {
-			return nil, fmt.Errorf("HServer context %q does not exist; run hserverctl context list", name)
+			return nil, fmt.Errorf("Heyserver context %q does not exist; run hserverctl context list", name)
 		}
 		selected = append(selected, cliContextView{Name: name, Server: item.Server, Current: name == config.Current})
 	}
@@ -294,7 +294,7 @@ func probeOneContext(ctx context.Context, contextView cliContextView, current st
 }
 
 func writeContextStatusText(out io.Writer, statuses []cliContextStatus) error {
-	fmt.Fprintln(out, "HServer context status")
+	fmt.Fprintln(out, "Heyserver context status")
 	fmt.Fprintln(out, "NAME\tSTATUS\tLATENCY_MS\tSERVER")
 	if len(statuses) == 0 {
 		fmt.Fprintln(out, "none")
@@ -352,7 +352,7 @@ func printCurrentContext(path string, out io.Writer) error {
 		return err
 	}
 	if config.Current == "" {
-		return errors.New("no active HServer context; run hserverctl context use NAME")
+		return errors.New("no active Heyserver context; run hserverctl context use NAME")
 	}
 	item := config.Contexts[config.Current]
 	raw, err := json.Marshal(cliContextView{Name: config.Current, Server: item.Server, TokenFile: item.TokenFile, Current: true})
@@ -365,7 +365,7 @@ func printCurrentContext(path string, out io.Writer) error {
 func addContext(args []string, path string, out io.Writer) error {
 	flags := flag.NewFlagSet("context add", flag.ContinueOnError)
 	flags.SetOutput(io.Discard)
-	server := flags.String("server", "", "HServer base URL")
+	server := flags.String("server", "", "Heyserver base URL")
 	tokenFile := flags.String("token-file", "", "protected bearer-token file")
 	use := flags.Bool("use", false, "select the context after adding it")
 	if err := flags.Parse(args); err != nil {
@@ -399,7 +399,7 @@ func addContext(args []string, path string, out io.Writer) error {
 		return err
 	}
 	if _, exists := config.Contexts[name]; exists {
-		return fmt.Errorf("HServer context %q already exists; remove it before replacing it", name)
+		return fmt.Errorf("Heyserver context %q already exists; remove it before replacing it", name)
 	}
 	config.Contexts[name] = cliContext{Server: client.baseURL.String(), TokenFile: selectedTokenFile}
 	if *use || config.Current == "" {
@@ -408,7 +408,7 @@ func addContext(args []string, path string, out io.Writer) error {
 	if err := writeContextsConfig(path, config); err != nil {
 		return err
 	}
-	fmt.Fprintf(out, "Added HServer context %q for %s\n", name, client.baseURL.String())
+	fmt.Fprintf(out, "Added Heyserver context %q for %s\n", name, client.baseURL.String())
 	if config.Current == name {
 		fmt.Fprintf(out, "Current context: %s\n", name)
 	}
@@ -425,17 +425,17 @@ func useContext(name, path string, out io.Writer) error {
 		return err
 	}
 	if !exists {
-		return fmt.Errorf("HServer context %q does not exist; run hserverctl context add", name)
+		return fmt.Errorf("Heyserver context %q does not exist; run hserverctl context add", name)
 	}
 	item, ok := config.Contexts[name]
 	if !ok {
-		return fmt.Errorf("HServer context %q does not exist; run hserverctl context list", name)
+		return fmt.Errorf("Heyserver context %q does not exist; run hserverctl context list", name)
 	}
 	config.Current = name
 	if err := writeContextsConfig(path, config); err != nil {
 		return err
 	}
-	fmt.Fprintf(out, "Using HServer context %q (%s)\n", name, item.Server)
+	fmt.Fprintf(out, "Using Heyserver context %q (%s)\n", name, item.Server)
 	return nil
 }
 
@@ -448,11 +448,11 @@ func removeContext(name, path string, out io.Writer) error {
 		return err
 	}
 	if !exists {
-		return fmt.Errorf("HServer context %q does not exist", name)
+		return fmt.Errorf("Heyserver context %q does not exist", name)
 	}
 	item, ok := config.Contexts[name]
 	if !ok {
-		return fmt.Errorf("HServer context %q does not exist", name)
+		return fmt.Errorf("Heyserver context %q does not exist", name)
 	}
 	delete(config.Contexts, name)
 	if config.Current == name {
@@ -461,7 +461,7 @@ func removeContext(name, path string, out io.Writer) error {
 	if err := writeContextsConfig(path, config); err != nil {
 		return err
 	}
-	fmt.Fprintf(out, "Removed HServer context %q; token file was not deleted: %s\n", name, item.TokenFile)
+	fmt.Fprintf(out, "Removed Heyserver context %q; token file was not deleted: %s\n", name, item.TokenFile)
 	return nil
 }
 

@@ -1,6 +1,6 @@
 # Google Drive OAuth setup
 
-HServer supports an installation-owned Google OAuth web client for Google Drive
+Heyserver supports an installation-owned Google OAuth web client for Google Drive
 backups. No maintainer project, hostname, redirect URI, or credential is built
 into the distribution.
 
@@ -15,12 +15,12 @@ authorized redirect URI remains a Google Cloud Console step.
   'https://panel.example.com/api/backups/gdrive/oauth/callback'
 ```
 
-The redirect URI must exactly match the public HServer callback URI configured
+The redirect URI must exactly match the public Heyserver callback URI configured
 in Google Cloud Console.
 
 ## Credential sources
 
-The recommended source is the protected HServer environment file:
+The recommended source is the protected Heyserver environment file:
 
 ```bash
 sudoedit /etc/hserver/hserver.env
@@ -32,7 +32,7 @@ HSERVER_GDRIVE_CLIENT_SECRET=your-client-secret
 HSERVER_GDRIVE_REDIRECT_URI=https://panel.example.com/api/backups/gdrive/oauth/callback
 ```
 
-Restart HServer after changing its environment, then connect the Google account
+Restart Heyserver after changing its environment, then connect the Google account
 from **Backups -> Google Drive**. Never commit the environment file, OAuth token,
 `rclone.conf`, client secret, or backup encryption password.
 
@@ -43,9 +43,9 @@ uses a file-based secret. Environment values take precedence.
 ## Multi-installation broker boundary
 
 A shared OAuth broker is an optional, separately deployed provider component.
-The core HServer installation does not depend on one. Community operators who
+The core Heyserver installation does not depend on one. Community operators who
 run a broker must configure its URL explicitly and keep tenant state signing,
-callback validation, and credentials outside the public HServer repository.
+callback validation, and credentials outside the public Heyserver repository.
 
 ## Redirect URI examples
 

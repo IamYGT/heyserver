@@ -498,7 +498,7 @@ export default function PM2() {
                 state={remediationState}
                 title={availabilityState === INTEGRATION_NOT_CONFIGURED ? 'PM2 integration is not configured' : 'PM2 inventory is unavailable'}
                 summary={availabilityState === INTEGRATION_NOT_CONFIGURED
-                  ? 'HServer requires an explicit unprivileged PM2 owner and never starts a root-owned PM2 daemon automatically.'
+                  ? 'Heyserver requires an explicit unprivileged PM2 owner and never starts a root-owned PM2 daemon automatically.'
                   : 'The configured PM2 identity or executable could not return process inventory, so PM2 mutations remain paused.'}
                 error={inventoryError}
                 retry={() => { void processesQuery.refetch() }}

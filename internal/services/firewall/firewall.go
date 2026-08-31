@@ -227,7 +227,7 @@ func ClassifyUFWError(err error) ReadinessState {
 	return StateUnavailable
 }
 
-// getStatusIPTables reads legacy rules for observation only. HServer's local
+// getStatusIPTables reads legacy rules for observation only. Heyserver's local
 // firewall mutations remain UFW-specific and must stay disabled in this state.
 func getStatusIPTables(ufwErr error) *Status {
 	out, err := shell.ExecuteRaw("iptables", "-L", "-n", "--line-numbers")

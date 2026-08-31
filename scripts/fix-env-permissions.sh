@@ -8,7 +8,7 @@ READ_GROUP=${HSERVER_ENV_READ_GROUP:-www-data}
 
 usage() {
   cat <<'EOF'
-Inspect or repair root-owned application .env files inside one HServer vhost root.
+Inspect or repair root-owned application .env files inside one Heyserver vhost root.
 
 Usage:
   fix-env-permissions.sh --check

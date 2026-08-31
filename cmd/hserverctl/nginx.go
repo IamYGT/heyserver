@@ -268,13 +268,13 @@ func validateNginxArchiveName(value string) (string, error) {
 	const marker = ".hserver-archive-"
 	index := strings.LastIndex(value, marker)
 	if index <= 0 || strings.Contains(value, "/") || strings.Contains(value, "..") {
-		return "", errors.New("Nginx archive must be a portable HServer archive identity")
+		return "", errors.New("Nginx archive must be a portable Heyserver archive identity")
 	}
 	if _, err := validateNginxConfigName(value[:index]); err != nil {
 		return "", errors.New("Nginx archive must contain a portable config filename")
 	}
 	if _, err := time.Parse("20060102T150405.000000000Z", value[index+len(marker):]); err != nil {
-		return "", errors.New("Nginx archive must include its exact HServer UTC timestamp")
+		return "", errors.New("Nginx archive must include its exact Heyserver UTC timestamp")
 	}
 	return value, nil
 }
@@ -284,14 +284,14 @@ func validateNginxBackupName(value string) (string, string, error) {
 	const marker = ".hserver-backup-"
 	index := strings.LastIndex(value, marker)
 	if index <= 0 || strings.Contains(value, "/") || strings.Contains(value, "..") {
-		return "", "", errors.New("Nginx backup must be a portable HServer backup identity")
+		return "", "", errors.New("Nginx backup must be a portable Heyserver backup identity")
 	}
 	filename, err := validateNginxConfigName(value[:index])
 	if err != nil {
 		return "", "", errors.New("Nginx backup must contain a portable config filename")
 	}
 	if _, err := time.Parse("20060102T150405.000000000Z", value[index+len(marker):]); err != nil {
-		return "", "", errors.New("Nginx backup must include its exact HServer UTC timestamp")
+		return "", "", errors.New("Nginx backup must include its exact Heyserver UTC timestamp")
 	}
 	return value, filename, nil
 }

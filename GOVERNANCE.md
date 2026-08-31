@@ -1,6 +1,6 @@
-# HServer Governance
+# Heyserver Governance
 
-HServer is currently a pre-1.0, maintainer-led open-source project. This file
+Heyserver is currently a pre-1.0, maintainer-led open-source project. This file
 documents how contributors can earn responsibility, how material decisions are
 made, and who has release authority without implying that a larger foundation
 or committee already exists.
@@ -20,7 +20,7 @@ Start here:
 
 ## Project roles
 
-- **Users** operate HServer and provide reproducible feedback.
+- **Users** operate Heyserver and provide reproducible feedback.
 - **Contributors** submit issues, documentation, tests, designs, or code under
   the project license.
 - **Reviewers** are recurring contributors trusted to review an area. Review
@@ -107,7 +107,7 @@ artifacts remain governed here.
 
 ## Releases
 
-Only a maintainer with release permission may publish an official HServer
+Only a maintainer with release permission may publish an official Heyserver
 release. A release must come from the public repository, use the documented
 version contract, pass the required public CI gates, include checksummed
 artifacts, and provide upgrade and rollback notes for stateful changes.

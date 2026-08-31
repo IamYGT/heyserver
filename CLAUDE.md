@@ -1,6 +1,6 @@
-# HServer contributor context
+# Heyserver contributor context
 
-HServer is a provider-neutral, self-hosted server-management panel built with a
+Heyserver is a provider-neutral, self-hosted server-management panel built with a
 Go backend and an embedded React frontend. `AGENTS.md` is the authoritative
 repository contract for automated contributors.
 
@@ -46,7 +46,7 @@ report `not configured`, `unavailable`, and `healthy` as distinct states.
 ## Product boundaries
 
 - Local management uses controlled native host integrations.
-- Remote management uses fixed HServer agent task schemas; do not fall back to
+- Remote management uses fixed Heyserver agent task schemas; do not fall back to
   SSH or execute arbitrary shell payloads.
 - The panel owns desired actions; each agent owns observed node state.
 - Provider-specific integrations stay behind explicit boundaries and the core

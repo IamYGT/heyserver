@@ -900,7 +900,7 @@ function ChannelsTab() {
       : notificationAvailability(channels)
   const availabilityPresentation = availabilityState ? integrationStatePresentation(availabilityState) : null
   const availabilityDetail = channelsQuery.isError
-    ? 'HServer could not verify the protected notification channel inventory. Existing delivery state remains unknown.'
+    ? 'Heyserver could not verify the protected notification channel inventory. Existing delivery state remains unknown.'
     : availabilityState
       ? notificationAvailabilityDetail(channels, availabilityState)
       : ''
@@ -1008,10 +1008,10 @@ function ChannelsTab() {
               error={channelsQuery.error.message}
               retry={() => { void channelsQuery.refetch() }}
               retrying={channelsQuery.isFetching}
-              summary="HServer could not verify the protected notification channel inventory. Existing alert delivery state remains unknown."
+              summary="Heyserver could not verify the protected notification channel inventory. Existing alert delivery state remains unknown."
               steps={[
-                'Run the packaged HServer doctor and inspect the panel service log.',
-                'Verify the notification secret directory is owned by the HServer service and remains mode 0700.',
+                'Run the packaged Heyserver doctor and inspect the panel service log.',
+                'Verify the notification secret directory is owned by the Heyserver service and remains mode 0700.',
                 'Retry channel detection after repairing the protected store.',
               ]}
             />
@@ -1024,7 +1024,7 @@ function ChannelsTab() {
                 steps={[
                   'Add a channel and provide its destination settings.',
                   'Send a test notification before assigning the channel to an alert rule.',
-                  'Keep provider credentials in the protected HServer channel store.',
+                  'Keep provider credentials in the protected Heyserver channel store.',
                 ]}
                 retry={() => setAddOpen(true)}
                 retryLabel="Add channel"
@@ -1352,7 +1352,7 @@ function AlertRulesTab() {
       <NotificationDeleteDialog
         open={deleteRule !== null}
         title="Delete Alert Rule"
-        description={deleteRule ? `Delete “${deleteRule.name}”? HServer will stop evaluating this alert condition.` : ''}
+        description={deleteRule ? `Delete “${deleteRule.name}”? Heyserver will stop evaluating this alert condition.` : ''}
         onClose={() => setDeleteRule(null)}
         onConfirm={() => { if (deleteRule) deleteMutation.mutate(deleteRule.id) }}
         isPending={deleteMutation.isPending}

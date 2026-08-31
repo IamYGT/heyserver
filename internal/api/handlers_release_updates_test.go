@@ -187,7 +187,7 @@ func TestReleaseUpdateCheckReturnsExplicitDiscoveryState(t *testing.T) {
 		LatestVersionState: releaseversion.Ahead,
 		UpdateAvailable:    true,
 		Platform:           "linux_amd64",
-		Message:            "A newer HServer release is available.",
+		Message:            "A newer Heyserver release is available.",
 		SignatureStatus:    releaseupdates.SignatureVerified,
 	}}
 	recorder := httptest.NewRecorder()

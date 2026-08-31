@@ -497,7 +497,7 @@ function Fail2BanRemediation({
       <DependencyRemediation
         state="not-configured"
         title="Fail2Ban is not installed"
-        summary="IP ban automation is optional and unavailable because fail2ban-client is missing. HServer will not install host packages automatically."
+        summary="IP ban automation is optional and unavailable because fail2ban-client is missing. Heyserver will not install host packages automatically."
         retry={retry}
         retrying={retrying}
         steps={[
@@ -513,13 +513,13 @@ function Fail2BanRemediation({
       <DependencyRemediation
         state="stopped"
         title="Fail2Ban is installed but stopped"
-        summary="HServer pauses ban and unban actions because the local Fail2Ban daemon is not enforcing jail state."
+        summary="Heyserver pauses ban and unban actions because the local Fail2Ban daemon is not enforcing jail state."
         retry={retry}
         retrying={retrying}
         steps={[
           <>Inspect the failure with <code className="text-zinc-100">systemctl status fail2ban</code>.</>,
           <>After correcting its configuration, run <code className="text-zinc-100">systemctl start fail2ban</code>.</>,
-          'Retry detection. HServer will not present an empty jail inventory while the daemon is stopped.',
+          'Retry detection. Heyserver will not present an empty jail inventory while the daemon is stopped.',
         ]}
       />
     )
@@ -527,7 +527,7 @@ function Fail2BanRemediation({
   return (
     <DependencyRemediation
       title="Fail2Ban readiness is unavailable"
-      summary="The client exists, but HServer could not verify the daemon and complete jail inventory, so IP actions remain paused."
+      summary="The client exists, but Heyserver could not verify the daemon and complete jail inventory, so IP actions remain paused."
       retry={retry}
       retrying={retrying}
       steps={[

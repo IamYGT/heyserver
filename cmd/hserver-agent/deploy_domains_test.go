@@ -83,7 +83,7 @@ func (runtime *fakeDeployDomainRuntime) write(domain models.DeployDomain) error 
 	if domain.TLSEnabled {
 		tls = "    listen 443 ssl;\n"
 	}
-	content := fmt.Sprintf("# Managed by HServer project domains. Do not edit manually.\n# hserver-project-target: %s\n# hserver-project-domain: %s\nserver {\n%s    proxy_pass http://127.0.0.1:%d;\n}\n", domain.RuntimeOwner, domain.Domain, tls, domain.HostPort)
+	content := fmt.Sprintf("# Managed by Heyserver project domains. Do not edit manually.\n# hserver-project-target: %s\n# hserver-project-domain: %s\nserver {\n%s    proxy_pass http://127.0.0.1:%d;\n}\n", domain.RuntimeOwner, domain.Domain, tls, domain.HostPort)
 	if err := os.WriteFile(runtime.path(domain.Domain), []byte(content), 0o644); err != nil {
 		return err
 	}

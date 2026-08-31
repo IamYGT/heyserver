@@ -157,7 +157,7 @@ export function ProjectDomainsDialog({ open, onOpenChange, targetId, targetName,
           <div className="rounded-lg border border-sky-500/20 bg-sky-500/[0.05] p-3">
             <p className="text-xs font-medium text-sky-200">Nginx → loopback published port</p>
             <p className="mt-1 text-[11px] leading-5 text-zinc-500">
-              HServer creates an HTTP virtual host that proxies only to 127.0.0.1. TLS is reported separately and is not implied by a running container.
+              Heyserver creates an HTTP virtual host that proxies only to 127.0.0.1. TLS is reported separately and is not implied by a running container.
             </p>
           </div>
 
@@ -244,7 +244,7 @@ export function ProjectDomainsDialog({ open, onOpenChange, targetId, targetName,
                               {enableTLS.isPending && <Loader2 className="mr-2 size-3.5 animate-spin" />}Issue certificate
                             </Button>
                           </div>
-                          <p className="text-[11px] leading-5 text-zinc-600 sm:basis-full">HTTP-01 must reach this host on port 80. HServer keeps the ACME challenge route available and redirects other HTTP traffic after issuance.</p>
+                          <p className="text-[11px] leading-5 text-zinc-600 sm:basis-full">HTTP-01 must reach this host on port 80. Heyserver keeps the ACME challenge route available and redirects other HTTP traffic after issuance.</p>
                         </div>
                       )}
                     </div>

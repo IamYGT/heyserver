@@ -122,7 +122,7 @@ describe('Domains page', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Open actions for example.com' }))
     fireEvent.click(await screen.findByText('Delete'))
 
-    expect(window.confirm).toHaveBeenCalledWith('Remove example.com from HServer? Site files will be kept.')
+    expect(window.confirm).toHaveBeenCalledWith('Remove example.com from Heyserver? Site files will be kept.')
     await waitFor(() => expect(api.delete).toHaveBeenCalledWith('/domains/example.com'))
   })
 

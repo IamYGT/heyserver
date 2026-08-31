@@ -1,4 +1,4 @@
-# HServer Web Interface
+# Heyserver Web Interface
 
 The web application is a React and TypeScript client built with Vite and
 embedded into the Go panel binary. It is not deployed as a separate production
@@ -22,7 +22,7 @@ npm ci
 npm run dev
 ```
 
-The Vite development server expects the HServer API to be available through the
+The Vite development server expects the Heyserver API to be available through the
 configured development proxy. Authentication and host-management behavior still
 come from the Go process; browser mocks are not production evidence.
 

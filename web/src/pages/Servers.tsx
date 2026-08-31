@@ -431,7 +431,7 @@ export default function Servers() {
     {showEnrollment && <AgentEnrollment onClose={() => setShowEnrollment(false)} onRegistered={async (registeredNodeID) => { await queryClient.invalidateQueries({ queryKey: ['managed-nodes'] }); const next = new URLSearchParams(); next.set('node', registeredNodeID); setSearchParams(next) }} />}
     {nodes.length > 0 && <FleetCompatibility summary={fleetCompatibility} />}
     <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-      <button onClick={() => navigate(localCounterpart)} className="rounded-2xl border border-zinc-800 bg-zinc-900/80 p-4 text-left transition hover:border-violet-500/50"><ServerCard name="HServer" detail="Open the matching local control" online /></button>
+      <button onClick={() => navigate(localCounterpart)} className="rounded-2xl border border-zinc-800 bg-zinc-900/80 p-4 text-left transition hover:border-violet-500/50"><ServerCard name="Heyserver" detail="Open the matching local control" online /></button>
       {nodes.map((node) => {
         const nodeOnline = managedNodeOnline(node, now)
         const compatibility = compatibilityPresentation(node.compatibility, node.agent_version, node.protocol_version)

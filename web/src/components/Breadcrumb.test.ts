@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { buildCrumbs } from './breadcrumbUtils'
 
 describe('buildCrumbs', () => {
-  it('keeps the local dashboard as Home for HServer routes', () => {
+  it('keeps the local dashboard as Home for Heyserver routes', () => {
     expect(buildCrumbs('/audit', '/')).toEqual([
       { label: 'Home', href: '/', isLast: false },
       { label: 'Audit Log', href: '/audit', isLast: true },

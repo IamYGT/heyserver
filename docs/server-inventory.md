@@ -9,7 +9,7 @@ and use this file only as a template.
 - **Node ID:** `edge-eu-1`
 - **Display name:** `Edge EU 1`
 - **Provider:** optional operator metadata
-- **Operating system:** detected by the HServer agent
+- **Operating system:** detected by the Heyserver agent
 - **Agent version:** reported by heartbeat
 - **Last verified:** ISO-8601 timestamp
 

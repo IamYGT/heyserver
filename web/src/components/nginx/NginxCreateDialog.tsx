@@ -168,7 +168,7 @@ export function NginxCreateDialog({ open, pending, onOpenChange, onSubmit }: Ngi
                   className="border-zinc-700 bg-zinc-800 font-mono text-white placeholder:text-zinc-600"
                 />
                 <p className="text-[11px] leading-relaxed text-zinc-600">
-                  Leave empty to use the configured HServer vhost root.
+                  Leave empty to use the configured Heyserver vhost root.
                 </p>
               </div>
             )}

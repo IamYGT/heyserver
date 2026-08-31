@@ -123,7 +123,7 @@ function StepWelcome({ onNext, transitioning }: { onNext: () => void; transition
       </div>
       <div className="space-y-3">
         <h1 className="text-3xl font-bold text-white tracking-tight">
-          Welcome to HServer Panel
+          Welcome to Heyserver Panel
         </h1>
         <p className="text-zinc-400 text-base max-w-md mx-auto leading-relaxed">
           A powerful, self-hosted server management panel. We'll help you get set up in just a few steps.
@@ -542,7 +542,7 @@ function StepDone({
       <div className="space-y-3">
         <h2 className="text-3xl font-bold text-white">You're all set!</h2>
         <p className="text-zinc-400 text-sm max-w-sm mx-auto">
-          HServer Panel is configured and ready. Here's what to explore next.
+          Heyserver Panel is configured and ready. Here's what to explore next.
         </p>
       </div>
 
@@ -696,7 +696,7 @@ export default function OnboardingPage() {
             <div className="space-y-2">
               <h1 className="text-xl font-semibold text-white">Setup progress is unavailable</h1>
               <p className="text-sm text-zinc-400">
-                HServer could not load the saved onboarding state. No progress was reset.
+                Heyserver could not load the saved onboarding state. No progress was reset.
               </p>
             </div>
             <Button
@@ -720,7 +720,7 @@ export default function OnboardingPage() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-1">
             <Server className="w-5 h-5 text-blue-400" />
-            <span className="text-white font-semibold tracking-tight">HServer Panel</span>
+            <span className="text-white font-semibold tracking-tight">Heyserver Panel</span>
           </div>
           <p className="text-zinc-600 text-xs">Setup Wizard</p>
         </div>

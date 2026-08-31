@@ -27,7 +27,7 @@ var (
 )
 
 // Config defines which unprivileged Linux account owns the PM2 daemon.
-// User is required; HServer never silently creates or controls a root PM2
+// User is required; Heyserver never silently creates or controls a root PM2
 // daemon. Bin may be an absolute NVM path or a command available in PATH.
 type Config struct {
 	User         string
@@ -275,7 +275,7 @@ func (s *Service) binaryMissing() bool {
 		return errors.Is(err, os.ErrNotExist)
 	}
 	// A command name is resolved by the configured unprivileged user's
-	// environment when `sudo ... env pm2` runs. Resolving it in HServer's PATH
+	// environment when `sudo ... env pm2` runs. Resolving it in Heyserver's PATH
 	// would falsely report not_configured for NVM/user-local installations.
 	return false
 }

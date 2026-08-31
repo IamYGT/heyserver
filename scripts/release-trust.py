@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the provider-neutral HServer release signer trust store."""
+"""Validate the provider-neutral Heyserver release signer trust store."""
 
 from __future__ import annotations
 

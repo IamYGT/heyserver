@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# HServer backup/snapshot durum özeti (smoke audit)
+# Heyserver backup/snapshot durum özeti (smoke audit)
 set -euo pipefail
 ENV_FILE="${HSERVER_ENV_FILE:-/etc/hserver/hserver.env}"
 BASE="${HSERVER_BASE_URL:-http://127.0.0.1:3085}"

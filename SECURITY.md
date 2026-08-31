@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-HServer is currently pre-1.0. Security fixes are prepared for the latest tagged
+Heyserver is currently pre-1.0. Security fixes are prepared for the latest tagged
 release and the `main` branch. Older snapshots and locally modified forks may
 need to upgrade before a fix can be applied.
 
@@ -22,7 +22,7 @@ repository's **Security → Report a vulnerability** action.
 
 Include only the minimum evidence needed to reproduce the problem:
 
-- affected HServer and agent versions;
+- affected Heyserver and agent versions;
 - installation method and operating-system version;
 - affected component and required privileges;
 - reproduction steps or a minimal proof of concept;
@@ -55,7 +55,7 @@ a public vulnerability report:
    affected credential using the installation's normal operator procedure.
 2. Preserve only the minimum diagnostic evidence needed to understand impact;
    do not upload tokens, passwords, private keys, databases, or full inventory.
-3. If HServer caused or widened the impact, report the root cause through the
+3. If Heyserver caused or widened the impact, report the root cause through the
    [private security advisory form](https://github.com/IamYGT/heyserver/security/advisories/new).
 4. If the concern is about harassment, retaliation, or another project-space
    conduct issue, use the private route in the [Code of Conduct](CODE_OF_CONDUCT.md)

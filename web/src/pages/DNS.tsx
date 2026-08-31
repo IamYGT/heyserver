@@ -1293,8 +1293,8 @@ export default function DNS() {
           retry={() => { void statusQuery.refetch() }}
           retrying={statusQuery.isFetching}
           steps={[
-            'Run the packaged HServer doctor and inspect HServer service logs.',
-            <>Verify <code>named -v</code> and local systemd access with the HServer service identity.</>,
+            'Run the packaged Heyserver doctor and inspect Heyserver service logs.',
+            <>Verify <code>named -v</code> and local systemd access with the Heyserver service identity.</>,
             'Retry detection after the API and local service state are observable.',
           ]}
         />
@@ -1303,7 +1303,7 @@ export default function DNS() {
       {!statusQuery.isError && statusResp?.state === 'not-installed' && (
         <DependencyRemediation
           title="BIND is not installed"
-          summary="HServer will not create distribution-owned BIND files implicitly. Install the local DNS server and its management tools before enabling zone controls."
+          summary="Heyserver will not create distribution-owned BIND files implicitly. Install the local DNS server and its management tools before enabling zone controls."
           state="not-configured"
           error={statusResp.error}
           retry={() => { void statusQuery.refetch(); void zonesQuery.refetch() }}
@@ -1326,7 +1326,7 @@ export default function DNS() {
           retrying={statusQuery.isFetching || zonesQuery.isFetching}
           steps={[
             <>Verify <code>/etc/bind/named.conf.local</code> is a regular file owned by the installation.</>,
-            <>Verify <code>named-checkconf</code>, <code>named-checkzone</code>, and <code>rndc</code> are available to HServer.</>,
+            <>Verify <code>named-checkconf</code>, <code>named-checkzone</code>, and <code>rndc</code> are available to Heyserver.</>,
             <>Run <code>named-checkconf -z</code>, then retry detection without replacing existing configuration.</>,
           ]}
         />
@@ -1351,14 +1351,14 @@ export default function DNS() {
       {!statusQuery.isError && statusResp?.recoveryPending && (
         <DependencyRemediation
           title="BIND transaction recovery is required"
-          summary="HServer detected an interrupted zone create or delete operation. DNS mutations stay locked until startup recovery can safely restore or finalize it."
+          summary="Heyserver detected an interrupted zone create or delete operation. DNS mutations stay locked until startup recovery can safely restore or finalize it."
           error={statusResp.error}
           retry={() => { void statusQuery.refetch() }}
           retrying={statusQuery.isFetching}
           steps={[
-            <>Inspect HServer service logs and run <code>named-checkconf -z</code>.</>,
+            <>Inspect Heyserver service logs and run <code>named-checkconf -z</code>.</>,
             <>Restore <code>rndc reload</code> availability without deleting the protected lifecycle journal manually.</>,
-            'Restart HServer; startup recovery will roll back the incomplete operation or finalize an already applied one.',
+            'Restart Heyserver; startup recovery will roll back the incomplete operation or finalize an already applied one.',
           ]}
         />
       )}
@@ -1366,13 +1366,13 @@ export default function DNS() {
       {!statusQuery.isError && statusResp?.state === 'unavailable' && !statusResp.recoveryPending && (
         <DependencyRemediation
           title="BIND readiness is unavailable"
-          summary="HServer found an incomplete or unobservable local BIND runtime. DNS mutations remain paused while existing files stay untouched."
+          summary="Heyserver found an incomplete or unobservable local BIND runtime. DNS mutations remain paused while existing files stay untouched."
           error={statusResp.error}
           retry={() => { void statusQuery.refetch() }}
           retrying={statusQuery.isFetching}
           steps={[
-            <>Run <code>named -v</code> with the HServer service identity.</>,
-            'Inspect systemd visibility and HServer service logs.',
+            <>Run <code>named -v</code> with the Heyserver service identity.</>,
+            'Inspect systemd visibility and Heyserver service logs.',
             'Retry after the local runtime can report both version and process state.',
           ]}
         />

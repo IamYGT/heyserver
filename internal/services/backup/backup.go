@@ -2009,7 +2009,7 @@ func (s *Service) writeCronScript(path string) error {
 	}
 	secret := os.Getenv("HSERVER_CRON_SECRET")
 	content := fmt.Sprintf(`#!/bin/bash
-# HServer automated backup runner — do not edit manually
+# Heyserver automated backup runner — do not edit manually
 set -euo pipefail
 TYPE="full"
 RETENTION="10"

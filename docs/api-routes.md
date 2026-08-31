@@ -1,4 +1,4 @@
-# HServer API Route Inventory
+# Heyserver API Route Inventory
 
 > Code generated from `internal/api/routes_manifest.go`; do not edit by hand.
 > Regenerate with `make gen-api-docs`.

@@ -338,7 +338,7 @@ for stale_default in \
   '| `HSERVER_AGENT_PM2_BINARY` | No | Absolute local PM2 executable; default `/usr/local/bin/pm2` |' \
   '| `HSERVER_AGENT_PM2_HOME` | No | PM2 state directory for the managed identity; default `/root/.pm2` |' \
   '| `HSERVER_AGENT_PM2_USER` | No | Local Unix identity used for PM2 commands; default `root` |' \
-  'When the variable is unset, HServer uses the configured vhost root plus `/home` and `/opt`.'; do
+  'When the variable is unset, Heyserver uses the configured vhost root plus `/home` and `/opt`.'; do
   if grep -Fq -- "$stale_default" "$installation_guide" "$api_reference" "$cli_guide" "$mail_guide"; then
     echo "public docs contain stale provider-specific default: $stale_default" >&2
     exit 1

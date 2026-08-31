@@ -218,7 +218,7 @@ var tuiMaintenanceActions = []tuiMaintenanceAction{
 	{ID: "swap-reset", Label: "Reset swap", Description: "Safely cycle configured swap after the server checks memory headroom"},
 	{ID: "temp-clean", Label: "Clean temporary files", Description: "Apply the host tmpfiles expiry policy"},
 	{ID: "reboot", Label: "Schedule reboot", Description: "Schedule a server reboot with a 10-second cancellation window", Dangerous: true},
-	{ID: "reboot-cancel", Label: "Cancel HServer reboot", Description: "Cancel a reboot previously scheduled by HServer"},
+	{ID: "reboot-cancel", Label: "Cancel Heyserver reboot", Description: "Cancel a reboot previously scheduled by Heyserver"},
 }
 
 func runUI(ctx context.Context, client *apiClient, args []string, serverURL string, out io.Writer) error {
@@ -2554,7 +2554,7 @@ func (model tuiModel) loadEncryptedSnapshots() (tea.Model, tea.Cmd) {
 func (model *tuiModel) openEncryptedSnapshotCreate() {
 	state := model.encryptedSnapshots
 	if !model.encryptedSnapshotsLoaded || !state.Supported {
-		model.notice, model.noticeError = "Encrypted snapshots are available only for the Local HServer hub", true
+		model.notice, model.noticeError = "Encrypted snapshots are available only for the Local Heyserver hub", true
 		return
 	}
 	if !state.ready() {
@@ -2574,7 +2574,7 @@ func (model *tuiModel) openEncryptedSnapshotCreate() {
 
 func (model *tuiModel) openEncryptedSnapshotDestination() {
 	if !model.encryptedSnapshotsLoaded || !model.encryptedSnapshots.Supported {
-		model.notice, model.noticeError = "Encrypted snapshot destinations are configured on the Local HServer hub", true
+		model.notice, model.noticeError = "Encrypted snapshot destinations are configured on the Local Heyserver hub", true
 		return
 	}
 	model.dialog = tuiDialog{
@@ -2614,7 +2614,7 @@ func (model *tuiModel) openEncryptedSnapshotRestore() {
 	model.dialog = tuiDialog{
 		Mode: tuiDialogChoices, Title: "Restore encrypted snapshot · " + snapshot.ID,
 		Body: []string{
-			"Every restore extracts only into HServer's fixed staging directory.",
+			"Every restore extracts only into Heyserver's fixed staging directory.",
 			"Choose the complete snapshot, installation-owned manifest identities, or currently observed website folders.",
 		},
 		Options: options,
@@ -2901,7 +2901,7 @@ func (model *tuiModel) openFirewallRuleActions() {
 	}
 	rule := model.firewall.Rules[model.cursor]
 	if !model.firewall.Manageable || !rule.Managed {
-		model.notice, model.noticeError = "This observed firewall rule is read-only and is not owned by HServer", true
+		model.notice, model.noticeError = "This observed firewall rule is read-only and is not owned by Heyserver", true
 		return
 	}
 	if reason := model.unavailableReason(agenthub.CapabilityFirewallWrite); reason != "" {
@@ -2960,7 +2960,7 @@ func (model *tuiModel) openBackupScopeChoices(operation tuiOperation) {
 		"All uses the installation-owned vhost root without accepting a filesystem path.",
 	}
 	if len(model.backupVhosts) > 0 && model.backupVhostMax > 0 {
-		body = append(body, fmt.Sprintf("HServer observed %d eligible website folder(s); a selective backup accepts at most %d.", len(model.backupVhosts), model.backupVhostMax))
+		body = append(body, fmt.Sprintf("Heyserver observed %d eligible website folder(s); a selective backup accepts at most %d.", len(model.backupVhosts), model.backupVhostMax))
 	} else {
 		body = append(body, "Selective targets are unavailable; all configured website files remains available.")
 	}
@@ -3338,7 +3338,7 @@ func confirmationBody(operation tuiOperation) []string {
 		case "restore-all":
 			return []string{
 				"EXTRACT every represented path from snapshot " + operation.EncryptedSnapshot.ID,
-				"The restore writes only to HServer's fixed local staging directory.",
+				"The restore writes only to Heyserver's fixed local staging directory.",
 				"Production paths are not replaced automatically.",
 			}
 		case "restore-selected":
@@ -3349,7 +3349,7 @@ func confirmationBody(operation tuiOperation) []string {
 			return []string{
 				"EXTRACT selected data from snapshot " + operation.EncryptedSnapshot.ID,
 				"Scope: " + scope,
-				"The restore writes only to HServer's fixed local staging directory.",
+				"The restore writes only to Heyserver's fixed local staging directory.",
 				"Production paths are not replaced automatically.",
 			}
 		case "destination-gdrive", "destination-s3":

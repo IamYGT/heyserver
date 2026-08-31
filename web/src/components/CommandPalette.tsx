@@ -238,8 +238,8 @@ export function CommandPalette({ isOpen, onClose, selectedServer, selectedOnline
   const serverResults: ResultItem[] = [
     ...(!isLocalServer(selectedServer) ? [{
         id: 'server-local',
-        label: 'Switch to HServer',
-        description: 'Continue this workflow on HServer',
+        label: 'Switch to Heyserver',
+        description: 'Continue this workflow on Heyserver',
         category: 'server',
         icon: Server,
         server: 'local',

@@ -1,8 +1,8 @@
-# HServer Panel — Database Schema
+# Heyserver Panel — Database Schema
 
 ## Overview
 
-HServer Panel uses **SQLite** (WAL mode, foreign keys enabled) as its sole datastore.
+Heyserver Panel uses **SQLite** (WAL mode, foreign keys enabled) as its sole datastore.
 The database file lives at the path configured by `HSERVER_DB_PATH`
 (default: `/var/lib/hserver/hserver.db`).
 
@@ -397,7 +397,7 @@ not stored as a free-form URL; it is reconstructed as loopback plus `host_port`.
 | `domain` | TEXT | NOT NULL, UNIQUE | Validated ASCII hostname |
 | `service` | TEXT | NOT NULL | Validated Compose service label |
 | `host_port` | INTEGER | NOT NULL | Explicit published host port |
-| `tls_enabled` | INTEGER | NOT NULL, DEFAULT 0 | Desired HServer-managed HTTPS state; certificate health is observed from Certbot files |
+| `tls_enabled` | INTEGER | NOT NULL, DEFAULT 0 | Desired Heyserver-managed HTTPS state; certificate health is observed from Certbot files |
 | `created_at` | DATETIME | NOT NULL, default `datetime('now')` | Mapping creation time |
 | `updated_at` | DATETIME | NOT NULL, default `datetime('now')` | Last mapping update time |
 

@@ -1,4 +1,4 @@
-# HServer Panel — Troubleshooting Guide
+# Heyserver Panel — Troubleshooting Guide
 
 Provider-neutral recovery notes for common installation and runtime failures.
 
@@ -177,7 +177,7 @@ curl -s -H "Authorization: Bearer TOKEN" http://localhost:3085/api/mail/dns-heal
 
 **Problem:** The Domains / nginx page lists all sites as "disabled" even though they are serving traffic normally.
 
-**Cause:** Some control panels or migration tools create nginx config files inside `sites-enabled/` as **direct copies** rather than symlinks. HServer detects enabled sites by checking whether a `sites-available/DOMAIN` file has a corresponding symlink in `sites-enabled/`. File copies are not symlinks, so the check returns false for every site.
+**Cause:** Some control panels or migration tools create nginx config files inside `sites-enabled/` as **direct copies** rather than symlinks. Heyserver detects enabled sites by checking whether a `sites-available/DOMAIN` file has a corresponding symlink in `sites-enabled/`. File copies are not symlinks, so the check returns false for every site.
 
 **Solution:**
 For each affected domain, replace the file copy with a proper symlink:
@@ -192,7 +192,7 @@ Verify the panel now shows the correct status.
 
 **Prevention:**
 - Always use `ln -s` when enabling nginx sites — never copy files.
-- After migrating from another panel, normalize copied entries in the configured enabled-site directory before managing them with HServer.
+- After migrating from another panel, normalize copied entries in the configured enabled-site directory before managing them with Heyserver.
 
 ---
 
@@ -383,11 +383,11 @@ The correct field is `running: true`. If the frontend template is checking the w
 **Problem:** The About page continues to show `scheduled` or `running` after an
 unexpected reboot, forced stop, or interrupted transient unit.
 
-**Automatic recovery:** Refresh **About → Release updates**. HServer inspects
+**Automatic recovery:** Refresh **About → Release updates**. Heyserver inspects
 only its fixed `hserver-panel-upgrade.timer` and
 `hserver-panel-upgrade.service`. If neither is active, the persisted stage is
 changed to `failed` with an interruption detail. If systemd cannot be queried,
-HServer keeps the last known state instead of inventing a terminal result.
+Heyserver keeps the last known state instead of inventing a terminal result.
 
 **Inspection:**
 
@@ -406,7 +406,7 @@ then repeat the explicit confirmation with `hserverctl updates install
 --confirm`. The CLI rereads the latest stage and will not schedule a different
 ID or version supplied by the caller. A detail mentioning a release identity
 mismatch means the replacement became healthy but the installed panel or CLI
-did not report the exact verified-stage version, so HServer attempted automatic
+did not report the exact verified-stage version, so Heyserver attempted automatic
 rollback. Confirm both commands above report the earlier release before
 retrying. Do not delete the current stage or retry while a timer or service is
 active.
@@ -418,7 +418,7 @@ active.
 **Problem:** The DNS page reports **Not Installed**, **Setup Required**,
 **Stopped**, or **Unavailable** instead of showing an editable empty zone list.
 
-**Cause:** HServer could not prove the local BIND management boundary. It
+**Cause:** Heyserver could not prove the local BIND management boundary. It
 requires `named`, `/etc/bind/named.conf.local`, `named-checkconf`,
 `named-checkzone`, `rndc`, and an observable running `named` process before it
 allows zone writes.
@@ -441,7 +441,7 @@ not install, start, rewrite, or reload anything. A missing
 
 For record and SOA changes, an error containing `original zone file restored
 and reloaded` means the new candidate passed validation but `rndc` rejected the
-runtime reload; HServer restored both the previous disk content and runtime
+runtime reload; Heyserver restored both the previous disk content and runtime
 view. An error containing `runtime rollback reload failed` means the disk file
 was restored but the running daemon could not confirm that rollback. Inspect
 the journal and run `named-checkconf -z` before an explicit reload.
@@ -453,12 +453,12 @@ their previous version. A message containing `rollback reload failed` means
 the files were restored but the running daemon still needs inspection before
 another mutation.
 
-If the page reports **BIND Recovery Required**, HServer found the protected
+If the page reports **BIND Recovery Required**, Heyserver found the protected
 zone-lifecycle journal in `${HSERVER_DATA_DIR}/bind/` and could not complete its
 startup recovery. Do not remove or edit that journal: it contains the original
 config and zone snapshots needed for recovery. Run `named-checkconf -z`, restore
-`rndc reload` and service availability, inspect the HServer service log, then
-restart HServer. A successful startup either restores the interrupted
+`rndc reload` and service availability, inspect the Heyserver service log, then
+restart Heyserver. A successful startup either restores the interrupted
 pre-reload transaction or finalizes a transaction already recorded as reloaded;
 the journal is removed only after that recovery succeeds.
 
@@ -506,7 +506,7 @@ hserverctl firewall list --node NODE
 `AF_NETLINK` only restores the kernel observation channel required by
 `iptables-nft`. The hub still cannot read or mutate firewall state unless the
 node explicitly advertises the corresponding capability, and writes remain
-limited to the HServer-owned chain and revision checks.
+limited to the Heyserver-owned chain and revision checks.
 
 ---
 
@@ -515,10 +515,10 @@ limited to the HServer-owned chain and revision checks.
 **Problem:** The Notifications page reports that its protected channel store is
 unavailable and pauses channel creation, editing, testing, and deletion.
 
-**Cause:** HServer could not create or validate
+**Cause:** Heyserver could not create or validate
 `${HSERVER_DATA_DIR}/notification-channel-secrets`, a SQLite channel references
 an unexpected file, or a channel config is missing, non-regular, group/world
-accessible, oversized, or malformed. HServer does not return an empty channel
+accessible, oversized, or malformed. Heyserver does not return an empty channel
 list or fall back to legacy database secrets.
 
 **Inspection:** Read `HSERVER_DATA_DIR` from the protected environment without
@@ -531,11 +531,11 @@ sudo find /var/lib/hserver/notification-channel-secrets -maxdepth 1 -type f \
 sudo journalctl -u hserver --since "30 minutes ago" --no-pager
 ```
 
-The directory must be owned by the HServer service identity and mode `0700`;
+The directory must be owned by the Heyserver service identity and mode `0700`;
 each channel file must be a regular, non-symlink mode-`0600` file. Do not paste
 file contents into logs or support reports. Repair ownership or permissions,
 restore the matching `hserver-data` snapshot when a file is missing, restart
-HServer, and use **Retry detection**. An empty secret field submitted by the edit
+Heyserver, and use **Retry detection**. An empty secret field submitted by the edit
 dialog intentionally preserves the current protected credential; use the
 explicit removal checkbox when the credential must be cleared.
 

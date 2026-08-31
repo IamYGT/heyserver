@@ -41,7 +41,7 @@ TOKEN=$(curl -sf --max-time 15 -X POST "$BASE/api/auth/login" \
   | python3 -c "import sys,json; print(json.load(sys.stdin).get('token',''))" 2>/dev/null || true)
 
 if [[ -z "$TOKEN" ]]; then
-  alert_once "HServer login failed in gdrive-keepalive"
+  alert_once "Heyserver login failed in gdrive-keepalive"
   exit 1
 fi
 

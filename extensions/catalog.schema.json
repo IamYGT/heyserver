@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "HServer optional integration catalog",
+  "title": "Heyserver optional integration catalog",
   "description": "Machine-readable inventory for the integrations listed in docs/optional-integrations.md.",
   "type": "object",
   "additionalProperties": false,

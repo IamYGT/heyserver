@@ -510,8 +510,8 @@ export default function SSL() {
           retry={() => { void statusQuery.refetch() }}
           retrying={statusQuery.isFetching}
           steps={[
-            'Run the packaged HServer doctor and inspect HServer service logs.',
-            <>Verify <code>certbot --version</code> with the HServer service identity.</>,
+            'Run the packaged Heyserver doctor and inspect Heyserver service logs.',
+            <>Verify <code>certbot --version</code> with the Heyserver service identity.</>,
             'Retry detection after the API and local command are ready.',
           ]}
         />
@@ -520,7 +520,7 @@ export default function SSL() {
       {!statusQuery.isError && sslStatus?.state === 'certbot-missing' && (
         <DependencyRemediation
           title="Certbot is not installed"
-          summary="Certificate files remain observable, but HServer cannot issue or renew certificates until the local Certbot client is available."
+          summary="Certificate files remain observable, but Heyserver cannot issue or renew certificates until the local Certbot client is available."
           state="not-configured"
           error={sslStatus.error}
           retry={() => { void statusQuery.refetch() }}
@@ -542,7 +542,7 @@ export default function SSL() {
           retrying={statusQuery.isFetching}
           steps={[
             <>Verify <code>HSERVER_CERTBOT_BIN</code> and run its <code>--version</code> command.</>,
-            'Inspect HServer service permissions and logs without exposing credentials.',
+            'Inspect Heyserver service permissions and logs without exposing credentials.',
             'Retry detection after correcting the command error.',
           ]}
         />
@@ -551,12 +551,12 @@ export default function SSL() {
       {!statusQuery.isError && certbotReady && !sslStatus?.pluginsAvailable && (
         <DependencyRemediation
           title="Certbot plugin inventory is unavailable"
-          summary="Renewal remains available, but new certificate issuance is paused because HServer cannot confirm a supported authenticator."
+          summary="Renewal remains available, but new certificate issuance is paused because Heyserver cannot confirm a supported authenticator."
           error={sslStatus?.pluginError}
           retry={() => { void statusQuery.refetch() }}
           retrying={statusQuery.isFetching}
           steps={[
-            <>Run <code>certbot plugins</code> with the HServer service identity.</>,
+            <>Run <code>certbot plugins</code> with the Heyserver service identity.</>,
             'Install the nginx or Cloudflare DNS authenticator from supported repositories.',
             'Retry detection after plugin inventory succeeds.',
           ]}
@@ -566,7 +566,7 @@ export default function SSL() {
       {!statusQuery.isError && certbotReady && sslStatus?.pluginsAvailable && !sslStatus.nginxPlugin && !sslStatus.dnsCloudflarePlugin && (
         <DependencyRemediation
           title="No supported Certbot authenticator is installed"
-          summary="Certbot can renew existing certificates, but HServer needs the nginx or Cloudflare DNS plugin to issue a new one."
+          summary="Certbot can renew existing certificates, but Heyserver needs the nginx or Cloudflare DNS plugin to issue a new one."
           state="not-configured"
           retry={() => { void statusQuery.refetch() }}
           retrying={statusQuery.isFetching}
@@ -588,7 +588,7 @@ export default function SSL() {
           steps={[
             'Create a least-privileged Cloudflare DNS token and store it in a Certbot INI file outside Git.',
             <>Set file mode to <code>0600</code> and point <code>HSERVER_CERTBOT_CLOUDFLARE_CREDENTIALS</code> to its absolute path.</>,
-            'Restart HServer to load the protected environment, then retry detection.',
+            'Restart Heyserver to load the protected environment, then retry detection.',
           ]}
         />
       )}
@@ -604,7 +604,7 @@ export default function SSL() {
           steps={[
             <>Verify <code>HSERVER_CERTBOT_CLOUDFLARE_CREDENTIALS</code> references an absolute regular file.</>,
             <>Set file mode to <code>0600</code> and keep the token value out of logs and Git.</>,
-            'Retry detection after the HServer service identity can read the file.',
+            'Retry detection after the Heyserver service identity can read the file.',
           ]}
         />
       )}
@@ -658,13 +658,13 @@ export default function SSL() {
       ) : certificatesQuery.isError ? (
         <DependencyRemediation
           title="Certificate inventory is unavailable"
-          summary="HServer could not read the Let's Encrypt certificate inventory. Issuance and renewal controls remain paused to avoid acting on unknown state."
+          summary="Heyserver could not read the Let's Encrypt certificate inventory. Issuance and renewal controls remain paused to avoid acting on unknown state."
           error={certificatesQuery.error.message}
           retry={() => { void certificatesQuery.refetch() }}
           retrying={certificatesQuery.isFetching}
           steps={[
             <>Verify read access to <code>/etc/letsencrypt/live</code>.</>,
-            'Inspect HServer service logs for unreadable or malformed certificate files.',
+            'Inspect Heyserver service logs for unreadable or malformed certificate files.',
             'Retry after certificate inventory access is restored.',
           ]}
         />

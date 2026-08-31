@@ -12,13 +12,13 @@ import (
 
 const crontabCommandTimeout = 10 * time.Second
 
-// ErrCrontabUnavailable means HServer could not safely observe or update the
+// ErrCrontabUnavailable means Heyserver could not safely observe or update the
 // installation-owned user crontab. Callers must not treat it as an empty
 // schedule because doing so could overwrite unrelated entries.
 var ErrCrontabUnavailable = errors.New("backup scheduling unavailable")
 
 // ErrInvalidScheduleTarget means a delete request did not identify a valid
-// HServer-managed backup schedule line.
+// Heyserver-managed backup schedule line.
 var ErrInvalidScheduleTarget = errors.New("invalid backup schedule target")
 
 // ErrScheduleNotFound means the requested managed schedule is not present in

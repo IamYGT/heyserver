@@ -77,7 +77,7 @@ func testCertificatePEM(t *testing.T, notBefore, notAfter time.Time, dnsNames []
 		t.Fatal(err)
 	}
 	template := &x509.Certificate{
-		SerialNumber: big.NewInt(42), Subject: pkix.Name{CommonName: dnsNames[0]}, Issuer: pkix.Name{CommonName: "HServer Test CA"},
+		SerialNumber: big.NewInt(42), Subject: pkix.Name{CommonName: dnsNames[0]}, Issuer: pkix.Name{CommonName: "Heyserver Test CA"},
 		NotBefore: notBefore, NotAfter: notAfter, DNSNames: dnsNames, KeyUsage: x509.KeyUsageDigitalSignature,
 	}
 	der, err := x509.CreateCertificate(rand.Reader, template, template, &key.PublicKey, key)

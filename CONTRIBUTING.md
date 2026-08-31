@@ -1,6 +1,6 @@
-# Contributing to HServer
+# Contributing to Heyserver
 
-HServer welcomes focused bug fixes, provider integrations, documentation,
+Heyserver welcomes focused bug fixes, provider integrations, documentation,
 tests, and server-management capabilities. Please keep the project useful for a
 fresh self-hosted installation rather than coupling a change to one operator's
 infrastructure.
@@ -254,7 +254,7 @@ script creates its own non-networked temporary server and removes it afterward:
 Read [AGENTS.md](AGENTS.md) before implementing a new capability. In particular:
 
 - optional providers must degrade to an honest `not configured` state;
-- remote operations go through the HServer agent contract;
+- remote operations go through the Heyserver agent contract;
 - existing databases upgrade in place;
 - source defaults cannot contain installation-specific domains or identities;
 - host-mutating operations require a bounded action, visible result, and useful
@@ -264,7 +264,7 @@ Read [AGENTS.md](AGENTS.md) before implementing a new capability. In particular:
 
 Read the [Extension Boundary v1](docs/extension-boundary.md) before proposing a
 provider adapter, local host capability, managed-node task, or new client
-surface. Start with the dedicated **Integration proposal** issue form. HServer
+surface. Start with the dedicated **Integration proposal** issue form. Heyserver
 v1 accepts reviewed in-tree extensions compiled into normal release artifacts;
 it does not load arbitrary plugins, executable hooks, or remote UI bundles at
 runtime.

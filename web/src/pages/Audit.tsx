@@ -130,7 +130,7 @@ function FilterBar({
             className="bg-zinc-800 border border-zinc-700 text-white rounded-md px-3 py-1.5 text-sm h-8 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="all">All activity</option>
-            <option value="local">HServer operations</option>
+            <option value="local">Heyserver operations</option>
             {serverScope !== 'all' && serverScope !== 'local' && !managedNodes.some((node) => node.id === serverScope) && (
               <option value={serverScope}>{serverScope} operations</option>
             )}
@@ -228,7 +228,7 @@ export default function AuditPage() {
   }
 
   const scopeLabel = serverScope === 'local'
-    ? 'HServer operations'
+    ? 'Heyserver operations'
     : serverScope !== 'all'
       ? `${managedNodes.find((node) => node.id === serverScope)?.name || managedNodes.find((node) => node.id === serverScope)?.hostname || serverScope} operations`
       : 'All panel activity'

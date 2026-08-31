@@ -1,4 +1,4 @@
-# HServer Panel — API Reference
+# Heyserver Panel — API Reference
 
 This is a curated guide to common request and response contracts. The complete,
 generated routing and access-level contract is maintained in the
@@ -147,7 +147,7 @@ endpoint by endpoint. Run
 ### GET /api/disk/smart/{device}
 - **Auth**: Admin
 - **Path**: Use `root` to resolve the one physical disk behind the observed root filesystem, or provide an explicit validated Linux block-device basename.
-- **Description**: Return SMART availability, definite health state, resolved device, optional model/serial data, and contextual message. HServer never defaults a missing device to `sda`; virtual, non-block, or multi-disk root storage returns `available: false` rather than choosing a device arbitrarily.
+- **Description**: Return SMART availability, definite health state, resolved device, optional model/serial data, and contextual message. Heyserver never defaults a missing device to `sda`; virtual, non-block, or multi-disk root storage returns `available: false` rather than choosing a device arbitrarily.
 
 ### GET /api/disk/cleanup/scan
 - **Auth**: Admin
@@ -173,12 +173,12 @@ endpoint by endpoint. Run
 ### POST /api/system/update/stage
 - **Auth**: Admin
 - **Request**: No body. Up to 4096 whitespace bytes are accepted; any other body returns `400 Bad Request` before release discovery runs.
-- **Description**: Re-fetch release discovery server-side, download the newer host archive, verify size/SHA-256/tar paths/version/ELF architecture, and publish an idempotent local stage. The compressed archive is removed after verified extraction and bounded stage retention runs. This endpoint never installs or restarts HServer.
+- **Description**: Re-fetch release discovery server-side, download the newer host archive, verify size/SHA-256/tar paths/version/ELF architecture, and publish an idempotent local stage. The compressed archive is removed after verified extraction and bounded stage retention runs. This endpoint never installs or restarts Heyserver.
 - **Response**: The verified stage. Returns `409` when no newer stable release exists and `503` when discovery or download is unavailable.
 
 ### POST /api/system/update/install
 - **Auth**: Admin
-- **Description**: Revalidate the fixed staged executables and schedule the packaged upgrade in a delayed transient systemd unit. The packaged installer snapshots current state, restarts HServer, health-checks the replacement, and automatically rolls back a failed health check.
+- **Description**: Revalidate the fixed staged executables and schedule the packaged upgrade in a delayed transient systemd unit. The packaged installer snapshots current state, restarts Heyserver, health-checks the replacement, and automatically rolls back a failed health check.
 - **Request**: `{"stage_id":"v1.3.0-0123456789ab","version":"v1.3.0","confirmed":true}`. All three fields are required. Unknown fields, trailing JSON, a missing confirmation, or a version/stage mismatch return `400`; bodies above 4096 bytes return `413 Payload Too Large`.
 - **Response**: `202 Accepted` with stage status `scheduled`. Poll `GET /api/system/update/stage` through `running` to terminal `completed` or `failed`; temporary connection errors are expected while the panel restarts.
 
@@ -231,7 +231,7 @@ the authenticated mutation limiter.
   bounded to `1–65535`, with zero meaning omitted.
 - **Description**: Create a new Nginx domain and its requested runtime configuration. A request without `existingCertName` starts as a working HTTP site rather than generating an invalid HTTPS configuration that references missing certificate files. Set `createDnsRecord: true` to reconcile the domain's Cloudflare A/AAAA record against the explicitly configured installation origin.
 - **Runtime options**: PHP domains accept `fpmPreset: "low" | "medium" | "high"`; an omitted value defaults to `medium`, while any other value is rejected with `400 Bad Request` before host mutation. The selected preset controls the generated pool process manager, worker limits, request recycling, memory, upload, and execution limits. Static domains accept `spaMode: true` to use `/index.html` as the Nginx fallback for client-side routes; the default remains a strict `404` fallback. Proxy domains accept `nodeEnv: "production" | "development"`; PM2 application and script fields must be supplied together, and a requested PM2 deployment defaults to `production` when `nodeEnv` is omitted.
-- **Certificate flow**: `issueSSL: true` requires `sslEmail`. HServer first activates the local HTTP configuration and requested PHP/PM2 runtime. When `createDnsRecord` is also true, it then reconciles the configured Cloudflare address record before running the configured `HSERVER_CERTBOT_BIN` with `HSERVER_CERTBOT_CONFIG_DIR`. Certbot serves `/.well-known/acme-challenge/` from `HSERVER_ACME_WEBROOT`, and HServer promotes the site to HTTPS only after issuance succeeds. DNS reconciliation failure skips Certbot and keeps HTTP active; certificate issuance failure does the same. A failed HTTPS test or reload attempts to restore the HTTP configuration.
+- **Certificate flow**: `issueSSL: true` requires `sslEmail`. Heyserver first activates the local HTTP configuration and requested PHP/PM2 runtime. When `createDnsRecord` is also true, it then reconciles the configured Cloudflare address record before running the configured `HSERVER_CERTBOT_BIN` with `HSERVER_CERTBOT_CONFIG_DIR`. Certbot serves `/.well-known/acme-challenge/` from `HSERVER_ACME_WEBROOT`, and Heyserver promotes the site to HTTPS only after issuance succeeds. DNS reconciliation failure skips Certbot and keeps HTTP active; certificate issuance failure does the same. A failed HTTPS test or reload attempts to restore the HTTP configuration.
 - **Configuration**: `HSERVER_NGINX_SITES_AVAILABLE`, `HSERVER_NGINX_SITES_ENABLED`, and `HSERVER_NGINX_SNIPPETS_DIR` bind domain inventory, mutations, and release-owned `hserver-*.conf` includes to installation-owned Nginx directories. `HSERVER_VHOSTS_ROOT` controls generated document-root defaults; an empty value keeps root-dependent domain operations `not_configured` and never selects a host-provider path. Invalid or relative installation paths return `503 Service Unavailable` instead of falling back to host defaults. Cloudflare DNS provisioning additionally requires `HSERVER_CF_API_TOKEN` and `HSERVER_DOMAIN_DNS_ORIGIN`; `HSERVER_DOMAIN_DNS_PROXIED` controls proxy mode.
 - **Partial results**: If certificate issuance/activation or DNS provisioning fails after the HTTP domain becomes active, the endpoint returns `207 Multi-Status` with a combined `warning`; it does not report the already active domain as a total failure.
 - **Conflict and availability**: An existing exact Nginx configuration returns
@@ -286,50 +286,50 @@ the authenticated mutation limiter.
 ### PUT /api/nginx/configs/{filename}
 - **Auth**: Manager
 - **Body**: Exactly `{"content":"...","checksum":"CURRENT_SHA256"}`. Unknown fields, trailing JSON, empty content, invalid UTF-8, NUL bytes, and malformed checksums return `400 Bad Request`; content above 2 MiB returns `413 Payload Too Large`.
-- **Description**: Replace the selected regular, non-symlink configuration only when `checksum` still matches the latest observed file. HServer creates a same-directory timestamped recovery backup, repeats the checksum check, atomically installs the candidate while preserving mode and ownership, and validates the complete configuration with `nginx -t`.
-- **Conflict and rollback**: A concurrent change returns `409 Conflict` without overwriting it. If `nginx -t` rejects the candidate, HServer restores the previous file and returns `422 Unprocessable Entity`. Success returns `message`, the portable retained `backup` identity, and the replacement `checksum`; absolute host paths are not part of the receipt.
+- **Description**: Replace the selected regular, non-symlink configuration only when `checksum` still matches the latest observed file. Heyserver creates a same-directory timestamped recovery backup, repeats the checksum check, atomically installs the candidate while preserving mode and ownership, and validates the complete configuration with `nginx -t`.
+- **Conflict and rollback**: A concurrent change returns `409 Conflict` without overwriting it. If `nginx -t` rejects the candidate, Heyserver restores the previous file and returns `422 Unprocessable Entity`. Success returns `message`, the portable retained `backup` identity, and the replacement `checksum`; absolute host paths are not part of the receipt.
 - **Reload boundary**: Saving never reloads Nginx. Call `POST /api/nginx/reload` separately after inspecting the validated save receipt.
 
 ### POST /api/nginx/configs
 - **Auth**: Manager
 - **Body**: A strict object with `domain`, `type` (`php`, `static`, `proxy`, or `redirect`), optional type-specific settings, and optional explicit TLS fields. Unknown fields and trailing JSON return `400 Bad Request`. Proxy sites require `proxyPass`; redirect sites require `redirectTo`; PHP runtime and pool identities are allowlisted. Custom `certPath` and `keyPath` must be safe absolute paths supplied together with `useSSL:true`.
-- **Description**: Create a new provider-neutral site config exclusively in the configured available-site directory. When PHP or static requests omit `docRoot`, HServer derives it as `<HSERVER_VHOSTS_ROOT>/<domain>/httpdocs` only after an absolute `HSERVER_VHOSTS_ROOT` is configured; an empty root returns `503 Service Unavailable` rather than selecting a provider-specific document root. `useSSL:false` generates a real HTTP-only site without an unusable port-443 listener. TLS listeners and the HTTP-to-HTTPS redirect are generated only when explicitly requested.
-- **Validation and recovery**: HServer temporarily exposes the new disabled site to the complete `nginx -t` validation boundary. A rejected candidate is removed and returns `422 Unprocessable Entity`; a concurrently existing domain returns `409 Conflict`. Success returns the canonical content, enabled state, checksum, size, and modification timestamp. Creation never enables the site or reloads Nginx.
+- **Description**: Create a new provider-neutral site config exclusively in the configured available-site directory. When PHP or static requests omit `docRoot`, Heyserver derives it as `<HSERVER_VHOSTS_ROOT>/<domain>/httpdocs` only after an absolute `HSERVER_VHOSTS_ROOT` is configured; an empty root returns `503 Service Unavailable` rather than selecting a provider-specific document root. `useSSL:false` generates a real HTTP-only site without an unusable port-443 listener. TLS listeners and the HTTP-to-HTTPS redirect are generated only when explicitly requested.
+- **Validation and recovery**: Heyserver temporarily exposes the new disabled site to the complete `nginx -t` validation boundary. A rejected candidate is removed and returns `422 Unprocessable Entity`; a concurrently existing domain returns `409 Conflict`. Success returns the canonical content, enabled state, checksum, size, and modification timestamp. Creation never enables the site or reloads Nginx.
 
 ### DELETE /api/nginx/configs/{filename}
 - **Auth**: Manager
 - **Body**: Exactly `{"checksum":"CURRENT_SHA256"}`. Unknown fields, trailing JSON, and malformed checksums return `400 Bad Request`.
-- **Description**: Archive one disabled regular, non-symlink site configuration. HServer refuses enabled sites, creates an exclusive same-directory recovery copy, repeats the checksum comparison, removes only the configuration file from active inventory, and validates the complete Nginx configuration.
-- **Conflict and rollback**: Enabled sites and concurrently changed checksums return `409 Conflict`. If `nginx -t` rejects the archived state, HServer restores the original file and returns `422 Unprocessable Entity`. Success returns the portable retained `archive` identity and exact archived `checksum`; absolute host paths are not part of the receipt.
+- **Description**: Archive one disabled regular, non-symlink site configuration. Heyserver refuses enabled sites, creates an exclusive same-directory recovery copy, repeats the checksum comparison, removes only the configuration file from active inventory, and validates the complete Nginx configuration.
+- **Conflict and rollback**: Enabled sites and concurrently changed checksums return `409 Conflict`. If `nginx -t` rejects the archived state, Heyserver restores the original file and returns `422 Unprocessable Entity`. Success returns the portable retained `archive` identity and exact archived `checksum`; absolute host paths are not part of the receipt.
 - **Data and reload boundary**: Archival never deletes the site's document root, application files, certificates, logs, or database, and never reloads Nginx. Disable the site first, inspect the receipt, then reload separately when required.
 
 ### GET /api/nginx/archives
 - **Auth**: Auth
-- **Description**: List validated regular HServer recovery copies retained below the installation-owned available-site directory. Each entry contains a portable `archive` identity, target `filename`, lowercase SHA-256 `checksum`, byte `size`, encoded `archivedAt`, and filesystem `modifiedAt`; archive contents and absolute host paths are not exposed.
-- **Failure boundary**: Unrelated files and malformed archive names are omitted. A matching HServer archive that is a symlink, unreadable, invalid UTF-8, or larger than 2 MiB makes the inventory fail instead of being presented as a healthy empty list.
+- **Description**: List validated regular Heyserver recovery copies retained below the installation-owned available-site directory. Each entry contains a portable `archive` identity, target `filename`, lowercase SHA-256 `checksum`, byte `size`, encoded `archivedAt`, and filesystem `modifiedAt`; archive contents and absolute host paths are not exposed.
+- **Failure boundary**: Unrelated files and malformed archive names are omitted. A matching Heyserver archive that is a symlink, unreadable, invalid UTF-8, or larger than 2 MiB makes the inventory fail instead of being presented as a healthy empty list.
 
 ### POST /api/nginx/archives/{archive}/restore
 - **Auth**: Manager
 - **Body**: Exactly `{"checksum":"OBSERVED_ARCHIVE_SHA256"}`. Unknown fields, trailing JSON, malformed archive identities, and malformed checksums return `400 Bad Request`.
-- **Description**: Restore one missing local config from the exact observed archive. HServer refuses to overwrite an existing config or activate a dangling enabled-site entry, repeats the archive checksum comparison, preserves archive mode and ownership, creates the config exclusively, temporarily includes the disabled candidate in full `nginx -t`, and leaves the restored site disabled.
+- **Description**: Restore one missing local config from the exact observed archive. Heyserver refuses to overwrite an existing config or activate a dangling enabled-site entry, repeats the archive checksum comparison, preserves archive mode and ownership, creates the config exclusively, temporarily includes the disabled candidate in full `nginx -t`, and leaves the restored site disabled.
 - **Conflict and recovery**: Existing targets, enabled targets, and stale checksums return `409 Conflict`. A syntax failure returns `422 Unprocessable Entity` after removing the restored candidate. The archive is retained after both success and validation failure, and Nginx is never reloaded automatically.
 
 ### GET /api/nginx/backups
 - **Auth**: Auth
-- **Description**: List validated regular HServer pre-edit backups retained below the installation-owned available-site directory. Each entry contains the portable `backup` identity, target `filename`, lowercase SHA-256 `checksum`, byte `size`, encoded `createdAt`, and filesystem `modifiedAt`; content and absolute paths are not exposed.
-- **Failure boundary**: Unrelated files and malformed backup names are omitted. A matching HServer backup that is a symlink, unreadable, invalid UTF-8, or larger than 2 MiB makes the inventory fail rather than silently disappearing from a healthy response.
+- **Description**: List validated regular Heyserver pre-edit backups retained below the installation-owned available-site directory. Each entry contains the portable `backup` identity, target `filename`, lowercase SHA-256 `checksum`, byte `size`, encoded `createdAt`, and filesystem `modifiedAt`; content and absolute paths are not exposed.
+- **Failure boundary**: Unrelated files and malformed backup names are omitted. A matching Heyserver backup that is a symlink, unreadable, invalid UTF-8, or larger than 2 MiB makes the inventory fail rather than silently disappearing from a healthy response.
 
 ### POST /api/nginx/backups/{backup}/restore
 - **Auth**: Manager
 - **Body**: Exactly `{"backupChecksum":"OBSERVED_BACKUP_SHA256","currentChecksum":"FRESH_CURRENT_CONFIG_SHA256"}`. Both locks are required; unknown fields, trailing JSON, malformed backup identities, and malformed checksums return `400 Bad Request`.
-- **Description**: Roll an existing config back to a selected pre-edit version without permitting a blind overwrite. HServer reopens both files, compares both checksums, preserves the current target's mode and ownership, retains a fresh pre-restore recovery copy, atomically installs the backup content, validates the complete `nginx -t`, and preserves the site's enabled or disabled state.
+- **Description**: Roll an existing config back to a selected pre-edit version without permitting a blind overwrite. Heyserver reopens both files, compares both checksums, preserves the current target's mode and ownership, retains a fresh pre-restore recovery copy, atomically installs the backup content, validates the complete `nginx -t`, and preserves the site's enabled or disabled state.
 - **Conflict and rollback**: A changed backup or current target returns `409 Conflict`. A rejected candidate returns `422 Unprocessable Entity` after the previous current config is restored. The selected backup and new recovery remain retained, and Nginx is never reloaded automatically.
 
 ### PUT /api/nginx/configs/{filename}/state
 - **Auth**: Manager
 - **Body**: Exactly `{"enabled":true}` or `{"enabled":false}`. Missing `enabled`, unknown fields, and trailing JSON return `400 Bad Request`.
 - **Description**: Canonical explicit, idempotent desired-state operation for the selected site. Retrying the same request preserves the requested state rather than flipping it.
-- **Filesystem boundary**: HServer only creates or removes a symlink that resolves exactly to the selected regular file in the installation-owned available-site directory. A regular enabled-site entry or a symlink to a foreign target is rejected and never replaced or removed. A missing available-site config returns `404 Not Found`.
+- **Filesystem boundary**: Heyserver only creates or removes a symlink that resolves exactly to the selected regular file in the installation-owned available-site directory. A regular enabled-site entry or a symlink to a foreign target is rejected and never replaced or removed. A missing available-site config returns `404 Not Found`.
 - **Reload boundary**: State changes do not reload Nginx; validate and reload separately.
 
 ### POST /api/nginx/configs/{filename}/toggle
@@ -588,23 +588,23 @@ capability and the same action is enabled in that agent's local allowlist.
 
 ### POST /api/backups/restore/{id}
 - **Auth**: Admin
-- **Description**: Start a background restore from a completed local backup. Database and full restores create a pre-mutation database recovery point and automatically roll back the database on failure. Files and full restores archive every existing path that will be overwritten into a completed `pre-restore-...-files.tar.gz` backup before extraction. If extraction fails, HServer restores those paths and removes paths created by the failed restore. The recovery archive remains listed by `GET /api/backups` after success and can be restored manually when an operator needs to reverse overwritten file content.
+- **Description**: Start a background restore from a completed local backup. Database and full restores create a pre-mutation database recovery point and automatically roll back the database on failure. Files and full restores archive every existing path that will be overwritten into a completed `pre-restore-...-files.tar.gz` backup before extraction. If extraction fails, Heyserver restores those paths and removes paths created by the failed restore. The recovery archive remains listed by `GET /api/backups` after success and can be restored manually when an operator needs to reverse overwritten file content.
 
 ### GET /api/backups/schedules
 - **Auth**: Admin
-- **Description**: List backup schedules owned by HServer in the panel service user's crontab. Daily, weekly, and first-day monthly presets include `frequency` plus `time`; custom safe cron expressions expose their exact `cron` without a misleading preset label. `retention_count` is the number of newest matching backup artifacts preserved by pruning. The deprecated `retention_days` response alias contains the same count for backwards compatibility and does not represent elapsed days. A missing crontab is an empty successful result; a missing executable, permission failure, timeout, or other unreadable state returns `503 Service Unavailable` rather than a false empty schedule.
+- **Description**: List backup schedules owned by Heyserver in the panel service user's crontab. Daily, weekly, and first-day monthly presets include `frequency` plus `time`; custom safe cron expressions expose their exact `cron` without a misleading preset label. `retention_count` is the number of newest matching backup artifacts preserved by pruning. The deprecated `retention_days` response alias contains the same count for backwards compatibility and does not represent elapsed days. A missing crontab is an empty successful result; a missing executable, permission failure, timeout, or other unreadable state returns `503 Service Unavailable` rather than a false empty schedule.
 
 ### POST /api/backups/schedules
 - **Auth**: Admin
 - **Body**: Use exactly one schedule source: either `{"frequency":"daily|weekly|monthly","time":"HH:MM"}` or `{"cron":"<safe five-field expression>"}`. The optional `type` is `full`, `database`, `files`, or `snapshot`; `database` is optional metadata for database schedules. `retention_count` defaults to `10` and accepts integers from `1` through `365`.
 - **Compatibility**: `retentionCount` and the deprecated `retention_days` name remain accepted as count aliases, but a request must provide at most one of the three retention names. Unknown fields, trailing JSON, mixed cron plus frequency/time sources, and ambiguous retention aliases return `400 Bad Request`.
-- **Description**: Add or replace a managed backup schedule while preserving unrelated crontab entries. HServer reads the complete current crontab before writing and returns `503 Service Unavailable` without changing the runner script or crontab when observation fails.
+- **Description**: Add or replace a managed backup schedule while preserving unrelated crontab entries. Heyserver reads the complete current crontab before writing and returns `503 Service Unavailable` without changing the runner script or crontab when observation fails.
 - **Validation**: The cron expression must use the safe five-field format and unsupported database metadata is rejected. Invalid input returns `400 Bad Request` before any host file or crontab is observed or changed.
 
 ### DELETE /api/backups/schedules
 - **Auth**: Admin
 - **Body**: `{"rawLine":"<exact rawLine returned by GET /api/backups/schedules>"}`. The body is required and rejects unknown fields or trailing JSON.
-- **Description**: Remove an exact, currently observed HServer-managed backup schedule while preserving every unrelated crontab entry. The server no longer guesses the first schedule when identity is omitted. A non-managed target returns `400 Bad Request`, a valid target that is no longer present returns `404 Not Found`, and the mutation is refused with `503 Service Unavailable` when the current crontab cannot be observed safely.
+- **Description**: Remove an exact, currently observed Heyserver-managed backup schedule while preserving every unrelated crontab entry. The server no longer guesses the first schedule when identity is omitted. A non-managed target returns `400 Bad Request`, a valid target that is no longer present returns `404 Not Found`, and the mutation is refused with `503 Service Unavailable` when the current crontab cannot be observed safely.
 
 ### PUT /api/backups/gdrive/oauth-app
 - **Auth**: Admin
@@ -670,8 +670,8 @@ capability and the same action is enabled in that agent's local allowlist.
 
 ### POST /api/backups/snapshot/restore
 - **Auth**: Admin
-- **Body**: `snapshotId` is a required `8–64` character hexadecimal identity observed from the snapshot list. Optional `manifestIds` selects fixed logical manifest entries; optional `vhosts` accepts at most `16` unique portable vhost directory names. HServer resolves both selectors against the installation's configured data and vhost roots. Selecting the complete `vhosts` manifest together with individual `vhosts` is rejected as ambiguous. Absolute client paths, arbitrary restic arguments, glob expressions, unknown manifest IDs, and caller-selected restore targets are rejected.
-- **Description**: Restore into HServer's fixed local staging directory. The API cannot target production paths directly; moving staged content into service paths remains a separate operator action.
+- **Body**: `snapshotId` is a required `8–64` character hexadecimal identity observed from the snapshot list. Optional `manifestIds` selects fixed logical manifest entries; optional `vhosts` accepts at most `16` unique portable vhost directory names. Heyserver resolves both selectors against the installation's configured data and vhost roots. Selecting the complete `vhosts` manifest together with individual `vhosts` is rejected as ambiguous. Absolute client paths, arbitrary restic arguments, glob expressions, unknown manifest IDs, and caller-selected restore targets are rejected.
+- **Description**: Restore into Heyserver's fixed local staging directory. The API cannot target production paths directly; moving staged content into service paths remains a separate operator action.
 
 ### POST /api/backups/snapshot/purge-repo
 - **Auth**: Admin
@@ -703,7 +703,7 @@ rules endpoints return `[]`, never `null`, when no rules are observable.
 
 ### DELETE /api/firewall/rules/{number}
 - **Auth**: Admin
-- **Description**: Delete a firewall rule by positive integer rule number. HServer rejects deletion of the last inbound SSH allow rule.
+- **Description**: Delete a firewall rule by positive integer rule number. Heyserver rejects deletion of the last inbound SSH allow rule.
 
 ### POST /api/firewall/toggle
 - **Auth**: Admin
@@ -756,7 +756,7 @@ rules endpoints return `[]`, never `null`, when no rules are observable.
 
 ### GET /api/logs/sources
 - **Auth**: Auth
-- **Description**: List readable Nginx, PHP, PostgreSQL, allowlisted system, application, and PM2 log files. Application discovery is restricted to `storage/logs` below the installation's configured vhost root. PM2 discovery is restricted to the single configured unprivileged PM2 owner and its configured or account-derived `PM2_HOME`; HServer does not scan every home directory or a root-owned PM2 daemon.
+- **Description**: List readable Nginx, PHP, PostgreSQL, allowlisted system, application, and PM2 log files. Application discovery is restricted to `storage/logs` below the installation's configured vhost root. PM2 discovery is restricted to the single configured unprivileged PM2 owner and its configured or account-derived `PM2_HOME`; Heyserver does not scan every home directory or a root-owned PM2 daemon.
 
 ### GET /api/logs/read
 - **Auth**: Auth
@@ -1258,7 +1258,7 @@ capability and enable the requested action in its local allowlist.
 
 ### POST /api/deploy/targets/{id}/staging
 - **Auth**: Admin
-- **Body**: `{"name":"App Staging","branch":"develop","projectDir":"/srv/apps/app-staging"}`. `projectDir` is required and must be an absolute directory that does not overlap the HServer data directory or any deployment target after symlink resolution. `name` and `branch` default from the production source when omitted. Unknown and trailing JSON fields are rejected.
+- **Body**: `{"name":"App Staging","branch":"develop","projectDir":"/srv/apps/app-staging"}`. `projectDir` is required and must be an absolute directory that does not overlap the Heyserver data directory or any deployment target after symlink resolution. `name` and `branch` default from the production source when omitted. Unknown and trailing JSON fields are rejected.
 - **Description**: Derive a staging target from one canonical production target. Repository and executor configuration are inherited. Environment values, webhook signing secrets, auto-deploy, domains, TLS, and DNS state are not copied. The `201 Created` receipt repeats these non-copy guarantees explicitly. Staging targets cannot be used as another staging source.
 - **Conflicts**: A production target with attached staging targets cannot be deleted. A production or staging project directory cannot later be moved across a staging storage boundary.
 
@@ -1308,7 +1308,7 @@ capability and enable the requested action in its local allowlist.
 ### POST /api/deploy/targets/{id}/domains
 - **Auth**: Admin
 - **Body**: `{"domain":"app.example.com","service":"web","hostPort":8080}`. All fields are required; the host port is `1–65535`. Unknown fields, trailing JSON values, arbitrary upstreams, and bodies above 8 KiB are rejected.
-- **Description**: Bind a validated ASCII hostname and Compose service label to an explicitly published host port. HServer normalizes the hostname, writes an owned HTTP virtual host, runs `nginx -t`, reloads Nginx, and rolls back persistence plus generated files if activation fails.
+- **Description**: Bind a validated ASCII hostname and Compose service label to an explicitly published host port. Heyserver normalizes the hostname, writes an owned HTTP virtual host, runs `nginx -t`, reloads Nginx, and rolls back persistence plus generated files if activation fails.
 
 ### GET /api/deploy/targets/{id}/domains/{domainId}/health
 - **Auth**: Auth
@@ -1326,7 +1326,7 @@ capability and enable the requested action in its local allowlist.
 
 ### DELETE /api/deploy/targets/{id}/domains/{domainId}
 - **Auth**: Admin
-- **Description**: With an empty request body, transactionally disable and remove one HServer-owned project-domain virtual host. Success is `204 No Content`; unrelated Nginx configuration is never deleted.
+- **Description**: With an empty request body, transactionally disable and remove one Heyserver-owned project-domain virtual host. Success is `204 No Content`; unrelated Nginx configuration is never deleted.
 
 ### PUT /api/deploy/targets/{id}
 - **Auth**: Admin
@@ -1469,7 +1469,7 @@ capability and enable the requested action in its local allowlist.
 
 ### POST /api/notify/channels/{id}/test
 - **Auth**: Manager
-- **Description**: Send a test notification through a channel to verify connectivity. After the provider call, HServer persists one bounded `success` or `failure` receipt for the channel and its current configuration revision; receipts never contain the subject, body, provider error, secret, or raw provider payload.
+- **Description**: Send a test notification through a channel to verify connectivity. After the provider call, Heyserver persists one bounded `success` or `failure` receipt for the channel and its current configuration revision; receipts never contain the subject, body, provider error, secret, or raw provider payload.
 - **Success (`200 OK`)**: `{"status":"sent","state":"healthy","detail":"delivery_confirmed"}` is returned only when the provider call succeeds and the receipt is persisted. The successful receipt remains fresh for seven days.
 - **Provider failure (`502 Bad Gateway`)**: `{"error":"test delivery failed","state":"unavailable"}`; the failed attempt is still persisted as `delivery_failed` when the receipt store is available.
 - **Receipt persistence failure (`503 Service Unavailable`)**: `{"error":"test sent but delivery receipt could not be stored","state":"unavailable"}`; a provider send is not presented as healthy without durable evidence.
@@ -1671,7 +1671,7 @@ client without reconstructing payloads from UI requests.
 
 ### GET /api/integrations/status
 - **Auth**: Auth (`RouteProtected`)
-- **Description**: Return a fresh schema-v1, local-only, read-only aggregate for every local integration entry in the catalog. HServer keeps fifteen required core probes: `process.pm2` (`pm2_inventory`), `cloudflare.dns` (`cloudflare_zone_list`), `container.docker` (`docker_info`), `web.nginx` (`nginx_readiness`), `firewall.ufw` (`ufw_readiness`), `tls.certbot` (`certbot_readiness`), `dns.bind9` (`bind9_readiness`), `runtime.php_fpm` (`php_fpm_readiness`), `database.local` (`database_readiness`), `storage.smartmontools` (`smartmontools_readiness`), `stalwart.mail` (`stalwart_readiness`), `mail.access` (`mail_access_readiness`), `backup.gdrive` (`gdrive_readiness`), `backup.snapshot.restic` (`restic_readiness`), and `notification.delivery` (`notification_readiness`). Reviewed additive catalog entries may contribute explicitly code-owned probes through the compile-time `api.Deps.IntegrationStatusProbes` seam; entries without a registered local probe remain in `unprobed`. Healthy always requires a fresh successful observation. Notification delivery stays unavailable until a persisted fresh successful delivery receipt exists. Failures and timeouts remain item-level, per-item HTTP 200 results. Managed-node status remains a separate endpoint. Raw provider errors, command output, paths, and secrets never cross this boundary.
+- **Description**: Return a fresh schema-v1, local-only, read-only aggregate for every local integration entry in the catalog. Heyserver keeps fifteen required core probes: `process.pm2` (`pm2_inventory`), `cloudflare.dns` (`cloudflare_zone_list`), `container.docker` (`docker_info`), `web.nginx` (`nginx_readiness`), `firewall.ufw` (`ufw_readiness`), `tls.certbot` (`certbot_readiness`), `dns.bind9` (`bind9_readiness`), `runtime.php_fpm` (`php_fpm_readiness`), `database.local` (`database_readiness`), `storage.smartmontools` (`smartmontools_readiness`), `stalwart.mail` (`stalwart_readiness`), `mail.access` (`mail_access_readiness`), `backup.gdrive` (`gdrive_readiness`), `backup.snapshot.restic` (`restic_readiness`), and `notification.delivery` (`notification_readiness`). Reviewed additive catalog entries may contribute explicitly code-owned probes through the compile-time `api.Deps.IntegrationStatusProbes` seam; entries without a registered local probe remain in `unprobed`. Healthy always requires a fresh successful observation. Notification delivery stays unavailable until a persisted fresh successful delivery receipt exists. Failures and timeouts remain item-level, per-item HTTP 200 results. Managed-node status remains a separate endpoint. Raw provider errors, command output, paths, and secrets never cross this boundary.
 - **Response (`200 OK`)**: The typed response contains `schema_version: 1`, an RFC3339 `observed_at`, `target.scope: "local_host"`, safe per-item `results`, an explicit `unprobed` list, and `partial`. Result states are exactly `not_configured`, `unavailable`, or `healthy`; failure items use only bounded `error_code` values and optional non-negative `duration_ms`. Result and unprobed IDs must use the catalog's provider-neutral ID syntax and be present in the current catalog. `partial` is true when an integration remains unprobed or a probe fails or times out; explicitly not-configured optional integrations do not make the aggregate partial.
 - **Failure boundary**: Individual probe failures and timeouts remain item results in HTTP `200`; only an unavailable embedded catalog returns `500`. Raw provider errors, command output, and secret values are never returned.
 - **Scope**: This endpoint reports local-host observations only. It does not provide live managed-node status.

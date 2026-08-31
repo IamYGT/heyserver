@@ -974,15 +974,15 @@ export default function Dashboard() {
   })
 
   const runResourceAction = (action: 'memory-optimize' | 'swap-reset') => {
-    const prompt = hostActionConfirmation(action, 'HServer', controlMemory, swapRequired)
+    const prompt = hostActionConfirmation(action, 'Heyserver', controlMemory, swapRequired)
     if (window.confirm(prompt)) resourceAction.mutate(action)
   }
 
   const controlService = (service: string, action: ServiceControlAction) => {
     const prompt = action === 'stop'
-      ? `Stop ${service} on HServer? Dependent sites or workers may become unavailable.`
+      ? `Stop ${service} on Heyserver? Dependent sites or workers may become unavailable.`
       : action === 'restart'
-        ? `Restart ${service} on HServer now? A short interruption may occur.`
+        ? `Restart ${service} on Heyserver now? A short interruption may occur.`
         : undefined
     if (!prompt || window.confirm(prompt)) serviceControl.mutate({ service, action })
   }

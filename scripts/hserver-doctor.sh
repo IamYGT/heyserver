@@ -26,7 +26,7 @@ warnings=0
 
 usage() {
   cat <<'EOF'
-HServer installation diagnostics
+Heyserver installation diagnostics
 
 Usage:
   ./doctor.sh preflight  # validate a host before native installation
@@ -196,7 +196,7 @@ check_installed() {
         ;;
       *) fail "BIND lifecycle journal permissions must be 0600 or stricter (detected: ${bind_journal_mode:-unknown})" ;;
     esac
-    warn "BIND lifecycle recovery is pending; inspect BIND readiness and restart HServer"
+    warn "BIND lifecycle recovery is pending; inspect BIND readiness and restart Heyserver"
   else
     pass "no pending BIND lifecycle recovery journal"
   fi

@@ -16,7 +16,7 @@ func TestRevisionComparisonReportsCurrentAndRollbackDiff(t *testing.T) {
 	projectDir := t.TempDir()
 	runGitForRevisionTest(t, projectDir, "init", "-q")
 	runGitForRevisionTest(t, projectDir, "config", "user.email", "contributor@example.com")
-	runGitForRevisionTest(t, projectDir, "config", "user.name", "HServer Test")
+	runGitForRevisionTest(t, projectDir, "config", "user.name", "Heyserver Test")
 	tracked := filepath.Join(projectDir, "app.txt")
 	if err := os.WriteFile(tracked, []byte("first\n"), 0o644); err != nil {
 		t.Fatal(err)

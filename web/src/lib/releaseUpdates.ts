@@ -68,7 +68,7 @@ export function releaseUpdatePresentation(update: ReleaseUpdateStatus) {
   if (update.latest_version_state === 'behind') {
     return { title: 'Panel is ahead of the release feed', tone: 'warning' as const }
   }
-  return { title: 'HServer is up to date', tone: 'healthy' as const }
+  return { title: 'Heyserver is up to date', tone: 'healthy' as const }
 }
 
 export function releaseStagePresentation(stage: ReleaseStage) {
@@ -76,9 +76,9 @@ export function releaseStagePresentation(stage: ReleaseStage) {
     case 'staged':
       return { title: 'Archive verified and ready', detail: 'A second admin confirmation is required before installation.', tone: 'available' as const }
     case 'scheduled':
-      return { title: 'Upgrade scheduled', detail: 'The detached installer will start in a few seconds and restart HServer.', tone: 'warning' as const }
+      return { title: 'Upgrade scheduled', detail: 'The detached installer will start in a few seconds and restart Heyserver.', tone: 'warning' as const }
     case 'running':
-      return { title: 'Upgrade in progress', detail: 'HServer may be briefly unavailable while the new release is health-checked.', tone: 'warning' as const }
+      return { title: 'Upgrade in progress', detail: 'Heyserver may be briefly unavailable while the new release is health-checked.', tone: 'warning' as const }
     case 'completed':
       return { title: 'Upgrade completed', detail: 'The new release passed its health check.', tone: 'healthy' as const }
     case 'failed':

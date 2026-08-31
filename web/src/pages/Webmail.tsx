@@ -216,12 +216,12 @@ export default function Webmail() {
       {settingsQuery.isError && (
         <DependencyRemediation
           title="Mail access settings are unavailable"
-          summary="Webmail links and client configuration remain hidden because HServer could not confirm the saved settings."
+          summary="Webmail links and client configuration remain hidden because Heyserver could not confirm the saved settings."
           error={settingsQuery.error.message}
           retry={() => { void settingsQuery.refetch() }}
           retrying={settingsQuery.isFetching}
           steps={[
-            'Verify the HServer API and Settings page are reachable.',
+            'Verify the Heyserver API and Settings page are reachable.',
             'Inspect the panel service log for a settings read failure.',
             'Retry detection after the settings source is readable.',
           ]}
@@ -231,7 +231,7 @@ export default function Webmail() {
         <DependencyRemediation
           state="not-configured"
           title="Mail access is not configured"
-          summary="HServer has no complete webmail, mail-admin, and IMAP/SMTP endpoint set, so it will not invent a provider or publish a partial client guide."
+          summary="Heyserver has no complete webmail, mail-admin, and IMAP/SMTP endpoint set, so it will not invent a provider or publish a partial client guide."
           retry={() => { void settingsQuery.refetch() }}
           retrying={settingsQuery.isFetching}
           steps={[
@@ -245,7 +245,7 @@ export default function Webmail() {
         <DependencyRemediation
           state="unavailable"
           title="Mail access reachability is unverified"
-          summary="HServer confirmed complete, validated mail access settings, but this endpoint does not probe the external provider. Links and client guidance are configuration-only until reachability is checked separately."
+          summary="Heyserver confirmed complete, validated mail access settings, but this endpoint does not probe the external provider. Links and client guidance are configuration-only until reachability is checked separately."
           retry={() => { void settingsQuery.refetch() }}
           retrying={settingsQuery.isFetching}
           retryLabel="Refresh settings"

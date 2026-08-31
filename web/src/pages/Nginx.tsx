@@ -405,10 +405,10 @@ export default function Nginx() {
       {statusQuery.isError ? (
         <DependencyRemediation
           title="Nginx service status is unavailable"
-          summary="HServer could not determine whether nginx is installed or active. Test, reload, and config mutations remain paused."
+          summary="Heyserver could not determine whether nginx is installed or active. Test, reload, and config mutations remain paused."
           state="unavailable"
           steps={[
-            <>Run the packaged HServer doctor and inspect the HServer service logs.</>,
+            <>Run the packaged Heyserver doctor and inspect the Heyserver service logs.</>,
             <>Verify <code>nginx -v</code> and <code>systemctl is-active nginx</code> on the local host.</>,
             <>Correct binary or systemd access, then retry detection.</>,
           ]}
@@ -419,7 +419,7 @@ export default function Nginx() {
       ) : nginxStatus && !nginxStatus.installed ? (
         <DependencyRemediation
           title="Nginx is not installed"
-          summary="HServer did not find an nginx executable. Nginx management stays disabled; HServer never installs host packages automatically."
+          summary="Heyserver did not find an nginx executable. Nginx management stays disabled; Heyserver never installs host packages automatically."
           state="not-configured"
           steps={[
             <>Install <code>nginx</code> from the supported Ubuntu repositories.</>,
@@ -432,11 +432,11 @@ export default function Nginx() {
       ) : nginxStatus && !nginxStatus.statusAvailable ? (
         <DependencyRemediation
           title="Nginx service state is unavailable"
-          summary="The nginx binary is installed, but HServer could not inspect its systemd unit. Reload and config mutations remain paused."
+          summary="The nginx binary is installed, but Heyserver could not inspect its systemd unit. Reload and config mutations remain paused."
           state="unavailable"
           steps={[
             <>Verify <code>systemctl is-active nginx</code> works on the local host.</>,
-            <>Inspect <code>systemctl status nginx</code> and the HServer service logs.</>,
+            <>Inspect <code>systemctl status nginx</code> and the Heyserver service logs.</>,
             <>Restore systemd access or the nginx unit, then retry detection.</>,
           ]}
           retry={() => { void statusQuery.refetch() }}
@@ -826,7 +826,7 @@ export default function Nginx() {
                         size="sm"
                         disabled={restoreBackupMutation.isPending || backupsQuery.isError || !nginxConfigReady}
                         onClick={() => {
-                          if (window.confirm(`Roll back ${backup.filename} from ${backup.backup}? HServer will re-read the current config, require both checksums, retain a new pre-restore recovery, validate with nginx -t, and will not reload Nginx.`)) {
+                          if (window.confirm(`Roll back ${backup.filename} from ${backup.backup}? Heyserver will re-read the current config, require both checksums, retain a new pre-restore recovery, validate with nginx -t, and will not reload Nginx.`)) {
                             restoreBackupMutation.mutate(backup)
                           }
                         }}

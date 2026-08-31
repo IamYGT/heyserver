@@ -376,7 +376,7 @@ func rootPhysicalDevice(output string) (string, string) {
 		return "", "No physical disk could be resolved behind the root filesystem."
 	}
 	if len(devices) > 1 {
-		return "", "The root filesystem spans multiple physical disks, so HServer will not choose one arbitrarily."
+		return "", "The root filesystem spans multiple physical disks, so Heyserver will not choose one arbitrarily."
 	}
 	for device := range devices {
 		return device, ""
@@ -753,25 +753,25 @@ func ScanCleanup() ([]CleanupTarget, error) {
 		})
 	}
 
-	// 8. Keep the five newest HServer rollback binaries and offer older copies.
+	// 8. Keep the five newest Heyserver rollback binaries and offer older copies.
 	_, oldBinarySize := oldHServerBinaries()
 	if oldBinarySize > 0 {
 		targets = append(targets, CleanupTarget{
-			ID: "hserver-old-binaries", Name: "Old HServer Rollback Binaries",
+			ID: "hserver-old-binaries", Name: "Old Heyserver Rollback Binaries",
 			Description: "Keeps the five newest rollback binaries and removes only older copies",
 			Size:        oldBinarySize, Scope: "root filesystem", Risk: "low",
 		})
 	}
 
-	// 9. HServer builds intentionally use uniquely named /tmp workspaces and a
+	// 9. Heyserver builds intentionally use uniquely named /tmp workspaces and a
 	// dedicated Go cache. They are never runtime data, but can accumulate quickly
 	// during frequent panel releases. Keep this separate from the age-based /tmp
 	// target so operators can reclaim it immediately and explicitly.
 	_, hserverTempSize := hserverTemporaryArtifacts("/tmp")
 	if hserverTempSize > 1024*1024 {
 		targets = append(targets, CleanupTarget{
-			ID: "hserver-build-artifacts", Name: "HServer Temporary Build Artifacts",
-			Description: "Disposable HServer build workspaces and Go build caches under /tmp; live panel data is not included",
+			ID: "hserver-build-artifacts", Name: "Heyserver Temporary Build Artifacts",
+			Description: "Disposable Heyserver build workspaces and Go build caches under /tmp; live panel data is not included",
 			Size:        hserverTempSize, Scope: filesystemScope("/tmp"), Risk: "low",
 		})
 	}
@@ -847,17 +847,17 @@ func ExecuteCleanup(id string) (string, error) {
 		paths, _ := oldHServerBinaries()
 		for _, path := range paths {
 			if err := os.Remove(path); err != nil && !os.IsNotExist(err) {
-				return "", fmt.Errorf("remove old HServer binary: %w", err)
+				return "", fmt.Errorf("remove old Heyserver binary: %w", err)
 			}
 		}
-		return fmt.Sprintf("%d old HServer rollback binaries removed; newest five retained", len(paths)), nil
+		return fmt.Sprintf("%d old Heyserver rollback binaries removed; newest five retained", len(paths)), nil
 
 	case "hserver-build-artifacts":
 		count, err := removeHServerTemporaryArtifacts("/tmp")
 		if err != nil {
-			return "", fmt.Errorf("HServer temporary build cleanup: %w", err)
+			return "", fmt.Errorf("Heyserver temporary build cleanup: %w", err)
 		}
-		return fmt.Sprintf("%d HServer temporary build artifacts removed", count), nil
+		return fmt.Sprintf("%d Heyserver temporary build artifacts removed", count), nil
 
 	default:
 		return "", fmt.Errorf("unknown cleanup target: %s", id)
@@ -986,7 +986,7 @@ var hserverTemporaryArtifactPatterns = []string{
 }
 
 // hserverTemporaryArtifacts returns only direct children of root matching the
-// fixed HServer build patterns. Symlinks are measured as links and never
+// fixed Heyserver build patterns. Symlinks are measured as links and never
 // followed, preventing a crafted /tmp link from expanding the cleanup scope.
 func hserverTemporaryArtifacts(root string) ([]string, uint64) {
 	cleanRoot := filepath.Clean(root)

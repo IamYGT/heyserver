@@ -10,7 +10,7 @@ usage() {
   cat >&2 <<'EOF'
 Usage: create-public-repository.sh DESTINATION --author-name NAME --author-email EMAIL
 
-Create an atomic, one-commit Git repository from HServer's audited public source
+Create an atomic, one-commit Git repository from Heyserver's audited public source
 snapshot. The command never configures a remote or pushes the repository.
 EOF
 }
@@ -108,7 +108,7 @@ git -C "$snapshot" config user.name "$author_name"
 git -C "$snapshot" config user.email "$author_email"
 git -C "$snapshot" add --all
 git -C "$snapshot" -c commit.gpgsign=false -c maintenance.auto=false \
-  commit -qm "Publish HServer community source"
+  commit -qm "Publish Heyserver community source"
 
 if [[ $(git -C "$snapshot" rev-list --all --count) != 1 ||
       $(git -C "$snapshot" rev-list --max-parents=0 --all --count) != 1 ]]; then

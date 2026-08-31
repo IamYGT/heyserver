@@ -1,6 +1,6 @@
 # Docker Compose Deployments
 
-HServer can manage a local Git checkout as a first-class Docker Compose deploy
+Heyserver can manage a local Git checkout as a first-class Docker Compose deploy
 target. This mode is intentionally different from a script target: the panel
 stores deployment intent and assembles a fixed Compose command instead of
 accepting an arbitrary command string.
@@ -11,10 +11,10 @@ a remote node.
 
 ## Requirements
 
-- HServer must be installed natively on the host that owns the project.
+- Heyserver must be installed natively on the host that owns the project.
 - `git` must be able to read the configured checkout.
 - Docker Engine and the Docker Compose v2 plugin must be available to the
-  HServer service identity.
+  Heyserver service identity.
 - The project directory must be an absolute path. It may contain an existing
   Git checkout, be empty, or be absent. Empty and absent targets are cloned on
   their first deployment from the configured repository URL.
@@ -45,7 +45,7 @@ readiness checks.
 ## Create an isolated staging environment
 
 An administrator can select **Create Staging Environment** on a production
-target. HServer derives repository and executor intent while requiring a
+target. Heyserver derives repository and executor intent while requiring a
 separate absolute project directory and recording the production target as the
 staging source. Name and branch remain staging-owned choices.
 
@@ -91,7 +91,7 @@ unchanged. A schema-v1 Compose template is:
   "schemaVersion": 1,
   "id": "docker-compose",
   "name": "Docker Compose",
-  "description": "Deploy with HServer's fixed Docker Compose lifecycle.",
+  "description": "Deploy with Heyserver's fixed Docker Compose lifecycle.",
   "branch": "main",
   "deploymentKind": "compose",
   "composeFile": "",
@@ -107,7 +107,7 @@ configured script target. Unknown fields are rejected, so a template cannot
 smuggle a repository URL, project directory, credential, or webhook secret into
 the target form.
 
-HServer accepts at most 128 regular `.json` files of 64 KiB each. Symlinks and
+Heyserver accepts at most 128 regular `.json` files of 64 KiB each. Symlinks and
 group- or world-writable directories or files are rejected. Inventory status is
 `not_configured` when the directory has no templates, `healthy` when every
 template is valid, and `unavailable` when the directory cannot be read or one or
@@ -124,11 +124,11 @@ https://panel.example.com/api/deploy/webhook/TARGET_ID
 ```
 
 For GitHub, configure JSON delivery, choose push events, and use the same secret
-entered in HServer. HServer validates `X-Hub-Signature-256` over the exact body
+entered in Heyserver. Heyserver validates `X-Hub-Signature-256` over the exact body
 and requires the unique `X-GitHub-Delivery` for every push.
 
 For GitLab, use **Standard Webhooks**, select push events, and store the returned
-`whsec_` signing token in HServer. HServer validates `webhook-id`,
+`whsec_` signing token in Heyserver. Heyserver validates `webhook-id`,
 `webhook-timestamp`, and any matching `v1,` entry in `webhook-signature`; the
 legacy plaintext `X-Gitlab-Token` contract is intentionally not accepted for a
 new target. See the upstream [GitHub validation guide](https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries) and [GitLab webhook documentation](https://docs.gitlab.com/user/project/integrations/webhooks/) for provider-side setup.
@@ -171,7 +171,7 @@ Select **Compare Deployment Revisions** on a Deploy card, or run:
 hserverctl deploy revision TARGET_ID
 ```
 
-HServer reads the exact local `HEAD`, the newest successful deployment commit,
+Heyserver reads the exact local `HEAD`, the newest successful deployment commit,
 and the commit the rollback endpoint would currently select. It reports whether
 the checkout matches the latest recorded deployment, whether tracked files
 have local changes, commit distance from the rollback revision, and a bounded
@@ -202,7 +202,7 @@ Existing checkouts are updated without an implicit merge:
 git pull --ff-only origin BRANCH
 ```
 
-After the checkout is ready, HServer executes only these Compose operations
+After the checkout is ready, Heyserver executes only these Compose operations
 from the configured project directory:
 
 ```text
@@ -293,10 +293,10 @@ The API never accepts a raw upstream URL. Use the published host port shown in
 the Compose network while preventing a browser request from selecting another
 host or scheme.
 
-HServer writes `<domain>.conf` below `HSERVER_NGINX_SITES_AVAILABLE`, links it
+Heyserver writes `<domain>.conf` below `HSERVER_NGINX_SITES_AVAILABLE`, links it
 below `HSERVER_NGINX_SITES_ENABLED`, tests the complete configuration with
 `nginx -t`, and reloads Nginx. A failed test or reload removes the staged files
-and restores the previous Nginx state. Deletion verifies HServer's target and
+and restores the previous Nginx state. Deletion verifies Heyserver's target and
 domain ownership markers before it moves either file, then uses the same test,
 reload, and rollback sequence. A deploy target with active mappings cannot be
 deleted until those mappings are removed.
@@ -304,14 +304,14 @@ deleted until those mappings are removed.
 ### Managed TLS
 
 Admins can select **Configure TLS** for a mapping after its public DNS points to
-the host and inbound port 80 reaches Nginx. HServer uses a fixed Certbot
+the host and inbound port 80 reaches Nginx. Heyserver uses a fixed Certbot
 HTTP-01 webroot command; the browser supplies only an optional ACME account
 email. The domain, certificate name, challenge root, config root, authenticator,
 and deploy hook are assembled from the persisted mapping and installation
 configuration rather than request data.
 
 The HTTP virtual host always serves `/.well-known/acme-challenge/` from
-`HSERVER_ACME_WEBROOT`. After Certbot succeeds, HServer parses the issued X.509
+`HSERVER_ACME_WEBROOT`. After Certbot succeeds, Heyserver parses the issued X.509
 certificate, verifies that it covers the mapped hostname, then atomically
 replaces the owned Nginx file with:
 
@@ -328,13 +328,13 @@ observed from the actual certificate file and is reported as `healthy`,
 not treated as valid TLS. Disabling TLS restores HTTP but deliberately preserves
 the certificate files instead of revoking or deleting them.
 
-Certbot stores the renewal lineage in its configured state directory. HServer
+Certbot stores the renewal lineage in its configured state directory. Heyserver
 runs one maintenance pass at panel startup and every 12 hours afterwards. Only
 observed `expiring` or `expired` mappings reach the fixed `certbot renew`
 operation; healthy certificates are not touched, and a missing certificate is
 left `unavailable` rather than silently reissued without the operator's ACME
 account decision. The fixed deploy hook reloads Nginx after a successful
-renewal. Distribution-provided Certbot timers may coexist, but HServer does not
+renewal. Distribution-provided Certbot timers may coexist, but Heyserver does not
 depend on one being enabled for project-domain maintenance.
 
 Use **Probe** for an independent on-demand, three-second loopback application

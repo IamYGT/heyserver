@@ -98,7 +98,7 @@ describe('RemoteProjectDomainsDialog', () => {
     const confirmMock = vi.spyOn(window, 'confirm').mockReturnValue(true)
     renderDialog()
 
-    await screen.findByText('No HServer-owned domain mappings were observed for this target.')
+    await screen.findByText('No Heyserver-owned domain mappings were observed for this target.')
     fireEvent.change(screen.getByLabelText('Domain'), { target: { value: 'new.example.com' } })
     fireEvent.click(screen.getByRole('button', { name: 'Ensure domain' }))
 
@@ -137,7 +137,7 @@ describe('RemoteProjectDomainsDialog', () => {
     const confirmMock = vi.spyOn(window, 'confirm').mockReturnValue(false)
     renderDialog()
 
-    await screen.findByText('No HServer-owned domain mappings were observed for this target.')
+    await screen.findByText('No Heyserver-owned domain mappings were observed for this target.')
     fireEvent.change(screen.getByLabelText('Domain'), { target: { value: 'cancel.example.com' } })
     fireEvent.click(screen.getByRole('button', { name: 'Ensure domain' }))
 
@@ -155,7 +155,7 @@ describe('RemoteProjectDomainsDialog', () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true)
     renderDialog()
 
-    await screen.findByText('No HServer-owned domain mappings were observed for this target.')
+    await screen.findByText('No Heyserver-owned domain mappings were observed for this target.')
     fireEvent.change(screen.getByLabelText('Domain'), { target: { value: 'stale.example.com' } })
     fireEvent.click(screen.getByRole('button', { name: 'Ensure domain' }))
 
@@ -183,7 +183,7 @@ describe('RemoteProjectDomainsDialog', () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true)
     renderDialog()
 
-    await screen.findByText('No HServer-owned domain mappings were observed for this target.')
+    await screen.findByText('No Heyserver-owned domain mappings were observed for this target.')
     fireEvent.change(screen.getByLabelText('Domain'), { target: { value: 'error.example.com' } })
     fireEvent.click(screen.getByRole('button', { name: 'Ensure domain' }))
 

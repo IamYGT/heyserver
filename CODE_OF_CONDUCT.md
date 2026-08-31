@@ -1,6 +1,6 @@
-# HServer Code of Conduct
+# Heyserver Code of Conduct
 
-HServer contributors and maintainers commit to a professional, welcoming, and
+Heyserver contributors and maintainers commit to a professional, welcoming, and
 technically constructive project environment.
 
 ## Expected behavior
@@ -24,9 +24,9 @@ technically constructive project environment.
 
 ## Scope
 
-This policy applies in HServer repositories, issues, pull requests, reviews,
+This policy applies in Heyserver repositories, issues, pull requests, reviews,
 release discussions, and project-run community spaces. It also applies when a
-person officially represents HServer in another public space.
+person officially represents Heyserver in another public space.
 
 ## Reporting a conduct concern
 
@@ -38,12 +38,12 @@ follow-up. Do not attach credentials, private keys, or unrelated server data.
 
 This route is for conduct concerns. Route other private reports as follows:
 
-- **Vulnerability, suspected credential exposure, or HServer-caused security
+- **Vulnerability, suspected credential exposure, or Heyserver-caused security
   impact:** use the [private security advisory](https://github.com/IamYGT/heyserver/security/advisories/new)
   and follow [SECURITY.md](SECURITY.md); do not use a public issue.
 - **Compromised host, lost credential, or outage:** isolate or recover the
   installation and rotate affected credentials first, then use the private
-  security advisory if HServer caused or widened the impact.
+  security advisory if Heyserver caused or widened the impact.
 - **Normal installation, usage, defect, feature, or integration help:** use the
   matching form in [SUPPORT.md](SUPPORT.md).
 
@@ -64,7 +64,7 @@ case and any appeal.
 
 For an immediate threat, contact the appropriate local emergency or protective
 service first. Project enforcement cannot replace local emergency response.
-Exact project response times are not promised while HServer remains a small
+Exact project response times are not promised while Heyserver remains a small
 pre-1.0 project, but good-faith reports will not be ignored or punished.
 
 See [GOVERNANCE.md](GOVERNANCE.md) for role authority and the

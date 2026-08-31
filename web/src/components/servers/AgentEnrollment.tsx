@@ -131,7 +131,7 @@ export function AgentEnrollment({ onClose, onRegistered }: AgentEnrollmentProps)
       <CardHeader className="flex-row items-start justify-between gap-4">
         <div>
           <CardTitle className="flex items-center gap-2 text-sm text-zinc-100"><Server className="size-4 text-violet-400" /> Enroll a managed server</CardTitle>
-          <p className="mt-1 text-xs text-zinc-500">The agent connects outbound to this HServer installation; no provider-specific network or inbound SSH is required.</p>
+          <p className="mt-1 text-xs text-zinc-500">The agent connects outbound to this Heyserver installation; no provider-specific network or inbound SSH is required.</p>
         </div>
         <Button type="button" variant="ghost" size="icon-xs" onClick={close} aria-label="Close server enrollment"><X className="size-3.5" /></Button>
       </CardHeader>
@@ -163,7 +163,7 @@ export function AgentEnrollment({ onClose, onRegistered }: AgentEnrollmentProps)
           <div className="space-y-4">
             <div className="rounded-xl border border-amber-500/25 bg-amber-500/[0.06] p-3">
               <p className="flex items-center gap-2 text-xs font-semibold text-amber-300"><ShieldCheck className="size-4" /> Save this enrollment token now</p>
-              <p className="mt-1 text-[10px] text-amber-300/70">It is returned once and is never stored by HServer in recoverable form.</p>
+              <p className="mt-1 text-[10px] text-amber-300/70">It is returned once and is never stored by Heyserver in recoverable form.</p>
               <code className="mt-3 block select-all overflow-x-auto rounded-lg bg-zinc-950 p-3 text-xs text-zinc-200">{enrollment.token}</code>
             </div>
             <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">

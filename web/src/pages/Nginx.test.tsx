@@ -285,7 +285,7 @@ describe('Nginx page', () => {
     renderPage()
 
     expect(await screen.findByText('Nginx is not installed')).toBeInTheDocument()
-    expect(screen.getByText(/HServer never installs host packages automatically/)).toBeInTheDocument()
+    expect(screen.getByText(/Heyserver never installs host packages automatically/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Test Config' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Reload' })).toBeDisabled()
   })

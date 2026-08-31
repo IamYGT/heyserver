@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "docker-compose",
   "name": "Docker Compose",
-  "description": "Deploy with HServer's fixed Docker Compose lifecycle.",
+  "description": "Deploy with Heyserver's fixed Docker Compose lifecycle.",
   "branch": "main",
   "deploymentKind": "compose",
   "composeFile": "",

@@ -370,7 +370,7 @@ func decodeNodeEnrollResponse(raw []byte, requestedID string) (nodeEnrollRespons
 
 func nodeEnrollHubURL(client *apiClient) (string, error) {
 	if client == nil || client.baseURL == nil {
-		return "", errors.New("HServer base URL is not configured")
+		return "", errors.New("Heyserver base URL is not configured")
 	}
 	base := *client.baseURL
 	base.User = nil
@@ -380,7 +380,7 @@ func nodeEnrollHubURL(client *apiClient) (string, error) {
 	base.Fragment = ""
 	hubURL := strings.TrimRight(base.String(), "/")
 	if hubURL == "" {
-		return "", errors.New("HServer base URL is empty")
+		return "", errors.New("Heyserver base URL is empty")
 	}
 	return hubURL, nil
 }

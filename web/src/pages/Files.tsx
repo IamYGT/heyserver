@@ -391,7 +391,7 @@ export function FileEditor({ path, onClose }: FileEditorProps) {
           </div>
         ) : isError ? (
           <div className="h-full overflow-auto p-4">
-            <DependencyRemediation title="File contents could not be observed" summary="Saving stays disabled until HServer successfully reads this exact file." error={error?.message} retry={() => refetch()} retrying={isFetching} steps={['Retry the file read.', 'Confirm the file still exists inside an allowed root.', 'Verify the HServer service identity can read the file.']} />
+            <DependencyRemediation title="File contents could not be observed" summary="Saving stays disabled until Heyserver successfully reads this exact file." error={error?.message} retry={() => refetch()} retrying={isFetching} steps={['Retry the file read.', 'Confirm the file still exists inside an allowed root.', 'Verify the Heyserver service identity can read the file.']} />
           </div>
         ) : (
           <Editor
@@ -595,15 +595,15 @@ export default function Files() {
               </div>
             ) : rootsError ? (
               <div className="p-4">
-                <DependencyRemediation title="File roots could not be observed" summary="File browsing and every file mutation stay paused until HServer returns its configured root boundaries." error={rootsFailure?.message} retry={() => rootsQuery.refetch()} retrying={rootsFetching} steps={['Retry root detection.', 'Confirm the HServer API is reachable.', 'Verify the installation-owned file-root configuration.']} />
+                <DependencyRemediation title="File roots could not be observed" summary="File browsing and every file mutation stay paused until Heyserver returns its configured root boundaries." error={rootsFailure?.message} retry={() => rootsQuery.refetch()} retrying={rootsFetching} steps={['Retry root detection.', 'Confirm the Heyserver API is reachable.', 'Verify the installation-owned file-root configuration.']} />
               </div>
             ) : allowedRoots.length === 0 ? (
               <div className="p-4">
-                <DependencyRemediation state="not-configured" title="No file roots are configured" summary="HServer has no absolute root boundary available for file browsing or mutation." retry={() => rootsQuery.refetch()} retrying={rootsFetching} steps={['Configure an absolute virtual-host root.', 'Restart HServer after changing installation settings.', 'Retry root detection.']} />
+                <DependencyRemediation state="not-configured" title="No file roots are configured" summary="Heyserver has no absolute root boundary available for file browsing or mutation." retry={() => rootsQuery.refetch()} retrying={rootsFetching} steps={['Configure an absolute virtual-host root.', 'Restart Heyserver after changing installation settings.', 'Retry root detection.']} />
               </div>
             ) : directoryError ? (
               <div className="p-4">
-                <DependencyRemediation title="Directory contents could not be observed" summary={`HServer did not return a successful listing for ${effectivePath}. File mutations remain paused.`} error={directoryFailure?.message} retry={() => directoryQuery.refetch()} retrying={directoryFetching} steps={['Retry the directory listing.', 'Confirm the path still exists inside an allowed root.', 'Verify the HServer service identity can read the path.']} />
+                <DependencyRemediation title="Directory contents could not be observed" summary={`Heyserver did not return a successful listing for ${effectivePath}. File mutations remain paused.`} error={directoryFailure?.message} retry={() => directoryQuery.refetch()} retrying={directoryFetching} steps={['Retry the directory listing.', 'Confirm the path still exists inside an allowed root.', 'Verify the Heyserver service identity can read the path.']} />
               </div>
             ) : sorted.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full py-16 text-zinc-600">

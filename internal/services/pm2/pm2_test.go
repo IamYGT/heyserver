@@ -130,7 +130,7 @@ func TestProbeProcessesReportsMissingCommandAsNotConfigured(t *testing.T) {
 
 	// The command name is intentionally resolved inside the configured user's
 	// environment, so the probe output is the authoritative missing-binary
-	// signal rather than HServer's own PATH.
+	// signal rather than Heyserver's own PATH.
 	inventory, err := service.ProbeProcesses()
 	if !errors.Is(err, ErrNotConfigured) {
 		t.Fatalf("ProbeProcesses() error = %v, want ErrNotConfigured", err)

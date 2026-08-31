@@ -187,7 +187,7 @@ func runSettingsExport(ctx context.Context, client *apiClient, args []string, ou
 	if err := writeSettingsExportFile(outputPath, raw); err != nil {
 		return err
 	}
-	_, err = fmt.Fprintf(out, "Wrote protected HServer portable settings export to %s\n", outputPath)
+	_, err = fmt.Fprintf(out, "Wrote protected Heyserver portable settings export to %s\n", outputPath)
 	return err
 }
 

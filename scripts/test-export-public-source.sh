@@ -51,7 +51,7 @@ for catalog in catalog.json catalog.schema.json; do
 done
 
 git -C "$source_tree" init -q --initial-branch=main
-git -C "$source_tree" config user.name "HServer CI"
+git -C "$source_tree" config user.name "Heyserver CI"
 git -C "$source_tree" config user.email "ci@example.com"
 printf '%s%s\n' '49.12.' '188.137' >"$source_tree/installation-inventory.txt"
 git -C "$source_tree" add .

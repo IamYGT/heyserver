@@ -805,7 +805,7 @@ export default function Integrations() {
         <div className="min-w-0">
           <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-blue-400">System catalog / schema v1</p>
           <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">Integrations</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">A provider-neutral map of optional and feature-specific capabilities available to this HServer installation.</p>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">A provider-neutral map of optional and feature-specific capabilities available to this Heyserver installation.</p>
         </div>
         <Button type="button" variant="outline" size="sm" onClick={() => void catalogQuery.refetch()} disabled={catalogQuery.isFetching} className="min-h-9 shrink-0 self-start border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white sm:self-auto">
           <RefreshCw className={cn('mr-2 size-3.5', catalogQuery.isFetching && 'animate-spin motion-reduce:animate-none')} aria-hidden="true" />

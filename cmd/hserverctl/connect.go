@@ -17,7 +17,7 @@ import (
 func runConnect(ctx context.Context, args []string, contextsPath, defaultServer, defaultTokenFile string, timeout time.Duration, input io.Reader, out, promptOut io.Writer) error {
 	flags := flag.NewFlagSet("connect", flag.ContinueOnError)
 	flags.SetOutput(io.Discard)
-	server := flags.String("server", defaultServer, "HServer base URL")
+	server := flags.String("server", defaultServer, "Heyserver base URL")
 	tokenFile := flags.String("token-file", defaultTokenFile, "protected bearer-token file")
 	email := flags.String("email", "", "administrator email")
 	passwordFile := flags.String("password-file", "", "file containing the password")
@@ -53,7 +53,7 @@ func runConnect(ctx context.Context, args []string, contextsPath, defaultServer,
 		return err
 	}
 	if _, exists := config.Contexts[name]; exists {
-		return fmt.Errorf("HServer context %q already exists; use it or remove it before reconnecting", name)
+		return fmt.Errorf("Heyserver context %q already exists; use it or remove it before reconnecting", name)
 	}
 	if _, err := os.Lstat(selectedTokenFile); err == nil {
 		return fmt.Errorf("token file already exists at %s; choose another context name or --token-file path", selectedTokenFile)
@@ -95,7 +95,7 @@ func runConnect(ctx context.Context, args []string, contextsPath, defaultServer,
 		return err
 	}
 
-	fmt.Fprintf(out, "Connected HServer context %q to %s\n", name, client.baseURL.String())
+	fmt.Fprintf(out, "Connected Heyserver context %q to %s\n", name, client.baseURL.String())
 	fmt.Fprintf(out, "Current context: %s\n", name)
 	fmt.Fprintf(out, "Authenticated role: %s\n", strings.TrimSpace(account.Role))
 	fmt.Fprintf(out, "Token file: %s\n", selectedTokenFile)

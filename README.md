@@ -1,28 +1,32 @@
-# HServer
+# Heyserver
 
-HServer is an open-source, self-hosted Linux server management panel. It pairs
+Heyserver is an open-source, self-hosted Linux server management panel. It pairs
 real-time monitoring with direct operations such as writable terminal access,
 service and process control, RAM and swap maintenance, disk cleanup,
 deployments, backups, firewall, DNS, databases, containers, and runtime
 management.
 
 A native panel manages its own host. Additional servers connect through an
-outbound, capability-scoped HServer agent, so one panel can operate a fleet
+outbound, capability-scoped Heyserver agent, so one panel can operate a fleet
 without exposing inbound agent ports.
 
-> HServer is pre-1.0. Review release notes and keep a tested backup before
+> Heyserver is pre-1.0. Review release notes and keep a tested backup before
 > upgrading production installations.
+
+The public brand is **Heyserver**. Existing technical identifiers—including
+`hserverctl`, the `hserver` systemd service, `HSERVER_*` settings, and
+`X-HServer-*` protocol headers—remain stable for upgrade compatibility.
 
 ## Screenshots
 
 Host identifiers and operational values in these documentation captures are
 intentionally blurred. No production credentials or inventory are embedded.
 
-![HServer local operations dashboard](docs/images/hserver-dashboard.webp)
+![Heyserver local operations dashboard](docs/images/hserver-dashboard.webp)
 
 | Managed server overview | Server quick controls |
 | --- | --- |
-| ![HServer managed server overview](docs/images/hserver-managed-server.webp) | ![HServer quick controls](docs/images/hserver-quick-controls.webp) |
+| ![Heyserver managed server overview](docs/images/hserver-managed-server.webp) | ![Heyserver quick controls](docs/images/hserver-quick-controls.webp) |
 
 ## Highlights
 
@@ -48,7 +52,7 @@ Browser / hserverctl
         |
         v
 +-------------------------+
-| HServer panel            |
+| Heyserver panel            |
 | Go API + embedded React  |
 | SQLite + audit receipts  |
 +-------------------------+
@@ -56,7 +60,7 @@ Browser / hserverctl
         | outbound authenticated agent channel
         v
 +-------------------------+
-| Managed HServer agents   |
+| Managed Heyserver agents   |
 | capability-scoped tasks  |
 +-------------------------+
 ```
@@ -158,7 +162,7 @@ full-screen TUI for interactive operation. See the complete
 
 ## Managed servers
 
-Remote servers connect to the panel through the least-privileged HServer agent
+Remote servers connect to the panel through the least-privileged Heyserver agent
 contract. Every remote feature requires an explicit advertised capability, and
 the agent remains the source of observed node state.
 
@@ -220,4 +224,4 @@ Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md),
 
 ## License
 
-HServer is licensed under the [Apache License 2.0](LICENSE).
+Heyserver is licensed under the [Apache License 2.0](LICENSE).

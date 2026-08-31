@@ -9,7 +9,7 @@ function update(overrides: Partial<ReleaseUpdateStatus>): ReleaseUpdateStatus {
     latest_version_state: 'current',
     update_available: false,
     platform: 'linux_amd64',
-    message: 'This HServer release is current.',
+    message: 'This Heyserver release is current.',
     checked_at: '2026-08-26T18:00:00Z',
     signature_status: 'not_configured',
     ...overrides,
@@ -28,7 +28,7 @@ describe('release update presentation', () => {
     expect(releaseUpdatePresentation(update({ latest_version: '1.3.0', latest_version_state: 'ahead', update_available: true })))
       .toEqual({ title: 'Update available', tone: 'available' })
     expect(releaseUpdatePresentation(update({})))
-      .toEqual({ title: 'HServer is up to date', tone: 'healthy' })
+      .toEqual({ title: 'Heyserver is up to date', tone: 'healthy' })
   })
 
   it('keeps development and feed-behind states explicit', () => {

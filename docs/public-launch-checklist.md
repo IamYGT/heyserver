@@ -1,7 +1,7 @@
 # Public Launch Checklist
 
 This checklist separates a clean public source snapshot from the private
-operational history that preceded HServer's community-project conversion.
+operational history that preceded Heyserver's community-project conversion.
 
 ## Current source-head progress
 
@@ -175,7 +175,7 @@ canonical checkout or permanent publication workflow.
 
 ```bash
 ./scripts/create-public-repository.sh /tmp/hserver-panel-public \
-  --author-name "HServer Maintainers" \
+  --author-name "Heyserver Maintainers" \
   --author-email "maintainers@example.com"
 
 cd /tmp/hserver-panel-public
@@ -313,7 +313,7 @@ trees are identical. Use `v0.9.10` as the next immutable patch candidate and
 publish that
 version only once after its fresh gates pass. A
 `v0.x` release can remain product-level pre-1.0 without using an unordered `-rc`
-suffix. HServer update manifests intentionally order only stable
+suffix. Heyserver update manifests intentionally order only stable
 `major.minor.patch` versions, so the release workflow rejects commit-derived,
 dirty, and hyphenated prerelease tags before building tagged release binaries.
 Add the matching `## [X.Y.Z]` section to `CHANGELOG.md` before creating the
@@ -567,7 +567,7 @@ Version tags enforce this native panel lifecycle on GitHub-hosted Ubuntu 24.04
 VMs for both architectures before the release job can publish. The labels are
 `ubuntu-24.04` for `amd64` and `ubuntu-24.04-arm` for `arm64`. The acceptance
 script refuses to run unless it is root on an explicitly disposable CI host,
-refuses a pre-existing HServer installation or occupied port, and purges only
+refuses a pre-existing Heyserver installation or occupied port, and purges only
 the installation it created after checking the non-purge uninstall boundary.
 It first injects an unhealthy initial executable and requires atomic cleanup
 before starting the signed bootstrap path.

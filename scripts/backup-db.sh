@@ -50,7 +50,7 @@ require_command gzip
 require_command sha256sum
 
 [[ -f "$DB_PATH" && ! -L "$DB_PATH" ]] || {
-  printf 'Installed HServer database must be a regular, non-symlink file: %s\n' "$DB_PATH" >&2
+  printf 'Installed Heyserver database must be a regular, non-symlink file: %s\n' "$DB_PATH" >&2
   exit 1
 }
 
