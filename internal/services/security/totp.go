@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	totpIssuer    = "Heyserver Panel"
+	totpIssuer    = "Heyserver"
 	totpPeriod    = 30
 	totpDigits    = otp.DigitsSix
 	totpAlgorithm = otp.AlgorithmSHA1

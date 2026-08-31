@@ -327,7 +327,7 @@ uninstall:
 
 ## help: Show available targets
 help:
-	@echo "Heyserver Panel — Makefile targets"
+	@echo "Heyserver — Makefile targets"
 	@echo ""
 	@grep -E '^## ' Makefile | sed 's/^## /  /'
 	@echo ""

@@ -1,8 +1,8 @@
-# Heyserver Panel — Database Schema
+# Heyserver — Database Schema
 
 ## Overview
 
-Heyserver Panel uses **SQLite** (WAL mode, foreign keys enabled) as its sole datastore.
+Heyserver uses **SQLite** (WAL mode, foreign keys enabled) as its sole datastore.
 The database file lives at the path configured by `HSERVER_DB_PATH`
 (default: `/var/lib/hserver/hserver.db`).
 

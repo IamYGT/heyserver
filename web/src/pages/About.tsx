@@ -252,7 +252,7 @@ export default function About() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-white">About</h1>
-          <p className="text-zinc-400 text-sm mt-1">Heyserver Panel — system information and build details</p>
+          <p className="text-zinc-400 text-sm mt-1">Heyserver — system information and build details</p>
         </div>
         <Button
           variant="outline"
@@ -273,7 +273,7 @@ export default function About() {
             <Server className="w-7 h-7 text-blue-400" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-white">Heyserver Panel</h2>
+            <h2 className="text-xl font-semibold text-white">Heyserver</h2>
             <p className="text-zinc-400 text-sm mt-0.5">
               Self-hosted server management — single control-plane binary with optional host integrations
             </p>

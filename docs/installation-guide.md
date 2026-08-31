@@ -1,4 +1,4 @@
-# Heyserver Panel — Installation Guide
+# Heyserver — Installation Guide
 
 Target OS: **Ubuntu 24.04 LTS or newer, or Debian 12 or newer**
 Installed binary: `/usr/local/bin/hserver-panel`
@@ -679,7 +679,7 @@ The installed unit loads protected configuration from a separate file:
 
 ```ini
 [Unit]
-Description=Heyserver Panel - Server Management GUI
+Description=Heyserver - Server Management GUI
 After=network-online.target
 Wants=network-online.target
 
@@ -729,7 +729,7 @@ nginx -v
 systemctl enable --now nginx
 ```
 
-Heyserver Panel listens on `127.0.0.1:3085`; the configuration below adds an
+Heyserver listens on `127.0.0.1:3085`; the configuration below adds an
 Nginx reverse proxy with SSL termination.
 
 ```bash
@@ -915,7 +915,7 @@ and `HSERVER_ADMIN_PASS`.
 
 ## 10. PM2 Setup for Node.js Apps (Optional)
 
-Heyserver Panel can manage Node.js processes through PM2. PM2 **must run
+Heyserver can manage Node.js processes through PM2. PM2 **must run
 as a non-root user** — the panel communicates with it via `sudo`-wrapped
 commands or the `PM2_HOME` environment variable pointing to the user's
 PM2 daemon.

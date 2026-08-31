@@ -1,4 +1,4 @@
-# Heyserver Panel — API Reference
+# Heyserver — API Reference
 
 This is a curated guide to common request and response contracts. The complete,
 generated routing and access-level contract is maintained in the

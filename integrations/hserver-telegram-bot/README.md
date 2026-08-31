@@ -1,6 +1,6 @@
 # HserverTrack Telegram Bot
 
-Telegram control plane for Heyserver Panel.
+Telegram control plane for Heyserver.
 
 ## Features
 

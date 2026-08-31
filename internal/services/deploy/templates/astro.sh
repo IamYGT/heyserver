@@ -1,5 +1,5 @@
 #!/bin/bash
-# Heyserver Panel — Astro Deployment Script Template
+# Heyserver — Astro Deployment Script Template
 # Runs inside the project directory after `git pull`.
 set -euo pipefail
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Heyserver Panel — Laravel Deployment Script Template
+# Heyserver — Laravel Deployment Script Template
 # Runs inside the project directory after `git pull`.
 # Customize variables at the top to match your environment.
 set -euo pipefail

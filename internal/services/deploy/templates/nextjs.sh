@@ -1,5 +1,5 @@
 #!/bin/bash
-# Heyserver Panel — Next.js Deployment Script Template
+# Heyserver — Next.js Deployment Script Template
 # Runs inside the project directory after `git pull`.
 set -euo pipefail
 

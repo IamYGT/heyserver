@@ -63,7 +63,7 @@ export function MainLayout() {
           </div>
           {!collapsed && (
             <span className="text-sm font-semibold text-[var(--color-sidebar-foreground)]">
-              Heyserver Panel
+              Heyserver
             </span>
           )}
         </div>
@@ -114,7 +114,7 @@ export function MainLayout() {
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Header */}
         <header className="flex h-14 shrink-0 items-center border-b border-[var(--color-border)] bg-[var(--color-card)] px-4">
-          <span className="text-sm font-medium text-[var(--color-foreground)]">Heyserver Panel</span>
+          <span className="text-sm font-medium text-[var(--color-foreground)]">Heyserver</span>
         </header>
 
         {/* Page content */}
