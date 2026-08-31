@@ -1,156 +1,77 @@
-# HServer Panel
+# HServer
 
-HServer is a self-hosted server-management panel built as a Go service with an
-embedded React interface. It combines monitoring with direct operations such as
-terminal access, process and service control, deployments, backups, firewall,
-DNS, mail, database, runtime, disk, RAM, and swap management.
+HServer is an open-source, self-hosted Linux server management panel. It pairs
+real-time monitoring with direct operations such as writable terminal access,
+service and process control, RAM and swap maintenance, disk cleanup,
+deployments, backups, firewall, DNS, databases, containers, and runtime
+management.
 
-Local deployment targets support both installation-owned scripts and a
-first-class Docker Compose mode with read-only readiness checks, fixed Compose
-arguments, first-deploy repository provisioning, recorded runs, and Git-based
-rollback.
+A native panel manages its own host. Additional servers connect through an
+outbound, capability-scoped HServer agent, so one panel can operate a fleet
+without exposing inbound agent ports.
 
-Managed nodes can expose the same project-domain workflow through explicit
-`deploy.domain.*` agent capabilities: HServer-owned Nginx reverse proxies,
-loopback health probes, verified X.509 state, HTTP-01 issuance, and automatic
-renewal. The upstream port remains in the node's local deploy plan and is never
-accepted from browser input.
+> HServer is pre-1.0. Review release notes and keep a tested backup before
+> upgrading production installations.
 
 ## Screenshots
 
 Host identifiers and operational values in these documentation captures are
 intentionally blurred. No production credentials or inventory are embedded.
 
-### Local operations dashboard
-
-![HServer local operations dashboard with CPU, memory, swap, disk, and service controls](docs/images/hserver-dashboard.webp)
+![HServer local operations dashboard](docs/images/hserver-dashboard.webp)
 
 | Managed server overview | Server quick controls |
 | --- | --- |
-| ![HServer managed server overview for an example edge node](docs/images/hserver-managed-server.webp) | ![HServer quick controls for terminal, RAM, swap, temp cleanup, and reboot](docs/images/hserver-quick-controls.webp) |
+| ![HServer managed server overview](docs/images/hserver-managed-server.webp) | ![HServer quick controls](docs/images/hserver-quick-controls.webp) |
 
-Managed agents can also opt into release discovery and lifecycle actions. Each
-server owns its release-manifest URL and verifies the selected archive checksum
-locally before extracting only the packaged agent binary and lifecycle
-installer. When trusted Ed25519 public keys are configured, the agent also
-requires and verifies the manifest's adjacent detached signature before it
-accepts artifact metadata. The hub can request only an exact stable version or rollback; it
-cannot provide a download URL, checksum, path, command, or systemd argument.
+## Highlights
 
-The project is currently **pre-1.0**. Its canonical public repository is
-[`IamYGT/heyserver`](https://github.com/IamYGT/heyserver). Immutable public
-source commit `adaccb23adf9720141d721970590de3a82fd17b5` produced the first
-fully green public main CI matrix run `#33283277809`. Public
-[PR #13](https://github.com/IamYGT/heyserver/pull/13) has head
-`1fcb2319160696e21fb25cd6b52c21f69cf0e3ee`; its CI run
-`#33295933393` completed with 14/14 checks successful. It merged at
-`2026-08-30T06:07:31Z` as protected `main` commit
-`bf67c80c9b383d28a4eefd1d75a014b41bd00f45` with exact tree
-`bb838be28a9cb23897e943250e1c69ce9e71d138`. The prior protected-main run
-`#33294999297` failed only its `EXIT cleanup` race, caused by Git 2.55
-detached auto-maintenance; private fix
-`aa10cb7b08fa98695ebdea7b95bfb2fb3a4835bd`
-uses command-scoped `maintenance.auto=false`. Protected-main CI run
-`#33296189213` completed/success with 14/14 checks, including the exact cleanup
-test and successful `Release Package (amd64)` and `Release Package (arm64)`
-jobs.
-Branch protection was enabled after these runs and is currently active. The
-initial active signer is prepared in private commit `df0a5070`, and the
-`HSERVER_RELEASE_SIGNING_KEY` Actions secret is configured; public signer PR #7
-was merged at protected `main` commit `b2af1591` on 2026-08-30. The public
-`v0.9.5` tag points to protected `main` commit
-`b2af1591f7a848acd71bbe54bc4f70fbffe99373`, but tagged run `#33285788628`
-failed all four lifecycle jobs (both `Native Lifecycle` jobs and both
-`Managed Agent Lifecycle` jobs) because their fixtures posted onboarding step 6
-while the canonical maximum is step 5. The tag and run remain historical
-failed-release evidence; no successful `v0.9.5` GitHub Release is claimed.
-The public `v0.9.6` tag points to protected `main` commit
-`8d19991e7db7aa8ee39564a41bf1e6ef649d8d96`, but tagged workflow
-`#33288698005` is not releasable: `Public Source Snapshot (amd64)` failed
-asynchronous backup temporary-directory cleanup, and both `Native Lifecycle`
-jobs failed because retained rollback did not preserve SQLite onboarding state.
-The managed-agent lifecycle jobs had not completed at audit time. No successful
-`v0.9.6` GitHub Release exists; its tag and workflow remain failed-release
-evidence. The public `v0.9.7` tag points to protected public `main` commit
-`5c5bcf053b333f657ef011078f32ed54126946e6`, but tagged workflow
-`#33291179584` is immutable disqualified evidence: both `Native Lifecycle` jobs
-returned file-backup HTTP 400 because the fixture lacked an explicit temporary
-vhosts root. The `Managed Agent Lifecycle` jobs were cancelled; their arm64
-runner log preserved `agent release archive contains an invalid path`. The
-workflow reached terminal `completed/cancelled` at
-`2026-08-30T04:27:26Z` after normal cancellation followed by a force-cancel
-because runner finalization stalled. No successful `v0.9.7` GitHub Release
-exists.
-The public `v0.9.8` tag object is
-`81d3095f4c6f0615bd6912225bf18c38788e6e6c` and resolves to public `main`
-commit `6f399eba2d4871d783dfff45a6d4ece276865d9a`. Tagged workflow
-`#33293250350` is immutable disqualified evidence. The initial signed install,
-retained upgrade, and rollback stages passed before the `Native Lifecycle`
-amd64 job `#99208960092` and arm64 job `#99208960118` failed because
-upgrade-feed signature rotation was missing, with
-`Refusing to overwrite ... release-manifest.json.sig`. The `Managed Agent
-Lifecycle` jobs `#99208960112` and `#99208960115` were cancelled. The workflow
-reached terminal `completed/cancelled` at `2026-08-30T05:20:10Z` after normal
-cancellation at `05:15 UTC` followed by a force-cancel accepted with HTTP 202
-at `05:17:32 UTC` because runner finalization stalled. No `v0.9.8` GitHub
-Release exists. Its immutable tag and
-workflow are disqualified evidence; do not delete or reuse `v0.9.8`. The next
-immutable replacement candidate after `v0.9.8` was `v0.9.9`.
-Source fix `c97ced79` preserves the signer fail-closed contract, explicitly
-rotates the native upgrade-feed signature, and locks the static gate call
-ordering that disqualified `v0.9.8`.
-The annotated public `v0.9.9` tag object is
-`926b364c02c6268463ee74b229c9c2587fbeb766` and resolves to public protected
-`main` commit `90c17083052c00a7231ca254badc6fde192b0207` with exact tree
-`49760b52710058f81247ceebad9defacab84f02d`. Tagged run `#33297465693` ended
-`completed/cancelled` and is immutable disqualified evidence. Nineteen jobs
-succeeded, including provenance, network isolation, and `Native Lifecycle`
-amd64 job `#99220085250` and arm64 job `#99220085229`. Managed arm64 job
-`#99220085238` failed at `2026-08-30T07:42:12Z` with this check annotation:
+- Local and remote server monitoring from one interface
+- Writable browser and CLI terminals
+- Process signals and service lifecycle controls
+- Guarded RAM optimization, swap reset, temporary-file cleanup, and reboot
+- Measured disk analysis and confirmed cleanup targets
+- Docker, PM2, PHP-FPM, nginx, SSL, cron, firewall, database, and file tools
+- Deployment, rollback, backup, and restore workflows
+- Audit receipts for administrative operations
+- Signed release discovery with explicit update approval and rollback
+- Responsive web interface plus the `hserverctl` CLI/TUI
 
-> The hosted runner lost communication with the server. Anything in your
-> workflow that terminates the runner process, starves it for CPU/Memory, or
-> blocks its network access can cause this error.
-
-Managed amd64 job `#99220085198` remained `in_progress` for more than 62
-minutes. Normal cancellation was requested at `2026-08-30T07:49:54Z`;
-force-cancel was accepted with HTTP `202` at `2026-08-30T07:54:23Z`; the job
-completed/cancelled at `2026-08-30T07:54:55Z`. The overall run was updated to
-`completed/cancelled` at `2026-08-30T07:55:02Z`. No `v0.9.9` GitHub Release
-exists. Do not delete or reuse its immutable tag. The next immutable replacement
-candidate is `v0.9.10`.
-
-Private source fix `b547b3d4` sets `RuntimeMaxSec` to 10 minutes. Private source
-fix `bf2f9f7f` adds progress markers, bounded polling, CLI waits, TERM cleanup,
-and caps script/job timeouts at 25 minutes/30 minutes. These are source
-evidence only; no public PR, public tag, GitHub Release, clean-host acceptance,
-or live rollout is claimed for `v0.9.10`.
-
-Public PR #13 and the green protected-main CI remain source/merge evidence
-only. The live `v0.9.3` rollout is not the current source; source or release
-evidence does not imply a live deployment.
+Optional integrations are detected separately and report `not configured`,
+`unavailable`, or `healthy` instead of being treated as core requirements. See
+the [optional integrations matrix](docs/optional-integrations.md).
 
 ## Architecture
 
-- **Native panel:** full management of the local Linux host.
-- **Hub + agent:** one panel manages additional servers through enrolled,
-  capability-scoped agents.
-- **Single release artifact:** the production binary embeds the web interface.
-- **SQLite state:** local application state with in-place migrations.
-- **Optional providers:** Cloudflare, Stalwart, Google Drive, PM2, PostgreSQL,
-  PHP-FPM, nginx, Docker, and other host tools are detected or configured; they
-  are not prerequisites for the core panel. See the
-  [optional integrations matrix](docs/optional-integrations.md) for each
-  provider's configuration and health boundary.
+```text
+Browser / hserverctl
+        |
+        v
++-------------------------+
+| HServer panel            |
+| Go API + embedded React  |
+| SQLite + audit receipts  |
++-------------------------+
+        |
+        | outbound authenticated agent channel
+        v
++-------------------------+
+| Managed HServer agents   |
+| capability-scoped tasks  |
++-------------------------+
+```
 
-See [AGENTS.md](AGENTS.md) for the product boundaries contributors must preserve.
+- **Native panel:** full management of the local Linux host
+- **Hub + agent:** one panel manages additional enrolled servers
+- **Single release artifact:** the Go binary embeds the web interface
+- **Portable state:** SQLite databases use in-place migrations
+- **Provider-neutral core:** external providers remain optional
 
 ## Quick evaluation with Docker
 
-Docker is useful for evaluating the UI/API and contributing. It intentionally
-does **not** grant the container unrestricted control of the host. Use a native
-install or enroll an HServer agent for real systemd, nginx, firewall, disk, and
-terminal operations.
+Docker is intended for UI/API evaluation and contribution work. It does not
+receive unrestricted control of the host; use a native installation for real
+systemd, firewall, storage, and terminal operations.
 
 ```bash
 git clone https://github.com/IamYGT/heyserver.git
@@ -159,288 +80,52 @@ cd heyserver
 docker compose up --build
 ```
 
-Open `http://localhost:3085`. The generated `.env` file has mode `0600`; the
-initial credentials are stored there and are never printed by the bootstrap
-script.
+Open `http://localhost:3085`. Initial credentials are written only to the local
+mode-`0600` `.env` file. Read `HSERVER_ADMIN_EMAIL` and
+`HSERVER_ADMIN_PASS` there; the default email is `admin@localhost`, while the
+generated password is never printed by `init-env.sh`. Sign in, complete onboarding,
+and open the dashboard. Never paste the generated credentials into issues, logs, and chat.
 
-**First login:** After `init-env.sh` creates the local `.env` and Compose is
-running, read `HSERVER_ADMIN_EMAIL` and `HSERVER_ADMIN_PASS` from that file
-locally. The default email is `admin@localhost`; the password is generated and
-is never printed by `init-env.sh`. Open `http://localhost:3085`, log in, then
-complete onboarding to reach the dashboard. Keep `.env` and its password out of
-issues, logs, and chat.
-
-Compose container and volume identities are project-scoped rather than
-global, so a disposable evaluation does not reuse another checkout's state.
-Use `docker compose -p NAME ...` when two checkouts share the same directory
-basename. Remove the evaluation and its owned volume with:
+Remove the disposable evaluation and its volume with:
 
 ```bash
 docker compose down --volumes
 ```
 
-Public CI builds this exact Dockerfile, waits for the health endpoint, logs in,
-persists onboarding state, restarts the container, and proves the state remains
-available. This is an evaluation/contributor gate, not evidence that a
-container can manage its host's systemd or firewall.
-
 ## Native installation
 
-Full server management currently targets Ubuntu 24.04 or newer and Debian 12 or
-newer, and requires root-owned systemd service access. Follow the
-[installation guide](docs/installation-guide.md). A native installation uses
-the version-matched panel and `hserverctl` binaries, a generated protected
-environment file, and the `hserver-install.sh` lifecycle tool. Upgrades snapshot
-the installed binary set and SQLite databases before replacement, health-check
-the new service, and roll back automatically on failure. A failed first install
-removes the new binaries, generated clean-host configuration and data, and
-managed Nginx files while restoring any prior HServer unit, managed snippets,
-and service state. With an optional provider-neutral release
-manifest configured, admins can stage and verify an archive from the About page
-or with `hserverctl updates stage --confirm`, then approve installation in a
-separate confirmation. An optional local
-Ed25519 trust set upgrades this flow from checksum-only metadata to a signed
-manifest; HServer never performs a
-silent self-update. Source builds remain available for contributors.
+Native installation currently targets Ubuntu 24.04+ and Debian 12+ with
+root-owned systemd access.
 
-The signed release path needs only the core host tools documented in the
-installation guide. Nginx, Certbot, Fail2Ban, PM2, PHP-FPM, UFW, database
-clients, Docker, BIND, mail, Cloudflare, and backup providers are optional
-feature dependencies; install them only when their corresponding feature is
-needed. The guide keeps this provider setup separate from the core install.
+1. Read the [installation guide](docs/installation-guide.md).
+2. Select a published release from [GitHub Releases](https://github.com/IamYGT/heyserver/releases).
+3. Verify the release signer fingerprint through an independent trusted source.
+4. Run the signed public bootstrap for the selected immutable release.
+5. Complete onboarding and run both host and authenticated CLI diagnostics.
 
-Tagged native acceptance builds a second stable package independently on both
-Ubuntu `amd64` and `arm64` runners, switches a local signed feed to it, and
-performs the complete packaged-CLI stage/install path through a detached systemd
-restart. The same acceptance job also runs the native OS and prerequisite gate
-inside a disposable Debian 12 container. Publication remains blocked unless the
-panel reconnects, the stage is terminally completed, the installed panel and CLI
-report the exact staged version, and SQLite state is preserved.
+The installer creates protected configuration, installs the panel, agent and
+`hserverctl`, enables the systemd service, checks health, and retains upgrade
+and rollback tooling. Existing databases are migrated in place; a normal
+upgrade never requires a reset.
 
-The Git-free path starts from an installer and signer fingerprint obtained
-independently of the mutable release asset directory. Replace every placeholder
-with values published for the exact source commit and release you intend to
-install; do not substitute an unversioned `latest` URL:
+For a provider-neutral site root, the verified `bootstrap-install.sh` supports
+`--vhosts-root /srv/hserver/sites`. If omitted, root-dependent capabilities report
+`not_configured` instead of guessing a host layout.
 
-```bash
-umask 077
-release_version=vX.Y.Z
-release_base=https://github.com/OWNER/REPOSITORY/releases/download/$release_version
-installer_commit=IMMUTABLE_PUBLIC_COMMIT_SHA
-installer_url=https://raw.githubusercontent.com/OWNER/REPOSITORY/$installer_commit/scripts/public-install.sh
-trusted_installer_sha256=LOWERCASE_SHA256_FROM_AN_INDEPENDENT_SOURCE
-trusted_release_key_sha256=LOWERCASE_SHA256_OF_RAW_ED25519_PUBLIC_KEY
-install_dir=$(mktemp -d)
-cd "$install_dir"
-curl --proto '=https' --proto-redir '=https' -fSLo public-install.sh \
-  "$installer_url"
-printf '%s  public-install.sh\n' "$trusted_installer_sha256" | sha256sum --check -
-chmod 0755 public-install.sh
-./public-install.sh --release-base "$release_base" \
-  --trusted-release-key-sha256 "$trusted_release_key_sha256" \
-  --vhosts-root /srv/hserver/sites
-```
-
-`public-install.sh` is a manifest-external trust-bootstrap asset. After its
-independently obtained digest passes, it downloads `bootstrap-install.sh`, its
-detached Ed25519 signature, and the public-key sidecars into a private temporary
-directory. The decoded 32-byte public key must match the explicit or embedded
-trusted fingerprint, and that key must verify `bootstrap-install.sh.sig` before
-the wrapper changes mode or invokes `sudo`. Adjacent SHA-256 files remain useful
-for transfer-corruption detection, but files downloaded from the same release
-directory do not establish signer identity.
-Tagged releases still publish `public-install.sh.sha256` beside the staged
-wrapper as a convenience checksum; do not use the pair as its own trust source.
-
-Contributors who already have a trusted source checkout may invoke the same
-canonical wrapper directly:
-
-```bash
-./scripts/public-install.sh https://github.com/OWNER/REPOSITORY \
-  --trusted-release-key-sha256 LOWERCASE_SHA256_OF_RAW_ED25519_PUBLIC_KEY \
-  --vhosts-root /srv/hserver/sites
-```
-
-An official staged wrapper embeds the canonical `active` and `next` signer
-fingerprints from `trust/release-signers.json`. The checked-in generic source
-wrapper intentionally embeds none, so a fork or trusted checkout must provide
-`--trusted-release-key-sha256` or
-`HSERVER_PUBLIC_INSTALL_TRUSTED_RELEASE_KEY_SHA256`.
-
-For an expanded manual audit, download the published bootstrap, detached
-signature, and verification key assets. The trusted fingerprint comparison and
-bootstrap signature verification must both pass before invoking root:
-
-```bash
-umask 077
-bootstrap_dir=$(mktemp -d)
-cd "$bootstrap_dir"
-release_url=https://github.com/OWNER/REPOSITORY/releases/download/vX.Y.Z
-curl -fSLO "$release_url/bootstrap-install.sh"
-curl -fSLO "$release_url/bootstrap-install.sh.sha256"
-curl -fSLO "$release_url/bootstrap-install.sh.sig"
-curl -fSLO "$release_url/release-public-key.b64"
-curl -fSLO "$release_url/release-public-key.b64.sha256"
-sha256sum --check bootstrap-install.sh.sha256
-sha256sum --check release-public-key.b64.sha256
-actual_release_key_sha256=$(base64 --decode release-public-key.b64 | sha256sum | awk '{print $1}')
-test "$actual_release_key_sha256" = "$trusted_release_key_sha256"
-TRUSTED_SOURCE_CHECKOUT/scripts/verify-release-asset-signature.sh \
-  ./bootstrap-install.sh ./bootstrap-install.sh.sig ./release-public-key.b64
-sudo ./bootstrap-install.sh \
-  --manifest-url "$release_url/release-manifest.json" \
-  --public-key-file ./release-public-key.b64 \
-  --vhosts-root /srv/hserver/sites
-```
-
-The independently obtained fingerprint establishes the expected signer;
-`bootstrap-install.sh.sig` authenticates the privileged bootstrap, and that
-bootstrap uses the same key for the stable manifest. Before invoking any
-packaged lifecycle tool it verifies the detached Ed25519 signature, target
-architecture, declared archive size, SHA-256, bounded package root, entry types,
-packaged version, and all three ELF architectures. The verified manifest URL
-and trust set are persisted into the new protected installation configuration,
-so the About page uses the same signed feed for later explicit updates. Initial
-credentials remain only in `/etc/hserver/hserver.env` and are never printed.
-
-Official release archives contain `hserver-panel`, `hserver-agent`, and the
-authenticated `hserverctl` automation and interactive management client for
-Linux `amd64` and `arm64`,
-separate panel and agent lifecycle installers, systemd units, documentation,
-and an archive checksum. Install a published archive through the signed
-bootstrap flow above: it authenticates the release manifest before downloading
-the architecture-specific archive, then verifies its declared size and SHA-256
-before extraction or privileged lifecycle commands. An adjacent archive
-checksum by itself is only a recovery aid for a copy obtained through an
-independently trusted channel; it is not the public release installation path.
-
-### Agent-only bridge for an existing managed node
-
-An existing managed HServer agent can be upgraded without installing or
-starting the panel. Run the same public wrapper on the node that already owns
-the agent, replacing the repository with the release maintainer's repository:
-
-```bash
-./scripts/public-install.sh https://github.com/OWNER/REPOSITORY \
-  --trusted-release-key-sha256 LOWERCASE_SHA256_OF_RAW_ED25519_PUBLIC_KEY \
-  --agent-only
-```
-
-`--agent-only` reuses the signed manifest, trusted Ed25519 public key, detected
-architecture, archive size and SHA-256, safe tar extraction, packaged
-`VERSION`, and agent ELF checks. It requires the existing managed agent and
-configuration, rejects `--vhosts-root`, and invokes only the verified
-`agent-install.sh upgrade --binary <verified hserver-agent>` from the package.
-The panel doctor, panel installer, and `hserverctl` are never run. The
-existing configuration, custom token destination and token file, service
-enabled/active state, and agent lifecycle rollback boundary remain owned by
-the installed agent lifecycle. No hub token, signing key, or credential is
-accepted, read, or printed by this bridge.
-
-The bridge does not enable `HSERVER_AGENT_ALLOW_UPDATE_READ`,
-`HSERVER_AGENT_ALLOW_UPDATE_ACTIONS`, or any other update setting and does not
-rewrite the existing configuration. If local agent update policy is wanted,
-the operator must add it separately to the protected agent configuration and
-run the lifecycle installer under that local policy.
-
-`--vhosts-root` is optional on a fresh install. Supply a provider-neutral local
-absolute path when domain document roots, file management, site backups, and
-snapshots should be available immediately. If it is omitted, the installer
-keeps `HSERVER_VHOSTS_ROOT` empty and those root-dependent capabilities report
-`not_configured` rather than guessing a host layout.
-
-The packaged installer places the panel at `/usr/local/bin/hserver-panel` and
-the authenticated client at `/usr/local/bin/hserverctl`. It also retains the
-version-matched lifecycle installer and doctor under `/usr/local/libexec`, plus
-the fixed Nginx lifecycle assets under
-`/usr/local/share/hserver/nginx-snippets`. A bootstrap installation therefore
-does not depend on the downloaded archive remaining on disk. Upgrade and
-rollback snapshot these recovery tools and assets together with the panel and
-CLI, and non-purge uninstall removes only the HServer-owned lifecycle files.
-
-After authenticating once, `hserverctl ui` opens the full-screen control center
-for local and enrolled servers. It provides live overview cards, server
-switching, service and process controls, bounded RAM/swap/reboot maintenance,
-measured disk cleanup, container lifecycle controls, PM2 application
-management, PHP-FPM version/pool inventory with configuration-tested lifecycle
-actions and checksum-locked local/managed pool replacement with backup and
-validation rollback, combined Nginx/domain/SSL Web Ops, local BIND readiness,
-zone/record inspection and creation, selected record/SOA editing, configuration
-checks and confirmed reload/deletion,
-local UFW and capability-scoped
-managed firewall inventory/actions, local security-score and Fail2Ban
-readiness/jail/banned-IP controls, local and capability-scoped managed cron
-inventory with enable/disable, deletion, and managed-agent run-now actions,
-local database inventory/create/drop/read-only queries and capability-scoped
-managed database inventory/restart health checks,
-configured-root local and managed file browsing with bounded text viewing,
-observed local create/rename/recursive-delete actions, and checksum-protected
-managed text replacement with backup receipts,
-local-artifact and managed-plan backup
-management with fixed full-application/database/files creation profiles,
-optional full-backup retention, live local-job progress and logs, a dedicated
-encrypted-snapshot dashboard with provider health, remote inventory, confirmed
-creation, destination switching, and full/manifest/vhost staging restore,
-selected-server audit history with local search, contextual `Ctrl+K` quick
-actions, a selected-server deployment dashboard with local preflight and
-revision inspection, confirmed deploy and rollback, managed-node advertised
-deployment actions, recent job state, and bounded output viewing, a
-selected-server Updates dashboard that distinguishes release
-discovery and signature states, stages and installs an exact observed panel
-release, and schedules capability-scoped managed-agent upgrade or rollback only
-after a fresh lifecycle preflight, a central Alerts dashboard with explicit
-integration states, notification-channel testing and enable/disable/deletion,
-alert-rule enable/disable/deletion, recent event inspection, and fresh-observation
-guards, a central Cloudflare dashboard with explicit provider states, zone,
-DNS-record, and email-routing inspection, confirmed whole-zone cache purge,
-proxy toggle, record deletion, and installation-owned mail DNS reconciliation,
-and scrollable host or application log
-viewers. Backup restore
-requires full artifact validation, then separate `R` and `Y` acknowledgements;
-every other mutation also has a separate `Y` confirmation. The same client
-exposes JSON-producing `containers`, `logs`, `pm2`, `php`, `nginx`, `domains`, `ssl`,
-`firewall`, `security`, `cron`, `databases`, `files`, `backups`, `audit`, `notify`,
-`dns`, `cloudflare`, `deploy`, and `updates`
-command families for automation without creating a second control plane. The
-notification family includes protected delivery-channel credentials, canonical
-type-specific alert-rule CRUD, and bounded alert-history pagination. The
-Cloudflare family keeps provider credentials on the panel while exposing zone,
-record, email-routing, confirmed DNS mutation, cache purge, and
-installation-owned mail DNS reconciliation operations. The
-scriptable backup family also selects Google Drive or S3-compatible
-client-side encrypted restic destinations, lists snapshots and observed
-vhosts, starts snapshots, and performs explicitly scoped staging restores.
-The release commands discover and stage panel artifacts through the configured
-signed feed, install only the latest server-observed verified stage, and drive
-managed-agent upgrade or rollback only after a fresh status preflight and an
-explicit `--confirm`:
-
-```bash
-hserverctl updates status
-hserverctl updates stage --confirm
-hserverctl updates install --confirm
-hserverctl updates agent status --node edge-1
-hserverctl updates agent upgrade --confirm --node edge-1
-hserverctl updates agent rollback --confirm --node edge-1
-```
-
-After a successful first install, provider-neutral guidance shows a local SSH
-tunnel, loopback browser URL, administrator email, protected credential-file
-location, and persistent diagnostic/lifecycle commands without printing the
-generated password. Reprint it at any time:
+After installation:
 
 ```bash
 sudo /usr/local/libexec/hserver-install next-steps
+systemctl status hserver
+curl --fail http://127.0.0.1:3085/api/health
 ```
 
-Create, authenticate, verify, and select the first CLI context in one command.
-On an interactive terminal, `hserverctl` asks for the password and any required
-TOTP code with terminal echo disabled. The bearer token is stored separately
-with mode `0600`, and no context is persisted unless both login and
-`/api/auth/me` verification succeed:
+## CLI
+
+Connect without placing passwords or tokens in command arguments:
 
 ```bash
-sudo -u YOUR_USER hserverctl connect \
+hserverctl connect \
   --server http://127.0.0.1:3085 \
   --email admin@example.com \
   local
@@ -449,38 +134,54 @@ hserverctl doctor
 hserverctl ui
 ```
 
-Unattended automation can instead provide installer-owned mode-`0600`
-`--password-file` and `--totp-file` inputs. Secret values are never accepted as
-command-line arguments.
+Common operations:
 
-The packaged host doctor reports compatibility, missing commands,
-protected-file permissions, systemd state, and health-endpoint availability
-without printing configuration values. The authenticated CLI doctor can also
-write its complete panel, account-role, fleet, or selected-node report directly
-to a new mode-`0600` file with `hserverctl doctor --output PATH`; it refuses an
-existing destination and preserves the available report even when a check
-fails. For managed nodes, unattended provisioning can require both the exact
-agent-reported `amd64` or `arm64` architecture and named capabilities. A
-non-zero exit status means at least one required check failed, which makes both
-doctor paths usable in unattended provisioning and support flows.
+```bash
+hserverctl terminal
+hserverctl terminal --node edge-1
 
-After one install with a current release package, the agent lifecycle installer
-is retained at `/usr/local/libexec/hserver-agent-install`. An operator may then
-enable capability-scoped update status and actions on that managed server; no
-remote update occurs unless both the server-local policy and an authenticated
-admin confirmation allow it.
+hserverctl host action --confirm memory-optimize
+hserverctl host action --confirm swap-reset
+hserverctl host action --confirm temp-clean
+
+hserverctl nodes list
+hserverctl nodes action --confirm edge-1 memory-optimize
+hserverctl disk scan --node edge-1
+
+hserverctl updates status
+hserverctl updates agent status --node edge-1
+```
+
+The CLI includes JSON-producing command families for automation and a
+full-screen TUI for interactive operation. See the complete
+[`hserverctl` guide](docs/cli.md).
+
+## Managed servers
+
+Remote servers connect to the panel through the least-privileged HServer agent
+contract. Every remote feature requires an explicit advertised capability, and
+the agent remains the source of observed node state.
+
+An existing managed agent can use the signed agent-only compatibility bridge:
+
+```bash
+./scripts/public-install.sh https://github.com/IamYGT/heyserver \
+  --trusted-release-key-sha256 TRUSTED_ED25519_KEY_SHA256 \
+  --agent-only
+```
+
+The bridge preserves the existing token, protected configuration, service
+state, and rollback snapshot. It does not install or start a panel on the
+managed node. See [Agent Hub contract](docs/agent-hub-contract.md) and
+[installation guide](docs/installation-guide.md) before enrollment.
 
 ## Development
 
 Required toolchains match CI:
 
-- Go 1.26.1 or newer (the exact minimum from the root `go.mod` `go` directive)
+- Go version declared by the root `go.mod`
 - Node.js 24
 - npm, Git, Make, Python 3, and a C compiler for CGO
-
-CI additionally provisions isolated PostgreSQL and MariaDB instances and gates
-release publication on real dump, restore, recovery-point, and failed-restore
-rollback drills for both engines.
 
 ```bash
 git clone https://github.com/IamYGT/heyserver.git
@@ -491,45 +192,32 @@ make test
 make build
 ```
 
-`make dev-check` is read-only and distinguishes required build tools from
-optional Docker, database-drill, SQLite CLI, and golangci-lint capabilities.
-`make dev-setup` stops on a missing required tool, otherwise installs the locked
-Go modules and `web/package-lock.json` dependencies without installing system
-packages or creating `.env`.
+`make dev-check` is read-only. `make dev-setup` installs locked Go and npm
+dependencies without installing system packages or generating credentials.
 
-Useful references:
+## Documentation
 
-- [Installation](docs/installation-guide.md)
-- [Docker Compose deployments](docs/docker-compose-deployments.md)
+- [Installation guide](docs/installation-guide.md)
+- [CLI reference](docs/cli.md)
 - [API reference](docs/api-reference.md)
-- [Command-line client](docs/cli.md)
-- [Complete API route inventory](docs/api-routes.md)
-- [Generated OpenAPI 3.1 contract](docs/openapi.json), including promoted local
-  bootstrap health, onboarding, authentication and TOTP recovery, safe editable
-  and portable settings, the complete local domain lifecycle, system
-  observation and verified update lifecycle, backup/restore, bounded
-  host-maintenance, measured disk-cleanup, and managed-node
-  enrollment/connectivity/task schemas; also served by each installation at
-  `/openapi.json` and browsable in
-  **Developer API** at `/developer/api`
+- [OpenAPI contract](docs/openapi.json)
 - [Frontend architecture](docs/frontend-architecture.md)
 - [Monitoring architecture](docs/monitoring-architecture.md)
-- [Troubleshooting](docs/troubleshooting.md)
-- [Portable configuration schema](docs/portable-configuration.md)
-- [Community roadmap](docs/feature-roadmap.md)
-- [Project sustainability](docs/project-sustainability.md)
+- [Portable configuration](docs/portable-configuration.md)
+- [Release manifest and signing](docs/release-manifest.md)
 - [Optional integrations](docs/optional-integrations.md)
-- [Community extension boundary](docs/extension-boundary.md)
-- [Release manifest contract](docs/release-manifest.md)
-- [Public launch checklist](docs/public-launch-checklist.md)
-- [Governance](GOVERNANCE.md)
-- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Roadmap](docs/feature-roadmap.md)
 
-## Contributing and license
+The OpenAPI contract is also served by each installation at `/openapi.json` and
+is available in the web interface under **Developer API**.
 
-Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md), the
-[governance model](GOVERNANCE.md), the [Code of Conduct](CODE_OF_CONDUCT.md),
-and the repository-wide [product contract](AGENTS.md) before opening a pull
-request.
+## Contributing
+
+Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md),
+[GOVERNANCE.md](GOVERNANCE.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), and
+[AGENTS.md](AGENTS.md) before opening a pull request.
+
+## License
 
 HServer is licensed under the [Apache License 2.0](LICENSE).

@@ -226,8 +226,7 @@ for bootstrap_asset in \
   'sha256sum --check bootstrap-install.sh.sha256' \
   'sha256sum --check release-public-key.b64.sha256' \
   '--public-key-file ./release-public-key.b64'; do
-  if ! grep -Fq -- "$bootstrap_asset" "$readme" ||
-     ! grep -Fq -- "$bootstrap_asset" "$installation_guide"; then
+  if ! grep -Fq -- "$bootstrap_asset" "$installation_guide"; then
     echo "verified bootstrap documentation is missing: $bootstrap_asset" >&2
     exit 1
   fi
@@ -242,8 +241,7 @@ for public_wrapper_contract in \
   'trusted_release_key_sha256=LOWERCASE_SHA256_OF_RAW_ED25519_PUBLIC_KEY' \
   'printf '\''%s  public-install.sh\n'\'' "$trusted_installer_sha256" | sha256sum --check -' \
   '--trusted-release-key-sha256 "$trusted_release_key_sha256"'; do
-  if ! grep -Fq -- "$public_wrapper_contract" "$readme" ||
-     ! grep -Fq -- "$public_wrapper_contract" "$installation_guide"; then
+  if ! grep -Fq -- "$public_wrapper_contract" "$installation_guide"; then
     echo "Git-free signer-pinned wrapper documentation is missing: $public_wrapper_contract" >&2
     exit 1
   fi
