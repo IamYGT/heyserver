@@ -169,7 +169,7 @@ run_bootstrap() {
 : >"$lifecycle_log"
 : >"$curl_log"
 run_bootstrap "$public_key_file" >"$tmp/success.log"
-grep -Fq "Verified signed HServer release: $version (linux/$arch)" "$tmp/success.log"
+grep -Fq "Verified signed Heyserver release: $version (linux/$arch)" "$tmp/success.log"
 diff -u <(printf '%s\n' \
   'doctor:preflight' \
   'install:install' \

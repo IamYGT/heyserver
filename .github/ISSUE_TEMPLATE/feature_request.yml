@@ -1,5 +1,5 @@
 name: Feature request
-description: Propose a provider-neutral HServer capability or operator workflow
+description: Propose a provider-neutral Heyserver capability or operator workflow
 title: "[Feature]: "
 labels: [enhancement]
 body:

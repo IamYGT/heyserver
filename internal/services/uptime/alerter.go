@@ -29,21 +29,21 @@ func NewAlerter(channelRepo *store.NotificationChannelRepository, settingsSvc *s
 }
 
 func (a *Alerter) SendDown(monitor *store.UptimeMonitor, result CheckResult) {
-	subject := fmt.Sprintf("[HServer] DOWN: %s", monitor.Name)
+	subject := fmt.Sprintf("[Heyserver] DOWN: %s", monitor.Name)
 	body := fmt.Sprintf("Monitor: %s\nType: %s\nTarget: %s\nError: %s\nResponse Time: %.0fms",
 		monitor.Name, monitor.Type, monitorTarget(monitor), result.Msg, result.PingMs)
 	a.dispatch(monitor, subject, body)
 }
 
 func (a *Alerter) SendRecovery(monitor *store.UptimeMonitor, result CheckResult) {
-	subject := fmt.Sprintf("[HServer] UP: %s is back online", monitor.Name)
+	subject := fmt.Sprintf("[Heyserver] UP: %s is back online", monitor.Name)
 	body := fmt.Sprintf("Monitor: %s\nType: %s\nTarget: %s\nStatus: %s\nResponse Time: %.0fms",
 		monitor.Name, monitor.Type, monitorTarget(monitor), result.Msg, result.PingMs)
 	a.dispatch(monitor, subject, body)
 }
 
 func (a *Alerter) SendReminder(monitor *store.UptimeMonitor, result CheckResult) {
-	subject := fmt.Sprintf("[HServer] STILL DOWN: %s", monitor.Name)
+	subject := fmt.Sprintf("[Heyserver] STILL DOWN: %s", monitor.Name)
 	body := fmt.Sprintf("Monitor: %s\nType: %s\nTarget: %s\nError: %s\nThis monitor has been down for multiple check cycles.",
 		monitor.Name, monitor.Type, monitorTarget(monitor), result.Msg)
 	a.dispatch(monitor, subject, body)

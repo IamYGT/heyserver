@@ -54,7 +54,7 @@ var ErrDestinationUnavailable = errors.New("snapshot destination unavailable")
 var ErrNotConfigured = errors.New("snapshot paths are not configured")
 
 // ErrUnsupportedCapability means the selected provider deliberately does not
-// expose a destructive capability through HServer.
+// expose a destructive capability through Heyserver.
 var ErrUnsupportedCapability = errors.New("snapshot destination capability unsupported")
 
 const PurgeConfirmation = "purge-snapshot-repository"

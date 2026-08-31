@@ -53,18 +53,18 @@ describe('host quick controls', () => {
   })
 
   it('explains the measured swap reset safety margin before execution', () => {
-    expect(swapResetConfirmation('HServer', {
+    expect(swapResetConfirmation('Heyserver', {
       total: 8 * 1024 ** 3,
       used: 2 * 1024 ** 3,
       available: 4 * 1024 ** 3,
     }, 2.5 * 1024 ** 3)).toBe(
-      'Reset 2.0 GB of used swap on HServer now? 4.0 GB RAM is currently available; the safety check requires at least 2.5 GB, including a 512 MB reserve. Running processes stay active, but memory pressure can rise briefly.',
+      'Reset 2.0 GB of used swap on Heyserver now? 4.0 GB RAM is currently available; the safety check requires at least 2.5 GB, including a 512 MB reserve. Running processes stay active, but memory pressure can rise briefly.',
     )
   })
 
   it('explains RAM optimization effects with and without a live measurement', () => {
-    expect(memoryOptimizeConfirmation('HServer', 12.25 * 1024 ** 3)).toBe(
-      'Optimize RAM on HServer now? 12.3 GB RAM is currently available. This syncs pending filesystem writes and releases only reclaimable caches; running processes and swap stay unchanged.',
+    expect(memoryOptimizeConfirmation('Heyserver', 12.25 * 1024 ** 3)).toBe(
+      'Optimize RAM on Heyserver now? 12.3 GB RAM is currently available. This syncs pending filesystem writes and releases only reclaimable caches; running processes and swap stay unchanged.',
     )
     expect(memoryOptimizeConfirmation('Contabo')).toBe(
       'Optimize RAM on Contabo now? This syncs pending filesystem writes and releases only reclaimable caches; running processes and swap stay unchanged.',

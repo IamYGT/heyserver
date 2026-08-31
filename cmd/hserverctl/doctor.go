@@ -247,7 +247,7 @@ func runDoctor(ctx context.Context, client *apiClient, args []string, out io.Wri
 		if err := writeProtectedDoctorReport(*outputPath, rendered.Bytes()); err != nil {
 			return err
 		}
-		fmt.Fprintf(out, "Wrote protected HServer doctor report to %s\n", *outputPath)
+		fmt.Fprintf(out, "Wrote protected Heyserver doctor report to %s\n", *outputPath)
 	} else if _, err := rendered.WriteTo(out); err != nil {
 		return err
 	}
@@ -301,7 +301,7 @@ func writeDoctorText(out io.Writer, report doctorReport) error {
 	if !report.OK {
 		result = "FAIL"
 	}
-	fmt.Fprintf(&text, "HServer connection doctor: %s\n", result)
+	fmt.Fprintf(&text, "Heyserver connection doctor: %s\n", result)
 	fmt.Fprintf(&text, "Server: %s\n", doctorTextValue(report.Server))
 	if report.Panel != nil {
 		fmt.Fprintf(&text, "Panel: %s | version %s | uptime %ds",

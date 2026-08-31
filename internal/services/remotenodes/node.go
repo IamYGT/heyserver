@@ -1,7 +1,7 @@
 package remotenodes
 
 // This package contains provider-neutral response contracts shared by the API.
-// Remote execution belongs exclusively to the versioned HServer agent protocol.
+// Remote execution belongs exclusively to the versioned Heyserver agent protocol.
 
 type ActionStatus struct {
 	Running   bool   `json:"running"`

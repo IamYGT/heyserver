@@ -183,7 +183,7 @@ footer span{color:#52525b}
 
   <!-- Footer -->
   <footer>
-    <p>90-day history &middot; Powered by <span>HServer Panel</span></p>
+    <p>90-day history &middot; Powered by <span>Heyserver Panel</span></p>
   </footer>
 
 </div>

@@ -68,11 +68,11 @@ export function RemoteAgentLifecycle({ nodeID, serverLabel, online, readAvailabl
 
   const confirmUpgrade = () => {
     if (!status?.latest_version || status.signature_status !== 'verified') return
-    const confirmed = window.confirm(`Upgrade the HServer agent on ${serverLabel} to ${status.latest_version}?\n\nThe agent service will restart. The verified lifecycle installer automatically restores the previous binary if the new service does not become active.`)
+    const confirmed = window.confirm(`Upgrade the Heyserver agent on ${serverLabel} to ${status.latest_version}?\n\nThe agent service will restart. The verified lifecycle installer automatically restores the previous binary if the new service does not become active.`)
     if (confirmed) upgrade.mutate(status.latest_version)
   }
   const confirmRollback = () => {
-    const confirmed = window.confirm(`Rollback the HServer agent on ${serverLabel} to its latest pre-upgrade snapshot?\n\nThe agent service will restart and may be briefly offline.`)
+    const confirmed = window.confirm(`Rollback the Heyserver agent on ${serverLabel} to its latest pre-upgrade snapshot?\n\nThe agent service will restart and may be briefly offline.`)
     if (confirmed) rollback.mutate()
   }
 

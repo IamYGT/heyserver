@@ -16,7 +16,7 @@ describe('audit server scope', () => {
     expect([local, edge, otherRemote, login].filter(entry => auditMatchesServer(entry, 'all'))).toHaveLength(4)
   })
 
-  it('shows only local system operations for HServer', () => {
+  it('shows only local system operations for Heyserver', () => {
     expect([local, edge, login].filter(entry => auditMatchesServer(entry, 'local'))).toEqual([local])
   })
 

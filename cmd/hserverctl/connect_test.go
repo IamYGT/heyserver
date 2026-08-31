@@ -62,7 +62,7 @@ func TestRunConnectAuthenticatesVerifiesAndSelectsProtectedContext(t *testing.T)
 	}, &out, &bytes.Buffer{}, getenv); err != nil {
 		t.Fatal(err)
 	}
-	if verified.Load() != 1 || !strings.Contains(out.String(), `Connected HServer context "production"`) || !strings.Contains(out.String(), "Next: hserverctl doctor") || !strings.Contains(out.String(), "Open control center: hserverctl ui") {
+	if verified.Load() != 1 || !strings.Contains(out.String(), `Connected Heyserver context "production"`) || !strings.Contains(out.String(), "Next: hserverctl doctor") || !strings.Contains(out.String(), "Open control center: hserverctl ui") {
 		t.Fatalf("verified=%d output=%q", verified.Load(), out.String())
 	}
 	for _, secret := range []string{"correct horse", "connect-secret-token", "admin@example.com"} {
@@ -255,7 +255,7 @@ func TestRunConnectPromptsForPasswordAndTOTPWithoutEcho(t *testing.T) {
 			}
 		}
 	}
-	readUntil("HServer password: ")
+	readUntil("Heyserver password: ")
 	if _, err := terminal.Write([]byte("interactive-password\r")); err != nil {
 		t.Fatal(err)
 	}
@@ -263,7 +263,7 @@ func TestRunConnectPromptsForPasswordAndTOTPWithoutEcho(t *testing.T) {
 	if _, err := terminal.Write([]byte("654321\r")); err != nil {
 		t.Fatal(err)
 	}
-	readUntil(`Connected HServer context "production"`)
+	readUntil(`Connected Heyserver context "production"`)
 	if err := command.Wait(); err != nil {
 		t.Fatalf("interactive connect helper: %v; transcript=%q", err, transcript.String())
 	}

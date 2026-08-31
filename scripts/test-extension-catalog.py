@@ -4,7 +4,7 @@
 The catalog is deliberately data-only: this verifier checks its structural
 contract, required core entries, source references, documentation row mapping,
 API prefixes, and the managed-agent names that are actually compiled into
-HServer. Additional entries are allowed when they satisfy the same contract.
+Heyserver. Additional entries are allowed when they satisfy the same contract.
 """
 
 from __future__ import annotations

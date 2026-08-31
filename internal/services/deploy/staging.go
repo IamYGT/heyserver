@@ -98,10 +98,10 @@ func (s *Service) validateIsolatedProjectDir(excludeTargetID int64, candidate st
 	if s.dataDir != "" {
 		resolvedDataDir, err := resolvePotentialProjectDir(s.dataDir)
 		if err != nil {
-			return fmt.Errorf("%w: HServer data directory cannot be resolved: %v", ErrInvalidTarget, err)
+			return fmt.Errorf("%w: Heyserver data directory cannot be resolved: %v", ErrInvalidTarget, err)
 		}
 		if projectDirsOverlap(resolvedCandidate, resolvedDataDir) {
-			return fmt.Errorf("%w: staging project directory must not overlap the HServer data directory", ErrInvalidTarget)
+			return fmt.Errorf("%w: staging project directory must not overlap the Heyserver data directory", ErrInvalidTarget)
 		}
 	}
 	rows, err := s.db.Query(`SELECT id, project_dir FROM deploy_targets WHERE id <> ? ORDER BY id`, excludeTargetID)

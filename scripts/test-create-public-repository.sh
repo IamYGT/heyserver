@@ -27,7 +27,7 @@ grep -Eq '^git -C "\$snapshot".*-c maintenance\.auto=false' \
 
 printf '%s\n' dirty >>"$source_tree/README.md"
 if "$source_tree/scripts/create-public-repository.sh" "$destination" \
-  --author-name "HServer Maintainers" --author-email "maintainers@example.com" \
+  --author-name "Heyserver Maintainers" --author-email "maintainers@example.com" \
   >"$tmp/dirty.log" 2>&1; then
   echo "public repository creator accepted a dirty source tree" >&2
   exit 1
@@ -37,7 +37,7 @@ grep -q 'Refusing to export a dirty worktree' "$tmp/dirty.log"
 git -C "$source_tree" restore README.md
 
 if "$source_tree/scripts/create-public-repository.sh" "$source_tree/public" \
-  --author-name "HServer Maintainers" --author-email "maintainers@example.com" \
+  --author-name "Heyserver Maintainers" --author-email "maintainers@example.com" \
   >"$tmp/inside.log" 2>&1; then
   echo "public repository creator wrote inside the private source tree" >&2
   exit 1
@@ -47,7 +47,7 @@ grep -q 'inside the private source tree' "$tmp/inside.log"
 
 mkdir "$destination"
 if "$source_tree/scripts/create-public-repository.sh" "$destination" \
-  --author-name "HServer Maintainers" --author-email "maintainers@example.com" \
+  --author-name "Heyserver Maintainers" --author-email "maintainers@example.com" \
   >"$tmp/existing.log" 2>&1; then
   echo "public repository creator overwrote an existing destination" >&2
   exit 1
@@ -56,7 +56,7 @@ grep -q 'Refusing to overwrite existing destination' "$tmp/existing.log"
 rmdir "$destination"
 
 "$source_tree/scripts/create-public-repository.sh" "$destination" \
-  --author-name "HServer Maintainers" --author-email "maintainers@example.com" \
+  --author-name "Heyserver Maintainers" --author-email "maintainers@example.com" \
   >"$tmp/success.log"
 
 grep -q 'Public repository created:' "$tmp/success.log"
@@ -67,8 +67,8 @@ grep -q 'Remote configured: no' "$tmp/success.log"
 [[ $(git -C "$destination" branch --show-current) == main ]]
 [[ -z "$(git -C "$destination" remote)" ]]
 [[ -z "$(git -C "$destination" status --porcelain)" ]]
-[[ $(git -C "$destination" log -1 --format=%s) == "Publish HServer community source" ]]
-[[ $(git -C "$destination" log -1 --format='%an <%ae>') == "HServer Maintainers <maintainers@example.com>" ]]
+[[ $(git -C "$destination" log -1 --format=%s) == "Publish Heyserver community source" ]]
+[[ $(git -C "$destination" log -1 --format='%an <%ae>') == "Heyserver Maintainers <maintainers@example.com>" ]]
 git -C "$destination" fsck --strict --no-dangling >/dev/null
 "$destination/scripts/test-public-docs.sh" >/dev/null
 

@@ -86,7 +86,7 @@ describe('Snapshot dependency states', () => {
 
     expect(await screen.findByText('Snapshot şifreleme parolası gerekli')).toBeInTheDocument()
     expect(screen.getByText('HSERVER_RESTIC_PASSWORD')).toBeInTheDocument()
-    expect(screen.getByText(/HServer bu parolayı gösteremez veya kurtaramaz/)).toBeInTheDocument()
+    expect(screen.getByText(/Heyserver bu parolayı gösteremez veya kurtaramaz/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Snapshot al (artımlı)' })).toBeDisabled()
   })
 

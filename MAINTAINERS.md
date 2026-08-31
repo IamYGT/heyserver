@@ -1,4 +1,4 @@
-# HServer Maintainers and Areas
+# Heyserver Maintainers and Areas
 
 This is a responsibility map, not a personal-name roster. It intentionally
 assigns work to project roles without inventing identities. Current maintainer
@@ -36,7 +36,7 @@ merge, release, or repository administration authority.
   and follow [SECURITY.md](SECURITY.md).
 - **Compromised installation or outage:** recover the installation and rotate
   affected credentials first, then use the private security advisory if
-  HServer caused or widened the impact.
+  Heyserver caused or widened the impact.
 
 Private reports are handled on a least-privilege basis. A maintainer who is
 personally involved in a report or has a material conflict must recuse and hand

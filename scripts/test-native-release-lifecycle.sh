@@ -45,15 +45,15 @@ if [[ -e /usr/local/bin/hserver-panel || -e /usr/local/bin/hserverctl || \
   -e /usr/local/libexec/hserver-install || -e /usr/local/libexec/hserver-doctor || \
   -e /usr/local/share/hserver || -e /etc/hserver || -e /var/lib/hserver || \
   -e /etc/systemd/system/hserver.service ]]; then
-  echo "Refusing to overwrite a pre-existing HServer installation." >&2
+  echo "Refusing to overwrite a pre-existing Heyserver installation." >&2
   exit 1
 fi
 if compgen -G '/etc/nginx/snippets/hserver-*.conf' >/dev/null; then
-  echo "Refusing to overwrite pre-existing HServer Nginx snippets." >&2
+  echo "Refusing to overwrite pre-existing Heyserver Nginx snippets." >&2
   exit 1
 fi
 if curl -fsS --max-time 1 http://127.0.0.1:3085/api/health >/dev/null 2>&1; then
-  echo "Refusing to use occupied HServer port 3085." >&2
+  echo "Refusing to use occupied Heyserver port 3085." >&2
   exit 1
 fi
 tmp=$(mktemp -d /tmp/hserver-native-acceptance-XXXXXXXX)
@@ -131,7 +131,7 @@ if compgen -G '/etc/nginx/snippets/hserver-*.conf' >/dev/null; then
   exit 1
 fi
 if systemctl is-active --quiet hserver || systemctl is-enabled --quiet hserver; then
-  echo "Failed initial installation left the HServer service active or enabled." >&2
+  echo "Failed initial installation left the Heyserver service active or enabled." >&2
   exit 1
 fi
 printf 'native initial-install rollback acceptance: OK (%s)\n' "$arch"

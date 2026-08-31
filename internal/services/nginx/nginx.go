@@ -96,7 +96,7 @@ type RestoreArchiveReceipt struct {
 	IsEnabled bool   `json:"isEnabled"`
 }
 
-// ConfigBackup is one validated pre-edit recovery copy retained by HServer.
+// ConfigBackup is one validated pre-edit recovery copy retained by Heyserver.
 type ConfigBackup struct {
 	Backup   string `json:"backup"`
 	Filename string `json:"filename"`

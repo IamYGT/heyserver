@@ -1,4 +1,4 @@
-# HServer CLI
+# Heyserver CLI
 
 `hserverctl` is the provider-neutral command-line client shipped in every
 Linux release archive. It uses the same HTTP API, bearer authentication, role
@@ -468,7 +468,7 @@ The interactive control center includes:
 - service Start, Restart, and Stop controls;
 - stable-identity process TERM and KILL controls;
 - RAM optimization, swap reset, temporary-file cleanup, reboot scheduling, and
-  HServer reboot cancellation;
+  Heyserver reboot cancellation;
 - server-measured disk cleanup scanning and fixed-target selection;
 - local and managed-node container inventory with fixed Start, Restart, and
   Stop controls;
@@ -843,7 +843,7 @@ presenting the first page as complete.
 ## Manage panel users
 
 Administrators can manage the central panel-user inventory without opening the
-web interface. These commands always target the selected HServer control plane;
+web interface. These commands always target the selected Heyserver control plane;
 they do not pretend that panel accounts are managed-node operating-system
 users.
 
@@ -932,12 +932,12 @@ hserverctl notify create --confirm \
 hserverctl notify create --confirm \
   --name "Discord operations" \
   --type discord \
-  --username HServer \
+  --username Heyserver \
   --credential-file ./discord-webhook-url
 hserverctl notify create --confirm \
   --name "Slack operations" \
   --type slack \
-  --username HServer \
+  --username Heyserver \
   --channel '#operations' \
   --credential-file ./slack-webhook-url
 
@@ -1083,7 +1083,7 @@ and creates the new file with mode `0600`.
 ## Manage Cloudflare DNS from scripts
 
 Cloudflare commands use the panel's optional provider integration; the API token
-stays on the HServer host and is never accepted as a CLI argument or returned in
+stays on the Heyserver host and is never accepted as a CLI argument or returned in
 output. When the integration is not configured, the API keeps the explicit
 `HTTP 503` state instead of presenting an empty zone inventory.
 
@@ -1128,7 +1128,7 @@ contract is configured on the panel.
 ## Operate the optional mail service from scripts
 
 The mail CLI calls the same authenticated panel endpoints used by the web
-panel. It is intentionally local to the HServer panel: there is no `--node`
+panel. It is intentionally local to the Heyserver panel: there is no `--node`
 flag and no direct Stalwart credential or provider URL input. The optional
 Stalwart boundary remains truthful. A missing or unavailable integration is
 reported as `HTTP 503` (or as an `unavailable`/`not_configured` source in the
@@ -1490,7 +1490,7 @@ state. `deploy domain create` accepts only an exact portable ASCII hostname, a
 bounded Compose service identity, and a published host port from `1` through
 `65535`; callers cannot supply raw Nginx or an arbitrary upstream. Creation is
 confirmation-bound, validates inputs before network access, and uses a bounded
-mutation timeout. It activates only HServer's owned mapping and does not claim
+mutation timeout. It activates only Heyserver's owned mapping and does not claim
 that DNS was changed or the application is healthy.
 
 `deploy domain health` performs the API's active three-second loopback probe.
@@ -1943,7 +1943,7 @@ document-root, managed-snippet, and full-host validation boundaries. It accepts
 only `php`, `static`, `proxy`, or `redirect`; type-specific flags cannot be mixed.
 PHP and static sites derive their document root from the installation-owned
 vhost root when `--doc-root` is omitted. Proxy sites require `--proxy-pass`, and
-redirect sites require `--redirect-to`. Without `--ssl`, HServer generates a
+redirect sites require `--redirect-to`. Without `--ssl`, Heyserver generates a
 real HTTP-only server rather than a port-443 listener without certificates.
 With `--ssl`, it adds TLS listeners and an HTTP-to-HTTPS redirect; custom
 `--cert-path` and `--key-path` must be safe absolute paths supplied together.
@@ -1954,7 +1954,7 @@ read-only managed snippet inventory used by generated templates.
 
 `nginx enable` and `nginx disable` are explicit desired-state operations, not
 flip-state aliases. Repeating either command is safe and leaves the site in the
-requested state. On the local host, HServer only manages an exact symlink from
+requested state. On the local host, Heyserver only manages an exact symlink from
 the installation-owned enabled-site directory to the selected regular
 available-site file; foreign files and foreign symlink targets are refused and
 left untouched. With `--node`, the CLI uses the managed domain action contract
@@ -2138,7 +2138,7 @@ including each server-observed `rawLine`. Schedule replacement accepts either
 one five-field `--cron` expression or the provider-neutral
 `--frequency`/`--time` presets, plus an optional backup type/database and a
 retention count from `1` to `365`. Replacement and deletion require
-`--confirm`. Deletion accepts only the exact single-line HServer `rawLine`
+`--confirm`. Deletion accepts only the exact single-line Heyserver `rawLine`
 returned by the inventory call; it never selects or removes an unrelated
 crontab entry.
 
@@ -2167,7 +2167,7 @@ Create a new client-side encrypted snapshot only after reviewing readiness:
 hserverctl backups snapshot run --confirm
 ```
 
-Remote snapshot restore extracts into HServer's fixed local staging directory;
+Remote snapshot restore extracts into Heyserver's fixed local staging directory;
 it does not silently replace production paths. The CLI requires an explicit
 scope even though the API represents a full restore with empty selectors:
 

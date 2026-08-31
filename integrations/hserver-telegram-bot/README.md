@@ -1,6 +1,6 @@
 # HserverTrack Telegram Bot
 
-Telegram control plane for HServer Panel.
+Telegram control plane for Heyserver Panel.
 
 ## Features
 
@@ -117,7 +117,7 @@ pytest -q
 The checked-in unit reads one explicit, root-owned environment file:
 `/etc/hserver/hserver-telegram-bot.env`. That file contains the same
 `HSERVER_BOT_HOME` and `HSERVER_BOT_DATA_DIR` contract as a local `.env`, plus
-the Telegram and HServer credentials. The default service identity is the
+the Telegram and Heyserver credentials. The default service identity is the
 unprivileged `hserver-telegram-bot` user; the unit never needs root access.
 
 Create the identity and data directory (change the path values to the selected

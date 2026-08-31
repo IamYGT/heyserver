@@ -1,6 +1,6 @@
 # Project Sustainability
 
-HServer's core source is licensed under Apache License 2.0. Installing the panel
+Heyserver's core source is licensed under Apache License 2.0. Installing the panel
 on additional servers, contributing changes, and redistributing compliant forks
 do not require a per-server license from this repository.
 

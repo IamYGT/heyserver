@@ -38,7 +38,7 @@ func NewNotificationChannelRepository(db *sql.DB, dataDir string) (*Notification
 		return r, r.initErr
 	}
 	if dataDir == "" || !filepath.IsAbs(dataDir) {
-		r.initErr = fmt.Errorf("%w: HServer data directory must be absolute", ErrNotificationSecretStoreUnavailable)
+		r.initErr = fmt.Errorf("%w: Heyserver data directory must be absolute", ErrNotificationSecretStoreUnavailable)
 		return r, r.initErr
 	}
 	r.secretDir = filepath.Join(filepath.Clean(dataDir), "notification-channel-secrets")

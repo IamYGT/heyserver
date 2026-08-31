@@ -314,7 +314,7 @@ func TestContextStatusSupportsHumanOutputAndSubset(t *testing.T) {
 	if err := run(context.Background(), []string{"context", "status", "production"}, &out, &bytes.Buffer{}, getenv); err != nil {
 		t.Fatal(err)
 	}
-	for _, want := range []string{"HServer context status", "NAME\tSTATUS\tLATENCY_MS\tSERVER", "production\thealthy", "current", "version=v0.2.0"} {
+	for _, want := range []string{"Heyserver context status", "NAME\tSTATUS\tLATENCY_MS\tSERVER", "production\thealthy", "current", "version=v0.2.0"} {
 		if !strings.Contains(out.String(), want) {
 			t.Fatalf("human status output missing %q: %q", want, out.String())
 		}
@@ -342,7 +342,7 @@ func TestContextStatusRejectsUnknownContextBeforeNetwork(t *testing.T) {
 		}
 		return ""
 	})
-	if err == nil || !strings.Contains(err.Error(), `HServer context "missing" does not exist`) {
+	if err == nil || !strings.Contains(err.Error(), `Heyserver context "missing" does not exist`) {
 		t.Fatalf("unknown context error = %v", err)
 	}
 	if requests != 0 {

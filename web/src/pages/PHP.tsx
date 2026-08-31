@@ -289,11 +289,11 @@ export default function PHP() {
       ) : versionsQuery.isError ? (
         <DependencyRemediation
           title="PHP-FPM inventory is unavailable"
-          summary="HServer could not inspect installed PHP-FPM versions. Version and pool controls remain paused until detection succeeds."
+          summary="Heyserver could not inspect installed PHP-FPM versions. Version and pool controls remain paused until detection succeeds."
           state="unavailable"
           steps={[
-            <>Run the packaged HServer doctor and inspect the HServer service logs.</>,
-            <>Verify HServer can read <code>/etc/php/*/fpm</code> and execute the installed PHP-FPM binaries.</>,
+            <>Run the packaged Heyserver doctor and inspect the Heyserver service logs.</>,
+            <>Verify Heyserver can read <code>/etc/php/*/fpm</code> and execute the installed PHP-FPM binaries.</>,
             <>Check the relevant <code>php&lt;VERSION&gt;-fpm</code> systemd unit, then retry detection.</>,
           ]}
           error={versionsQuery.error.message}
@@ -303,7 +303,7 @@ export default function PHP() {
       ) : versions.length === 0 ? (
         <DependencyRemediation
           title="PHP-FPM is not installed"
-          summary="No supported PHP-FPM installation was detected. HServer does not install runtimes automatically."
+          summary="No supported PHP-FPM installation was detected. Heyserver does not install runtimes automatically."
           state="not-configured"
           steps={[
             <>Install the required <code>php&lt;VERSION&gt;-fpm</code> package from the supported Ubuntu repositories.</>,

@@ -372,7 +372,7 @@ HSERVER_INSTALL_UPDATE_MANIFEST_PUBLIC_KEYS=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 [ -x "$tmp/root/usr/local/libexec/hserver-doctor" ]
 cmp -s "$root_dir/scripts/hserver-install.sh" "$tmp/root/usr/local/libexec/hserver-install"
 cmp -s "$root_dir/scripts/hserver-doctor.sh" "$tmp/root/usr/local/libexec/hserver-doctor"
-grep -q 'HServer is ready for first access.' "$tmp/install.log"
+grep -q 'Heyserver is ready for first access.' "$tmp/install.log"
 grep -Fq "Installed starter deployment templates: $tmp/root/var/lib/hserver/deploy-templates" "$tmp/install.log"
 grep -q 'ssh -N -L 3085:127.0.0.1:3085 YOUR_SSH_USER@YOUR_SERVER' "$tmp/install.log"
 grep -q 'Open http://127.0.0.1:3085 in your browser.' "$tmp/install.log"
@@ -472,7 +472,7 @@ stage='retained lifecycle upgrade and rollback'
 run_privileged env \
   HSERVER_ROOT_PREFIX="$tmp/root" \
     "$tmp/root/usr/local/libexec/hserver-install" next-steps >"$tmp/next-steps.log"
-grep -q 'HServer is ready for first access.' "$tmp/next-steps.log"
+grep -q 'Heyserver is ready for first access.' "$tmp/next-steps.log"
 ! grep -Fq "$initial_password" "$tmp/next-steps.log"
 [ -f "$tmp/root/etc/hserver/hserver.env" ]
 [ "$(stat -c %a "$tmp/root/etc/hserver/hserver.env")" = 600 ]

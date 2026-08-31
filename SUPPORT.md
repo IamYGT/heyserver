@@ -1,6 +1,6 @@
-# HServer Support
+# Heyserver Support
 
-HServer is a community-maintained, self-hosted project. The fastest support
+Heyserver is a community-maintained, self-hosted project. The fastest support
 request includes a reproducible symptom and the smallest relevant diagnostic
 output.
 
@@ -41,7 +41,7 @@ route in the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Safe diagnostic output
 
-Include HServer version, Ubuntu version, CPU architecture, install method,
+Include Heyserver version, Ubuntu version, CPU architecture, install method,
 affected page or API route, exact error text, and the relevant service state.
 Do not include secrets or full production inventory. The doctor is designed to
 report installation health without printing configuration values.

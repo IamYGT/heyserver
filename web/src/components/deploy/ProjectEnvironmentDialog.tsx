@@ -81,7 +81,7 @@ export function ProjectEnvironmentDialog({ open, targetId, targetName, onOpenCha
           <div className="rounded-lg border border-violet-500/20 bg-violet-500/[0.05] p-3">
             <p className="text-xs font-medium text-violet-200">Values are write-only</p>
             <p className="mt-1 text-[11px] leading-5 text-zinc-500">
-              HServer stores values outside Git with private file permissions. Existing values can be replaced or removed, but never read back into the browser.
+              Heyserver stores values outside Git with private file permissions. Existing values can be replaced or removed, but never read back into the browser.
             </p>
           </div>
 

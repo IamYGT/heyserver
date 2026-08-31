@@ -52,7 +52,7 @@ func (model tuiModel) View() tea.View {
 	}
 	view := tea.NewView(content)
 	view.AltScreen = true
-	view.WindowTitle = "HServer Control Center"
+	view.WindowTitle = "Heyserver Control Center"
 	return view
 }
 

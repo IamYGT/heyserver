@@ -1,16 +1,16 @@
 name: Bug report
-description: Report a reproducible HServer defect
+description: Report a reproducible Heyserver defect
 title: "[Bug]: "
 labels: [bug]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for helping improve HServer. Do not include passwords, tokens, private keys, environment files, or production inventory.
+        Thanks for helping improve Heyserver. Do not include passwords, tokens, private keys, environment files, or production inventory.
   - type: input
     id: version
     attributes:
-      label: HServer version
+      label: Heyserver version
       description: Use the version shown on the About page or release archive.
       placeholder: v0.1.0
     validations:

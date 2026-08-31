@@ -171,11 +171,11 @@ export default function SnapshotSection({ onWatchJob, snapshotBusy }: SnapshotSe
     return (
       <DependencyRemediation
         title="Snapshot bağımlılık durumu alınamadı"
-        summary="HServer snapshot API'si restic, şifreleme ve uzak depo hazırlığını doğrulayamadı. Snapshot işlemleri durum bilinene kadar duraklatıldı."
+        summary="Heyserver snapshot API'si restic, şifreleme ve uzak depo hazırlığını doğrulayamadı. Snapshot işlemleri durum bilinene kadar duraklatıldı."
         state="unavailable"
         steps={[
-          <>HServer API sağlığını ve servis günlüklerini kontrol edin.</>,
-          <><code>restic version</code> komutunu ve seçili uzak hedef yapılandırmasını HServer servis ortamında doğrulayın.</>,
+          <>Heyserver API sağlığını ve servis günlüklerini kontrol edin.</>,
+          <><code>restic version</code> komutunu ve seçili uzak hedef yapılandırmasını Heyserver servis ortamında doğrulayın.</>,
           <>Bağımlılık veya API sorununu giderdikten sonra algılamayı yeniden deneyin.</>,
         ]}
         error={error instanceof Error ? error.message : undefined}
@@ -280,12 +280,12 @@ export default function SnapshotSection({ onWatchJob, snapshotBusy }: SnapshotSe
         {!st?.resticFound && (
           <DependencyRemediation
             title="restic kurulumu gerekli"
-            summary="Artımlı ve şifreli sunucu snapshot'ları restic olmadan çalışamaz. HServer paketleri otomatik kurmaz."
+            summary="Artımlı ve şifreli sunucu snapshot'ları restic olmadan çalışamaz. Heyserver paketleri otomatik kurmaz."
             state="not-configured"
             steps={[
               <>İşletim sisteminizin desteklenen paket kaynağından <code>restic</code> kurun.</>,
               <>Standart dışı kurulumlarda <code>HSERVER_RESTIC_BIN</code> değerini <code>/etc/hserver/hserver.env</code> içinde mutlak binary yoluna ayarlayın.</>,
-              <><code>restic version</code> komutunu HServer servis ortamında doğrulayın, servisi yeniden başlatın ve algılamayı yineleyin.</>,
+              <><code>restic version</code> komutunu Heyserver servis ortamında doğrulayın, servisi yeniden başlatın ve algılamayı yineleyin.</>,
             ]}
             retry={() => { void refetch() }}
             retrying={isFetching}
@@ -294,12 +294,12 @@ export default function SnapshotSection({ onWatchJob, snapshotBusy }: SnapshotSe
         {st?.resticFound && !st.passwordSet && (
           <DependencyRemediation
             title="Snapshot şifreleme parolası gerekli"
-            summary="Her kurulum kendi restic parolasını üretmeli ve kurulumdan ayrı, kalıcı bir şifre kasasında saklamalıdır. HServer bu parolayı gösteremez veya kurtaramaz."
+            summary="Her kurulum kendi restic parolasını üretmeli ve kurulumdan ayrı, kalıcı bir şifre kasasında saklamalıdır. Heyserver bu parolayı gösteremez veya kurtaramaz."
             state="not-configured"
             steps={[
               <>Sunucuda <code>openssl rand -base64 32</code> ile güçlü ve benzersiz bir parola üretin.</>,
               <>Parolayı şifre kasasına kaydedin ve <code>HSERVER_RESTIC_PASSWORD</code> olarak <code>/etc/hserver/hserver.env</code> içine ekleyin.</>,
-              <>HServer servisini yeniden başlatın ve algılamayı yeniden deneyin.</>,
+              <>Heyserver servisini yeniden başlatın ve algılamayı yeniden deneyin.</>,
             ]}
             retry={() => { void refetch() }}
             retrying={isFetching}
@@ -358,7 +358,7 @@ export default function SnapshotSection({ onWatchJob, snapshotBusy }: SnapshotSe
         {destination === 's3' && destinationStatus !== 'healthy' && (
           <DependencyRemediation
             title={destinationStatus === 'not_configured' ? 'S3-compatible hedef yapılandırılmadı' : 'S3-compatible hedef kullanılamıyor'}
-            summary="HServer, S3 kimlik bilgilerini panelde veya veritabanında tutmaz; yalnız kurulum sahibinin koruduğu dosyalardan okur."
+            summary="Heyserver, S3 kimlik bilgilerini panelde veya veritabanında tutmaz; yalnız kurulum sahibinin koruduğu dosyalardan okur."
             state={destinationStatus === 'not_configured' ? 'not-configured' : 'unavailable'}
             steps={[
               <><code>HSERVER_S3_ENDPOINT</code>, <code>HSERVER_S3_BUCKET</code> ve gerekirse <code>HSERVER_S3_REGION</code> değerlerini ayarlayın.</>,

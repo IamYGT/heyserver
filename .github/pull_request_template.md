@@ -1,6 +1,6 @@
 ## Outcome
 
-Describe the operator-visible result and why it belongs in HServer.
+Describe the operator-visible result and why it belongs in Heyserver.
 
 ## Scope
 

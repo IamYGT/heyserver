@@ -9,7 +9,7 @@ describe('operation history', () => {
     { id: 4, action: 'login', resource: 'auth', details: 'successful login', createdAt: '2026-08-25T13:00:00Z' },
   ]
 
-  it('shows only local system operations for HServer', () => {
+  it('shows only local system operations for Heyserver', () => {
     expect(buildOperationHistory('local', audits)).toEqual([
       expect.objectContaining({ id: 'audit:1', label: 'Memory Optimize', status: 'completed', source: 'audit' }),
     ])

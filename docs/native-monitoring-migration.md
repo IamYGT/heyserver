@@ -1,7 +1,7 @@
-# Migrating external monitors to HServer
+# Migrating external monitors to Heyserver
 
 This guide describes a provider-neutral migration from an external uptime
-monitoring service to HServer's native monitoring engine. It intentionally
+monitoring service to Heyserver's native monitoring engine. It intentionally
 contains no installation inventory, hostnames, accounts, or credentials.
 
 ## 1. Inventory the source
@@ -16,9 +16,9 @@ Export only the monitor configuration needed for migration:
 Keep source databases, session cookies, API tokens, and notification secrets
 outside the repository.
 
-## 2. Configure HServer notifications
+## 2. Configure Heyserver notifications
 
-Create the required notification channels and rules in HServer before importing
+Create the required notification channels and rules in Heyserver before importing
 monitors. Send a test notification from each channel and record any provider
 limitations separately from monitor health.
 
@@ -56,7 +56,7 @@ Do not print or persist the token in migration output.
 
 ## 4. Run both systems in parallel
 
-Keep the existing monitor active while validating HServer. Compare at least:
+Keep the existing monitor active while validating Heyserver. Compare at least:
 
 1. HTTP/TCP state transitions.
 2. Timeout and retry behavior.
@@ -74,19 +74,19 @@ After the acceptance checks pass:
 
 1. Export a final copy of the source configuration.
 2. Disable the old monitors without deleting their data.
-3. Observe one more HServer check cycle and notification test.
+3. Observe one more Heyserver check cycle and notification test.
 4. Remove the old service, proxy, DNS, and files only through the source
    product's documented uninstall path and a separately approved cleanup scope.
 
 ## Rollback
 
-If HServer monitoring has a critical issue, re-enable the old monitors, keep the
-HServer monitor definitions for diagnosis, and avoid deleting either history
+If Heyserver monitoring has a critical issue, re-enable the old monitors, keep the
+Heyserver monitor definitions for diagnosis, and avoid deleting either history
 until the incident is understood.
 
 ## Acceptance criteria
 
-- Every intended monitor exists once in HServer.
+- Every intended monitor exists once in Heyserver.
 - Scheduled checks run at the configured interval.
 - DOWN and recovery transitions create the expected events.
 - Notification delivery succeeds through every required channel.

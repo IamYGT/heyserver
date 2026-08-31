@@ -1,13 +1,13 @@
 # Release Manifest Contract
 
-HServer release discovery consumes a small provider-neutral JSON document. The
+Heyserver release discovery consumes a small provider-neutral JSON document. The
 panel never infers a maintainer repository and remains explicitly
 `not_configured` until an operator sets `HSERVER_UPDATE_MANIFEST_URL`.
 
 The JSON schema remains independent from transport trust. Operators may set up
 to eight comma-separated base64 Ed25519 public keys in
 `HSERVER_UPDATE_MANIFEST_PUBLIC_KEYS`. When at least one key is configured,
-HServer downloads the same manifest URL with `.sig` appended to its path while
+Heyserver downloads the same manifest URL with `.sig` appended to its path while
 preserving the query string, decodes the base64 64-byte detached signature, and
 accepts the exact manifest bytes only when one configured key verifies it. A
 missing, malformed, oversized, or mismatched signature makes release discovery
@@ -45,7 +45,7 @@ upgrade a release stage.
 - `schema_version` must be `1`.
 - `version` must be a stable `major.minor.patch` release with an optional `v`
   prefix. Prerelease and commit-derived values are not ordered.
-- `artifacts` must contain the running `GOOS_GOARCH` key. Public HServer
+- `artifacts` must contain the running `GOOS_GOARCH` key. Public Heyserver
   packages currently support `linux_amd64` and `linux_arm64`.
 - Each archive contains architecture-matched `hserver-panel`, `hserver-agent`,
   and `hserverctl` binaries; archive verification rejects a missing binary or
@@ -179,7 +179,7 @@ and install paths, and the managed-agent upgrade path, require
 `signature_status=verified`; checksum-only, `not_configured`, and
 `unavailable` results stay read-only and fail closed before archive download or
 lifecycle scheduling. No automatic or unattended updater is provided or
-promised: every update mutation requires an explicit operator action. HServer
+promised: every update mutation requires an explicit operator action. Heyserver
 never performs a silent download, install, restart, or upgrade.
 
 Managed agents may consume the same schema-v1 manifest only when their own
@@ -219,7 +219,7 @@ under the installation data directory. Before publishing the stage it verifies:
    lifecycle installer.
 
 The compressed archive is discarded after successful extraction because the
-installer uses only the individually hashed staged files. HServer retains the
+installer uses only the individually hashed staged files. Heyserver retains the
 current stage and the newest previous inactive stage; `scheduled` and `running`
 stages are never removed by retention. Incomplete temporary staging directories
 older than 24 hours are removed on the next successful stage. Unknown files or
@@ -227,7 +227,7 @@ directories beneath the update data directory are left untouched.
 
 Staging does not stop or restart the panel. Installation stays disabled until
 the admin accepts the restart and rollback notice, then confirms the exact
-staged ID and version in a second request. HServer rechecks the individually
+staged ID and version in a second request. Heyserver rechecks the individually
 hashed staged panel, CLI, installer, doctor, and fixed upgrade runner before scheduling a separate
 transient systemd unit. The delayed unit survives the panel process being
 stopped by the packaged installer.
@@ -283,7 +283,7 @@ presented as a successful installation.
 After the panel reconnects, it compares any persisted `scheduled` or `running`
 state with `hserver-panel-upgrade.timer` and
 `hserver-panel-upgrade.service`. If systemd conclusively reports that neither is
-active before the runner wrote a terminal state, HServer records `failed` with
+active before the runner wrote a terminal state, Heyserver records `failed` with
 an interrupted-operation detail instead of polling forever. If systemd itself
 cannot be inspected, the persisted state is preserved rather than guessed. A
 `failed` state should be investigated with `journalctl -u hserver` and

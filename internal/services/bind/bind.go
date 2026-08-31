@@ -830,7 +830,7 @@ func (s *Service) withRecoveryStatus(status ServiceStatus) ServiceStatus {
 	status.State = StateUnavailable
 	status.ZoneManagementReady = false
 	status.RecoveryPending = true
-	status.Error = "an interrupted BIND lifecycle transaction needs recovery; inspect the service log and restart HServer after correcting BIND"
+	status.Error = "an interrupted BIND lifecycle transaction needs recovery; inspect the service log and restart Heyserver after correcting BIND"
 	if recoveryErr == nil {
 		status.Error = "an interrupted BIND lifecycle transaction is waiting for startup recovery"
 	}

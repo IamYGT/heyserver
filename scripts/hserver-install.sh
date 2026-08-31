@@ -50,7 +50,7 @@ NGINX_SNIPPETS_DIR=${HSERVER_NGINX_SNIPPETS_DIR_PATH:-$(root_path /etc/nginx/sni
 
 usage() {
   cat <<'EOF'
-HServer native lifecycle installer
+Heyserver native lifecycle installer
 
 Supported hosts: Ubuntu 24.04+ or Debian 12+ with a reachable systemd manager
 and the apt-get, curl, openssl, tar, install, and sqlite3 lifecycle tools.
@@ -445,7 +445,7 @@ write_service_unit() {
   unit_tmp=$(mktemp) || return 1
   if ! cat >"$unit_tmp" <<EOF
 [Unit]
-Description=HServer Panel - Server Management GUI
+Description=Heyserver Panel - Server Management GUI
 After=network-online.target
 Wants=network-online.target
 
@@ -567,7 +567,7 @@ show_next_steps() {
 
   cat <<EOF
 
-HServer is ready for first access.
+Heyserver is ready for first access.
 
 1. From your workstation, create an encrypted SSH tunnel:
    ssh -N -L ${next_port}:127.0.0.1:${next_port} YOUR_SSH_USER@YOUR_SERVER
@@ -575,7 +575,7 @@ HServer is ready for first access.
 3. Sign in as ${next_admin} and complete onboarding.
 
 The initial password remains only in the root-readable file: ${ENV_FILE}
-Configure an HTTPS reverse proxy before exposing HServer directly to a network.
+Configure an HTTPS reverse proxy before exposing Heyserver directly to a network.
 
 Diagnostics: sudo ${DOCTOR_PATH} installed
 Lifecycle:   sudo ${LIFECYCLE_INSTALLER_PATH} --help
@@ -1171,9 +1171,9 @@ install_or_upgrade() {
 
   recovery_snapshot=
   if [ "$mode" = upgrade ]; then
-    [ -f "$BINARY_PATH" ] || die "HServer is not installed; use install first"
+    [ -f "$BINARY_PATH" ] || die "Heyserver is not installed; use install first"
   elif [ -e "$BINARY_PATH" ] || [ -e "$CLI_PATH" ]; then
-    die "HServer panel or CLI is already installed; use upgrade"
+    die "Heyserver panel or CLI is already installed; use upgrade"
   fi
 
   if [ "$PRESERVE_LAYOUT" != 1 ]; then
@@ -1412,7 +1412,7 @@ rollback_release() {
   prune_pre_upgrade_snapshots "$snapshot_retention"
   restore_snapshot "$target"
   if [ "$(snapshot_flag "$target" SERVICE_WAS_ACTIVE 1)" = 1 ]; then
-    wait_healthy || die "rollback restored $target, but HServer is still unhealthy"
+    wait_healthy || die "rollback restored $target, but Heyserver is still unhealthy"
   fi
   printf 'Rollback completed from snapshot: %s\n' "$target"
 }
@@ -1436,7 +1436,7 @@ uninstall_release() {
     rm -rf "$DATA_DIR"
   fi
 
-  printf '%s\n' "HServer panel, CLI, and service were removed."
+  printf '%s\n' "Heyserver panel, CLI, and service were removed."
   [ "$purge_config" = 1 ] || printf 'Configuration preserved: %s\n' "$CONFIG_DIR"
   [ "$purge_data" = 1 ] || printf 'Application data preserved: %s\n' "$DATA_DIR"
 }

@@ -435,13 +435,13 @@ export default function Firewall() {
       {statusQuery.isError && (
         <DependencyRemediation
           title="Firewall API is unavailable"
-          summary="HServer could not observe firewall readiness. Rules and mutating controls remain paused until the API responds."
+          summary="Heyserver could not observe firewall readiness. Rules and mutating controls remain paused until the API responds."
           error={statusQuery.error.message}
           retry={() => { void statusQuery.refetch() }}
           retrying={statusQuery.isFetching}
           steps={[
-            'Run the packaged HServer doctor and inspect HServer service logs.',
-            <>Verify <code>ufw status verbose</code> using the HServer service identity.</>,
+            'Run the packaged Heyserver doctor and inspect Heyserver service logs.',
+            <>Verify <code>ufw status verbose</code> using the Heyserver service identity.</>,
             'Retry detection after API and local command access are ready.',
           ]}
         />
@@ -451,8 +451,8 @@ export default function Firewall() {
         <DependencyRemediation
           title="UFW is not installed"
           summary={status.backend === 'iptables'
-            ? 'Legacy iptables rules remain visible below for observation only. HServer firewall mutations require UFW.'
-            : 'HServer firewall mutations require UFW, and no legacy iptables inventory is currently observable.'}
+            ? 'Legacy iptables rules remain visible below for observation only. Heyserver firewall mutations require UFW.'
+            : 'Heyserver firewall mutations require UFW, and no legacy iptables inventory is currently observable.'}
           state="not-configured"
           error={status.error}
           retry={() => { void statusQuery.refetch() }}
@@ -468,13 +468,13 @@ export default function Firewall() {
       {!statusQuery.isError && status?.state === 'unavailable' && (
         <DependencyRemediation
           title="UFW status is unavailable"
-          summary="UFW appears present, but HServer could not inspect it. Rules and mutating controls remain paused."
+          summary="UFW appears present, but Heyserver could not inspect it. Rules and mutating controls remain paused."
           error={status.error}
           retry={() => { void statusQuery.refetch() }}
           retrying={statusQuery.isFetching}
           steps={[
-            'Run the packaged HServer doctor and inspect HServer service logs.',
-            <>Run <code>ufw status verbose</code> with the HServer service identity and verify command permissions.</>,
+            'Run the packaged Heyserver doctor and inspect Heyserver service logs.',
+            <>Run <code>ufw status verbose</code> with the Heyserver service identity and verify command permissions.</>,
             'Retry detection after the reported local error is corrected.',
           ]}
         />

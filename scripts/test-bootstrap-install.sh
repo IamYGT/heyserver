@@ -56,7 +56,7 @@ if [ "$command" = install ]; then
   printf 'public-keys:%s\n' "${HSERVER_INSTALL_UPDATE_MANIFEST_PUBLIC_KEYS:-}" >>"${HSERVER_BOOTSTRAP_TEST_LOG:?}"
   printf 'defer-next-steps:%s\n' "${HSERVER_INSTALL_DEFER_NEXT_STEPS:-}" >>"${HSERVER_BOOTSTRAP_TEST_LOG:?}"
 elif [ "$command" = next-steps ]; then
-  printf '%s\n' 'HServer is ready for first access.'
+  printf '%s\n' 'Heyserver is ready for first access.'
   printf '%s\n' 'Open http://127.0.0.1:3085 in your browser.'
 fi
 EOF
@@ -164,9 +164,9 @@ run_agent_bootstrap() {
 }
 
 run_bootstrap >"$tmp/success.log"
-grep -q "Verified signed HServer release: $version (linux/$arch)" "$tmp/success.log"
-grep -q "HServer $version installation completed" "$tmp/success.log"
-grep -q 'HServer is ready for first access.' "$tmp/success.log"
+grep -q "Verified signed Heyserver release: $version (linux/$arch)" "$tmp/success.log"
+grep -q "Heyserver $version installation completed" "$tmp/success.log"
+grep -q 'Heyserver is ready for first access.' "$tmp/success.log"
 grep -q 'Open http://127.0.0.1:3085 in your browser.' "$tmp/success.log"
 diff -u <(printf '%s\n' \
   'doctor:preflight' \
@@ -180,8 +180,8 @@ diff -u <(printf '%s\n' \
 : >"$package_log"
 : >"$curl_log"
 run_agent_bootstrap >"$tmp/agent-success.log"
-grep -q "Verified signed HServer agent release: $version (linux/$arch)" "$tmp/agent-success.log"
-grep -q "HServer agent $version upgrade completed" "$tmp/agent-success.log"
+grep -q "Verified signed Heyserver agent release: $version (linux/$arch)" "$tmp/agent-success.log"
+grep -q "Heyserver agent $version upgrade completed" "$tmp/agent-success.log"
 grep -q 'agent-install:upgrade' "$package_log"
 grep -q 'agent-install-arg:--binary' "$package_log"
 if grep -Eq '^(doctor|install):' "$package_log"; then
@@ -212,7 +212,7 @@ vhosts_root="$tmp/provider-neutral-sites"
 : >"$package_log"
 : >"$curl_log"
 run_bootstrap --vhosts-root "$vhosts_root" >"$tmp/forward.log"
-grep -q "Verified signed HServer release: $version (linux/$arch)" "$tmp/forward.log"
+grep -q "Verified signed Heyserver release: $version (linux/$arch)" "$tmp/forward.log"
 diff -u <(printf '%s\n' \
   'doctor:preflight' \
   'install:install' \

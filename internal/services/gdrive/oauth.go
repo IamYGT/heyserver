@@ -486,7 +486,7 @@ try{var channel=new BroadcastChannel("hserver-gdrive-oauth");channel.postMessage
 setTimeout(function(){window.close();},3000);
 </script>`, stateJS)
 	}
-	return fmt.Sprintf(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>HServer — Google Drive</title>
+	return fmt.Sprintf(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Heyserver — Google Drive</title>
 <style>body{font-family:system-ui;background:#18181b;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
 .card{background:#27272a;border-radius:12px;padding:2rem;max-width:400px;text-align:center}
 h1{color:%s;font-size:1.25rem}</style></head><body><div class="card"><h1>%s</h1><p>%s</p>

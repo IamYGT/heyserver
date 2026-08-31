@@ -126,7 +126,7 @@ func TestFilesCommandsRejectUnsafeInputBeforeHTTP(t *testing.T) {
 		{args: []string{"files", "read", "/srv/files/../secret"}, want: "clean absolute path"},
 		{args: []string{"files", "save", "--content-file", contentFile, "/srv/files/app.conf"}, want: "explicit --confirm"},
 		{args: []string{"files", "save", "--confirm", "--node", "edge-1", "--content-file", contentFile, "/srv/files/app.conf"}, want: "64-character SHA-256"},
-		{args: []string{"files", "save", "--confirm", "--content-file", contentFile, "/etc/nginx/nginx.conf"}, want: "dedicated HServer management surface"},
+		{args: []string{"files", "save", "--confirm", "--content-file", contentFile, "/etc/nginx/nginx.conf"}, want: "dedicated Heyserver management surface"},
 		{args: []string{"files", "save", "--confirm", "--content-file", link, "/srv/files/app.conf"}, want: "not a symlink"},
 		{args: []string{"files", "create", "--confirm", "--type", "socket", "/srv/files/new"}, want: "file or directory"},
 		{args: []string{"files", "rename", "/srv/files/a", "/srv/files/b"}, want: "explicit --confirm"},

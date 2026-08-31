@@ -1,6 +1,6 @@
 # Changelog
 
-Notable HServer changes are recorded here using the
+Notable Heyserver changes are recorded here using the
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) structure. The project
 is pre-1.0; public release acceptance remains in progress.
 
@@ -451,7 +451,7 @@ is pre-1.0; public release acceptance remains in progress.
   responses, actionable backup inventories, and root-confined restore
   contracts. Ambiguous or oversized JSON is rejected, `write_mode` no longer
   pretends to enable writes, empty arrays remain non-null, restore symlink/path
-  escapes are refused, and fresh installations use the HServer-owned
+  escapes are refused, and fresh installations use the Heyserver-owned
   `${HSERVER_DATA_DIR}/pgm-backups` root while preserving existing configured
   paths during upgrades.
 - OpenAPI contract revision 44 completes the full 25-operation local Deploy API
@@ -846,12 +846,12 @@ is pre-1.0; public release acceptance remains in progress.
   schedule or writes over unobserved entries; list and mutation endpoints now
   return `503 Service Unavailable` with contextual remediation.
 - Backup schedule deletion now accepts only an exact, currently observed
-  HServer-managed line and preserves every unrelated crontab entry.
+  Heyserver-managed line and preserves every unrelated crontab entry.
 - Backup schedule retention is now named and displayed as a backup count,
   matching the pruning behavior; the misleading `retention_days` field remains
   only as a backwards-compatible API alias.
 - Invalid backup schedule cron expressions, types, retention counts, and
-  database metadata now return `400 Bad Request` before HServer reads or writes
+  database metadata now return `400 Bad Request` before Heyserver reads or writes
   any host crontab or runner file.
 - Snapshot scheduling now records the persisted restic daily-retention policy
   instead of silently hardcoding 14 in the cron metadata.

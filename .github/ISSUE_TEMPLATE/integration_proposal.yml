@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        HServer v1 accepts reviewed in-tree integrations. Read `docs/extension-boundary.md` first. Do not include credentials, private endpoints, environment files, or production inventory.
+        Heyserver v1 accepts reviewed in-tree integrations. Read `docs/extension-boundary.md` first. Do not include credentials, private endpoints, environment files, or production inventory.
   - type: textarea
     id: problem
     attributes:

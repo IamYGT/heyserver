@@ -138,12 +138,12 @@ export function SmartHealthCard({
         ) : error ? (
           <DependencyRemediation
             title="SMART health could not be observed"
-            summary="HServer could not resolve or inspect the physical disk behind the root filesystem. No health result is assumed."
+            summary="Heyserver could not resolve or inspect the physical disk behind the root filesystem. No health result is assumed."
             error={error.message}
             retry={retry}
             retrying={retrying}
             steps={[
-              'Verify lsblk, df, and smartctl are available to the HServer service.',
+              'Verify lsblk, df, and smartctl are available to the Heyserver service.',
               'Confirm the root storage exposes a physical disk and SMART data.',
               'Inspect the panel service log, then retry detection.',
             ]}
@@ -196,12 +196,12 @@ export function OverviewTab({ onExplore, onCleanup }: { onExplore: (path: string
       <div className="space-y-4">
         <DependencyRemediation
           title="Disk overview could not be observed"
-          summary="Mounted filesystems, capacity totals, and I/O counters remain unknown. HServer will not describe the failed inventory as an empty server."
+          summary="Mounted filesystems, capacity totals, and I/O counters remain unknown. Heyserver will not describe the failed inventory as an empty server."
           error={overviewQuery.error.message}
           retry={() => { void overviewQuery.refetch() }}
           retrying={overviewQuery.isFetching}
           steps={[
-            'Verify lsblk, df, and /proc/diskstats are readable by the HServer service.',
+            'Verify lsblk, df, and /proc/diskstats are readable by the Heyserver service.',
             'Inspect the panel service log for the original inventory failure.',
             'Retry detection after host storage visibility is restored.',
           ]}
@@ -342,8 +342,8 @@ export function DeepAnalysisCard() {
   })
 
   return <Card className="border-blue-500/20 bg-zinc-900/80">
-    <CardHeader className="flex-row items-start justify-between gap-4"><div><CardTitle className="flex items-center gap-2 text-sm text-zinc-200"><Search className="size-4 text-blue-400" /> Persistent deep analysis</CardTitle><p className="mt-1 text-[10px] text-zinc-500">Scans large paths in a low-priority systemd job. Results survive page refresh and HServer restarts.</p></div><div className="flex gap-2"><Button variant="ghost" size="xs" onClick={() => statusQuery.refetch()} disabled={statusQuery.isFetching}><RefreshCw className={`size-3 ${statusQuery.isFetching ? 'animate-spin' : ''}`} /> Refresh</Button><Button size="xs" disabled={statusUnavailable || active || startMutation.isPending} onClick={start}>{active || startMutation.isPending ? <Loader2 className="size-3 animate-spin" /> : <Search className="size-3" />}{status?.status === 'completed' || status?.status === 'failed' ? 'Run again' : 'Start analysis'}</Button></div></CardHeader>
-    <CardContent className="space-y-3">{statusQuery.isLoading ? <Skeleton className="h-20 bg-zinc-800/50" /> : statusQuery.isError ? <DependencyRemediation title="Deep analysis status could not be observed" summary="HServer cannot safely start another persistent scan until the current job state is known." error={statusQuery.error?.message} retry={() => statusQuery.refetch()} retrying={statusQuery.isFetching} steps={['Retry status detection.', 'Confirm the HServer service is reachable.', 'Verify the local analysis worker and systemd are available.']} /> : !status || status.status === 'idle' ? <p className="py-6 text-center text-xs text-zinc-600">No deep analysis has run yet.</p> : <><div className="flex flex-wrap items-center gap-2 text-[10px]"><span className={`rounded px-2 py-1 font-semibold uppercase ${status.status === 'completed' ? 'bg-emerald-500/10 text-emerald-400' : status.status === 'failed' ? 'bg-red-500/10 text-red-400' : 'bg-blue-500/10 text-blue-400'}`}>{status.status}</span><span className="text-zinc-500">{status.message}</span>{status.id && <span className="font-mono text-zinc-700">{status.id}</span>}{status.finished_at && <span className="text-zinc-600">Finished {new Date(status.finished_at).toLocaleString()}</span>}</div>{active && <div className="flex items-center gap-2 rounded-lg border border-blue-500/20 bg-blue-500/5 p-3 text-xs text-blue-300"><Loader2 className="size-4 animate-spin" />Scanning `/var/lib`, `/var/www`, `/opt` and `/root` in the background…</div>}{entries.length > 0 && <><p className="text-[10px] text-zinc-600">Top paths over 100 MiB. Parent and child paths may overlap; values are attribution, not a sum.</p><div className="max-h-[520px] overflow-auto rounded-xl border border-zinc-800">{entries.slice(0, 40).map((entry, index) => <div key={entry.path} className="relative flex items-center gap-3 overflow-hidden border-b border-zinc-800/60 px-3 py-2 last:border-0"><div className="absolute inset-y-0 left-0 bg-blue-500/[0.06]" style={{ width: `${Math.max(1, (entry.size / maxSize) * 100)}%` }} /><span className="relative w-6 shrink-0 text-right font-mono text-[9px] text-zinc-700">{index + 1}</span><span className="relative min-w-0 flex-1 truncate font-mono text-[10px] text-zinc-300" title={entry.path}>{entry.path}</span><span className="relative shrink-0 font-mono text-[10px] font-semibold text-blue-400">{formatBytes(entry.size)}</span></div>)}</div></>}{status.errors && status.errors.length > 0 && <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3 text-[10px] text-amber-400">{status.errors.join(' · ')}</div>}</>}</CardContent>
+    <CardHeader className="flex-row items-start justify-between gap-4"><div><CardTitle className="flex items-center gap-2 text-sm text-zinc-200"><Search className="size-4 text-blue-400" /> Persistent deep analysis</CardTitle><p className="mt-1 text-[10px] text-zinc-500">Scans large paths in a low-priority systemd job. Results survive page refresh and Heyserver restarts.</p></div><div className="flex gap-2"><Button variant="ghost" size="xs" onClick={() => statusQuery.refetch()} disabled={statusQuery.isFetching}><RefreshCw className={`size-3 ${statusQuery.isFetching ? 'animate-spin' : ''}`} /> Refresh</Button><Button size="xs" disabled={statusUnavailable || active || startMutation.isPending} onClick={start}>{active || startMutation.isPending ? <Loader2 className="size-3 animate-spin" /> : <Search className="size-3" />}{status?.status === 'completed' || status?.status === 'failed' ? 'Run again' : 'Start analysis'}</Button></div></CardHeader>
+    <CardContent className="space-y-3">{statusQuery.isLoading ? <Skeleton className="h-20 bg-zinc-800/50" /> : statusQuery.isError ? <DependencyRemediation title="Deep analysis status could not be observed" summary="Heyserver cannot safely start another persistent scan until the current job state is known." error={statusQuery.error?.message} retry={() => statusQuery.refetch()} retrying={statusQuery.isFetching} steps={['Retry status detection.', 'Confirm the Heyserver service is reachable.', 'Verify the local analysis worker and systemd are available.']} /> : !status || status.status === 'idle' ? <p className="py-6 text-center text-xs text-zinc-600">No deep analysis has run yet.</p> : <><div className="flex flex-wrap items-center gap-2 text-[10px]"><span className={`rounded px-2 py-1 font-semibold uppercase ${status.status === 'completed' ? 'bg-emerald-500/10 text-emerald-400' : status.status === 'failed' ? 'bg-red-500/10 text-red-400' : 'bg-blue-500/10 text-blue-400'}`}>{status.status}</span><span className="text-zinc-500">{status.message}</span>{status.id && <span className="font-mono text-zinc-700">{status.id}</span>}{status.finished_at && <span className="text-zinc-600">Finished {new Date(status.finished_at).toLocaleString()}</span>}</div>{active && <div className="flex items-center gap-2 rounded-lg border border-blue-500/20 bg-blue-500/5 p-3 text-xs text-blue-300"><Loader2 className="size-4 animate-spin" />Scanning `/var/lib`, `/var/www`, `/opt` and `/root` in the background…</div>}{entries.length > 0 && <><p className="text-[10px] text-zinc-600">Top paths over 100 MiB. Parent and child paths may overlap; values are attribution, not a sum.</p><div className="max-h-[520px] overflow-auto rounded-xl border border-zinc-800">{entries.slice(0, 40).map((entry, index) => <div key={entry.path} className="relative flex items-center gap-3 overflow-hidden border-b border-zinc-800/60 px-3 py-2 last:border-0"><div className="absolute inset-y-0 left-0 bg-blue-500/[0.06]" style={{ width: `${Math.max(1, (entry.size / maxSize) * 100)}%` }} /><span className="relative w-6 shrink-0 text-right font-mono text-[9px] text-zinc-700">{index + 1}</span><span className="relative min-w-0 flex-1 truncate font-mono text-[10px] text-zinc-300" title={entry.path}>{entry.path}</span><span className="relative shrink-0 font-mono text-[10px] font-semibold text-blue-400">{formatBytes(entry.size)}</span></div>)}</div></>}{status.errors && status.errors.length > 0 && <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3 text-[10px] text-amber-400">{status.errors.join(' · ')}</div>}</>}</CardContent>
   </Card>
 }
 
@@ -406,7 +406,7 @@ export function SpaceAnalysisTab({ initialPath = '/' }: { initialPath?: string }
             <div className="p-4 space-y-2">{[1,2,3,4,5].map(i => <Skeleton key={i} className="h-9 bg-zinc-800/50" />)}</div>
           ) : isError ? (
             <div className="p-4">
-              <DependencyRemediation title="Directory contents could not be observed" summary={`HServer did not return a successful listing for ${currentPath}. An unavailable path is not treated as an empty directory.`} error={error?.message} retry={() => refetch()} retrying={isFetching} steps={['Retry the directory listing.', 'Confirm the path still exists on this server.', 'Verify the HServer service account can read the path.']} />
+              <DependencyRemediation title="Directory contents could not be observed" summary={`Heyserver did not return a successful listing for ${currentPath}. An unavailable path is not treated as an empty directory.`} error={error?.message} retry={() => refetch()} retrying={isFetching} steps={['Retry the directory listing.', 'Confirm the path still exists on this server.', 'Verify the Heyserver service account can read the path.']} />
             </div>
           ) : entries.length === 0 ? (
             <p className="text-zinc-500 text-sm py-8 text-center">Empty directory</p>
@@ -641,7 +641,7 @@ function CleanupTab() {
 				{maintenanceRunning && (
 					<div className="mb-4 flex items-center gap-2 rounded-xl border border-blue-500/20 bg-blue-500/[0.06] px-4 py-3 text-xs text-blue-300">
 						<Loader2 className="size-4 shrink-0 animate-spin" />
-						<strong>{hostActionLabel(actionStatus.data?.action)} is running on HServer.</strong>
+						<strong>{hostActionLabel(actionStatus.data?.action)} is running on Heyserver.</strong>
 						<span className="text-blue-300/60">New cleanup requests are paused until it finishes.</span>
 					</div>
 				)}
@@ -817,7 +817,7 @@ export function MountsTab() {
         {isLoading ? (
           <Skeleton className="h-32 bg-zinc-800/50" />
         ) : isError ? (
-          <DependencyRemediation title="Mount configuration could not be observed" summary="HServer did not return a successful /etc/fstab inventory. An unavailable inventory is not treated as an empty configuration." error={error?.message} retry={() => refetch()} retrying={isFetching} steps={['Retry mount detection.', 'Confirm the HServer service is reachable.', 'Verify the service account can read /etc/fstab.']} />
+          <DependencyRemediation title="Mount configuration could not be observed" summary="Heyserver did not return a successful /etc/fstab inventory. An unavailable inventory is not treated as an empty configuration." error={error?.message} retry={() => refetch()} retrying={isFetching} steps={['Retry mount detection.', 'Confirm the Heyserver service is reachable.', 'Verify the service account can read /etc/fstab.']} />
         ) : !mounts || mounts.length === 0 ? (
           <p className="text-zinc-500 text-sm py-4 text-center">No mount entries found</p>
         ) : (

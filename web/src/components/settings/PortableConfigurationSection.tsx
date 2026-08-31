@@ -145,7 +145,7 @@ export function PortableConfigurationSection() {
       <CardContent className="space-y-5">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
           <div className="max-w-3xl">
-            <p className="text-sm text-zinc-300">Move safe panel preferences between self-hosted HServer installations with a versioned JSON file.</p>
+            <p className="text-sm text-zinc-300">Move safe panel preferences between self-hosted Heyserver installations with a versioned JSON file.</p>
             <p className="mt-1 text-xs leading-5 text-zinc-500">
               Schema v1 includes the panel label, admin email, notification preferences, mail endpoints, and timezone. It excludes users, passwords, tokens, 2FA, provider credentials, server inventory, audit history, and runtime data.
             </p>

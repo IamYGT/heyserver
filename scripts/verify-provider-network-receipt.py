@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate a protected HServer provider-network acceptance receipt."""
+"""Validate a protected Heyserver provider-network acceptance receipt."""
 
 from __future__ import annotations
 
@@ -67,7 +67,7 @@ class ReceiptError(ValueError):
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Verify a protected HServer provider-network acceptance receipt."
+        description="Verify a protected Heyserver provider-network acceptance receipt."
     )
     parser.add_argument("receipt", type=Path)
     parser.add_argument("--max-age", default="24h", metavar="DURATION")

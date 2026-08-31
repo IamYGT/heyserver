@@ -890,7 +890,7 @@ export default function Domains() {
           <CardContent className="p-5 text-center">
             <AlertTriangle className="mx-auto size-5 text-amber-400" />
             <p className="mt-2 text-sm text-amber-200">Domain creation is paused because installation paths are not configured.</p>
-            <p className="mt-1 text-xs text-zinc-500">Set absolute HSERVER_VHOSTS_ROOT, HSERVER_NGINX_SITES_AVAILABLE, HSERVER_NGINX_SITES_ENABLED, and HSERVER_NGINX_SNIPPETS_DIR values, then restart HServer.</p>
+            <p className="mt-1 text-xs text-zinc-500">Set absolute HSERVER_VHOSTS_ROOT, HSERVER_NGINX_SITES_AVAILABLE, HSERVER_NGINX_SITES_ENABLED, and HSERVER_NGINX_SNIPPETS_DIR values, then restart Heyserver.</p>
           </CardContent>
         </Card>
       )}
@@ -934,7 +934,7 @@ export default function Domains() {
               onDelete={(id) => {
                 const target = domains.find((item) => item.id === id)
                 const label = target?.name ?? id
-                if (window.confirm(`Remove ${label} from HServer? Site files will be kept.`)) {
+                if (window.confirm(`Remove ${label} from Heyserver? Site files will be kept.`)) {
                   deleteMutation.mutate(id)
                 }
               }}

@@ -230,7 +230,7 @@ export function RemoteProjectDomainsDialog({
         </div>}
         {provisionError && <Notice tone="red"><span role="alert">{provisionError}</span></Notice>}
 
-        {domains.length === 0 ? <div className="rounded-xl border border-dashed border-zinc-800 p-8 text-center text-xs text-zinc-600">No HServer-owned domain mappings were observed for this target.</div> : <div className="space-y-3">{domains.map((item) => {
+        {domains.length === 0 ? <div className="rounded-xl border border-dashed border-zinc-800 p-8 text-center text-xs text-zinc-600">No Heyserver-owned domain mappings were observed for this target.</div> : <div className="space-y-3">{domains.map((item) => {
         const observedHealth = health[item.domain]
         const tlsConfigured = item.tls_status !== 'not_configured'
         const itemBusy = (enableTLS.isPending && enableTLS.variables?.domain === item.domain) || (disableTLS.isPending && disableTLS.variables?.domain === item.domain) || (renewTLS.isPending && renewTLS.variables?.domain === item.domain) || (removeDomain.isPending && removeDomain.variables?.domain === item.domain)

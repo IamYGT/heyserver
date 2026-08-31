@@ -367,7 +367,7 @@ download_asset() {
     || die "download was empty or not a regular file: $url"
 }
 
-printf 'Downloading verified HServer trust assets from %s\n' "$release_base"
+printf 'Downloading verified Heyserver trust assets from %s\n' "$release_base"
 download_asset bootstrap-install.sh "$bootstrap_file"
 download_asset bootstrap-install.sh.sha256 "$bootstrap_checksum"
 download_asset bootstrap-install.sh.sig "$bootstrap_signature"

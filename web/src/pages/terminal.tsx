@@ -136,7 +136,7 @@ function TerminalPermissionState({
         </h2>
         <p className="mt-2 text-xs leading-5 text-[var(--color-muted-foreground)]">
           {loading
-            ? 'HServer is verifying the signed-in account before opening a writable shell.'
+            ? 'Heyserver is verifying the signed-in account before opening a writable shell.'
             : error
               ? 'The panel could not verify the signed-in account, so it did not open a terminal session.'
               : <>Writable terminal sessions require the <code>admin</code> role. The current <code>{role || 'unknown'}</code> role was not upgraded to a shell session.</>}
@@ -195,7 +195,7 @@ export function TerminalPage() {
   const selectedNodeHeartbeatAge = heartbeatAge(selectedNode?.last_seen_at, now);
   const serverLabel = remoteSelected
     ? selectedNode?.name || selectedNode?.hostname || node
-    : 'HServer';
+    : 'Heyserver';
   const terminalControlsReady = terminalPermitted && remoteTerminalReady;
 
   const selectNode = useCallback((next: string) => {
@@ -367,7 +367,7 @@ export function TerminalPage() {
               className="rounded-md border border-[var(--color-border)] bg-[var(--color-muted)] px-2 py-1 text-xs text-[var(--color-foreground)]"
               aria-label="Terminal server"
             >
-              <option value="local">HServer</option>
+              <option value="local">Heyserver</option>
               {nodesQuery.data?.map((candidate) => (
                 <option key={candidate.id} value={candidate.id}>
                   {candidate.name || candidate.hostname || candidate.id} · {!managedNodeOnline(candidate, now) ? 'Offline' : candidate.capabilities?.includes('terminal') ? 'Terminal ready' : 'Terminal disabled'}
@@ -612,7 +612,7 @@ export function TerminalPage() {
                       onClick={() => selectNode('local')}
                       className="rounded-lg bg-[var(--color-primary)] px-3 py-1.5 text-xs font-medium text-[var(--color-primary-foreground)] transition-opacity hover:opacity-90"
                     >
-                      Open HServer terminal
+                      Open Heyserver terminal
                     </button>
                   </div>
                 </div>

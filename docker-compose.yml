@@ -1,5 +1,5 @@
 ---
-# HServer Panel — Docker Compose
+# Heyserver Panel — Docker Compose
 # Usage:
 #   First run:        ./scripts/init-env.sh
 #   Local evaluation: docker compose up --build
@@ -86,7 +86,7 @@ services:
       - hserver-data:/app/data
 
     # Docker is an evaluation/contributor path. Host-management capabilities
-    # require the native install or a separately enrolled HServer agent.
+    # require the native install or a separately enrolled Heyserver agent.
 
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3085/api/health"]

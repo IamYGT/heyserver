@@ -1,13 +1,13 @@
 # S3-compatible encrypted snapshots
 
-HServer supports an explicit S3-compatible destination for incremental restic
+Heyserver supports an explicit S3-compatible destination for incremental restic
 snapshots. Google Drive remains available as a separate destination. Switching
 snapshot providers does not change local backup artifacts or upload their
 contents implicitly.
 
 ## Data and credential boundary
 
-- Restic encrypts repository data on the HServer host before it is uploaded.
+- Restic encrypts repository data on the Heyserver host before it is uploaded.
 - `HSERVER_RESTIC_PASSWORD` is shared only with the local restic process. Keep a
   durable copy outside the server; losing it makes the repository unrecoverable.
 - S3 access and secret key **values** are never accepted by the panel/API,
@@ -34,7 +34,7 @@ sudoedit /etc/hserver/secrets/s3-secret-key
 ```
 
 Each file must contain exactly one non-empty credential line. Set ownership to
-the HServer systemd service identity. Symlinks and any group/world permission
+the Heyserver systemd service identity. Symlinks and any group/world permission
 bits fail closed.
 
 Add the provider-neutral values to `/etc/hserver/hserver.env`:
@@ -60,7 +60,7 @@ fragments are rejected. `HSERVER_S3_BUCKET_LOOKUP` accepts:
 | `dns` | Virtual-host-style bucket lookup when provider DNS supports it |
 | `path` | Path-style lookup, commonly needed by local or compatible services |
 
-Restart HServer after changing installation configuration. Then select the
+Restart Heyserver after changing installation configuration. Then select the
 destination in the panel or CLI:
 
 ```bash
@@ -89,7 +89,7 @@ fresh read-only probe.
 ## Operations and current capability boundary
 
 Snapshot run, retention (`restic forget --prune`), inventory, and restore use
-the same selected S3 repository. Restore always extracts into HServer's fixed
+the same selected S3 repository. Restore always extracts into Heyserver's fixed
 local staging directory before an operator moves data into production paths.
 
 Use an observed hexadecimal identity from `snapshot list`. The CLI requires an
@@ -130,12 +130,12 @@ repository.
 The destructive **purge entire repository** operation remains available only
 for the Google Drive/rclone destination. S3 returns `422 Unprocessable Entity`
 and the panel hides that control. This avoids adding a broad provider SDK or
-claiming deletion that HServer cannot yet prove. Bucket/prefix deletion remains
+claiming deletion that Heyserver cannot yet prove. Bucket/prefix deletion remains
 an explicit provider-side operation in this release.
 
 ## Recovery checks
 
-1. Confirm `restic version` works in the HServer systemd environment.
+1. Confirm `restic version` works in the Heyserver systemd environment.
 2. Confirm both credential paths are absolute regular files with mode `0600`
    and correct ownership.
 3. Confirm the endpoint uses HTTPS, except for loopback MinIO.

@@ -868,7 +868,7 @@ function ScheduleSection({
         ) : error ? (
           <DependencyRemediation
             title="Cron zamanlama altyapısı kullanılamıyor"
-            summary="HServer mevcut kullanıcı crontab'ını güvenle okuyamadığı için zamanlama oluşturma, değiştirme ve silme kontrollerini duraklattı. Mevcut cron kayıtları boş kabul edilmez ve üzerine yazılmaz."
+            summary="Heyserver mevcut kullanıcı crontab'ını güvenle okuyamadığı için zamanlama oluşturma, değiştirme ve silme kontrollerini duraklattı. Mevcut cron kayıtları boş kabul edilmez ve üzerine yazılmaz."
             state="unavailable"
             error={error.message}
             steps={[

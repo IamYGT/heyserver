@@ -11,7 +11,7 @@ type DeployStatus string
 
 // DeployKind selects the installation-owned deployment executor. Script keeps
 // the existing explicit shell workflow; compose uses fixed Docker Compose
-// commands assembled by HServer rather than accepting an arbitrary command.
+// commands assembled by Heyserver rather than accepting an arbitrary command.
 type DeployKind string
 
 // DeployWebhookProvider selects the provider-specific signed delivery

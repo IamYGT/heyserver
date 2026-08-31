@@ -52,7 +52,7 @@ PROFILE_STATE_FILE=$PROFILE_DIR/$PROFILE_STATE_FILE_NAME
 
 usage() {
   cat <<'EOF'
-HServer managed-node agent lifecycle installer
+Heyserver managed-node agent lifecycle installer
 
 Usage:
   sudo ./hserver-agent-install.sh install [--binary PATH] --config PATH --token-file PATH
@@ -1212,7 +1212,7 @@ write_service_unit() {
   unit_tmp=$(mktemp)
   cat >"$unit_tmp" <<EOF
 [Unit]
-Description=HServer Managed Node Agent
+Description=Heyserver Managed Node Agent
 After=network-online.target
 Wants=network-online.target
 
@@ -1408,7 +1408,7 @@ install_agent() {
   source_binary=$1
   config_source=$2
   token_source=$3
-  [ ! -e "$BINARY_PATH" ] || die "HServer agent is already installed; use upgrade"
+  [ ! -e "$BINARY_PATH" ] || die "Heyserver agent is already installed; use upgrade"
   validate_binary "$source_binary"
   validate_config "$config_source"
   validate_token_file "$token_source"
@@ -1430,7 +1430,7 @@ install_agent() {
 
 upgrade_agent() {
   source_binary=$1
-  [ -f "$BINARY_PATH" ] || die "HServer agent is not installed; use install first"
+  [ -f "$BINARY_PATH" ] || die "Heyserver agent is not installed; use install first"
   validate_config "$CONFIG_FILE"
   snapshot_retention=$(validate_snapshot_retention "$CONFIG_FILE")
   validate_binary "$source_binary"
@@ -1506,7 +1506,7 @@ uninstall_agent() {
     assert_safe_path "$TOKEN_FILE"
     rm -f "$CONFIG_FILE" "$TOKEN_FILE"
   fi
-  printf '%s\n' "HServer agent binary and service were removed."
+  printf '%s\n' "Heyserver agent binary and service were removed."
   [ "$purge_config" = 1 ] || printf 'Configuration preserved: %s and %s\n' "$CONFIG_FILE" "$TOKEN_FILE"
 }
 

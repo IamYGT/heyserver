@@ -296,7 +296,7 @@ clean-dist:
 
 # ─── Native lifecycle ────────────────────────────────────────────────────────
 
-## install: Build and install HServer as a native systemd service
+## install: Build and install Heyserver as a native systemd service
 install: build
 	sudo ./scripts/hserver-install.sh install \
 		--binary "$(abspath $(BIN_PATH))" \
@@ -315,7 +315,7 @@ deploy: upgrade
 rollback:
 	sudo ./scripts/hserver-install.sh rollback
 
-## doctor: Validate the current host and native HServer installation
+## doctor: Validate the current host and native Heyserver installation
 doctor:
 	sudo ./scripts/hserver-doctor.sh installed
 
@@ -327,7 +327,7 @@ uninstall:
 
 ## help: Show available targets
 help:
-	@echo "HServer Panel — Makefile targets"
+	@echo "Heyserver Panel — Makefile targets"
 	@echo ""
 	@grep -E '^## ' Makefile | sed 's/^## /  /'
 	@echo ""

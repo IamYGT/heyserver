@@ -1,5 +1,5 @@
 #!/bin/bash
-# HServer Panel — Generic Node.js Deployment Script Template
+# Heyserver Panel — Generic Node.js Deployment Script Template
 # Runs inside the project directory after `git pull`.
 set -euo pipefail
 

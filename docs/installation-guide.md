@@ -1,4 +1,4 @@
-# HServer Panel — Installation Guide
+# Heyserver Panel — Installation Guide
 
 Target OS: **Ubuntu 24.04 LTS or newer, or Debian 12 or newer**
 Installed binary: `/usr/local/bin/hserver-panel`
@@ -101,7 +101,7 @@ smartctl --version
 ```
 
 Virtual disks, storage controllers, RAID, and roots spanning multiple physical
-disks may not expose one readable SMART device. HServer reports that state as
+disks may not expose one readable SMART device. Heyserver reports that state as
 unavailable and does not assume `/dev/sda` or choose one disk arbitrarily.
 
 The general Disk Overview does not require SMART. It recursively inventories
@@ -230,7 +230,7 @@ installation, or health failure returns non-zero and does not continue to the
 next lifecycle stage.
 
 `--vhosts-root` is optional and is accepted only for a fresh installation. Give
-it a provider-neutral absolute host path when HServer should enable local
+it a provider-neutral absolute host path when Heyserver should enable local
 document-root, file-management, site-backup, and snapshot capabilities from the
 first start. The installer creates a missing directory with mode `0755`, writes
 the host path unchanged to `HSERVER_VHOSTS_ROOT`, and never removes that tree on
@@ -255,7 +255,7 @@ architectures before it extracts or invokes any packaged lifecycle command.
 
 ### Agent-only signed bridge for an existing managed agent
 
-A host that already runs a managed HServer agent can receive a signed agent
+A host that already runs a managed Heyserver agent can receive a signed agent
 upgrade without installing the panel. The bridge accepts the same release
 manifest and public-key assets as a fresh installation:
 
@@ -351,7 +351,7 @@ Provisioning systems may seed the same verified update feed during first install
 with `HSERVER_INSTALL_UPDATE_MANIFEST_URL` and
 `HSERVER_INSTALL_UPDATE_MANIFEST_PUBLIC_KEYS`. These inputs affect only a newly
 generated environment file; an existing configuration is never overwritten.
-Before the first mutation, the installer records the existing HServer systemd
+Before the first mutation, the installer records the existing Heyserver systemd
 unit, enabled/active state, and every `hserver-*.conf` Nginx snippet. If binary
 installation, snippet installation, service activation, or the health check
 fails, it removes the attempted panel and CLI and restores that state. On a
@@ -370,7 +370,7 @@ sections. The core service can remain on its loopback listener without either
 provider.
 
 Release discovery is optional and provider-neutral. Set the stable URL of a
-schema-v1 HServer release manifest to enable the **About → Release updates**
+schema-v1 Heyserver release manifest to enable the **About → Release updates**
 card. A GitHub release repository can use its redirecting latest-release URL:
 
 ```bash
@@ -384,7 +384,7 @@ HSERVER_UPDATE_CLI_BINARY_PATH=/opt/hserver-panel/bin/hserverctl
 The panel reads at most 512 KiB, accepts only HTTP(S) artifact and release-note
 URLs without embedded credentials, and requires a lowercase 64-character
 SHA-256 for every artifact. Discovery is read-only and never downloads,
-installs, or restarts HServer automatically. With an empty public-key trust set,
+installs, or restarts Heyserver automatically. With an empty public-key trust set,
 the panel may report checksum-only discovery as `signature_status=not_configured`
 and expose version/checksum metadata for inspection. That status is never an
 update authorization: panel **Stage & verify**, **Install verified release**,
@@ -418,7 +418,7 @@ ls -la
 ### 2.3 Docker quick evaluation
 
 Docker can evaluate the UI, API, login, and persisted application state without
-installing HServer into the host's systemd. It is not the full-management
+installing Heyserver into the host's systemd. It is not the full-management
 installation mode and does not grant the container control of the host's nginx,
 firewall, runtimes, storage, or terminal.
 
@@ -463,7 +463,7 @@ the script again refuses to overwrite an existing file.
 
 Optional provider settings in the table below are intentionally empty unless
 shown as a core default. An empty value keeps that integration explicitly
-`not_configured`; HServer does not infer a provider endpoint, filesystem layout,
+`not_configured`; Heyserver does not infer a provider endpoint, filesystem layout,
 service name, or privileged identity from the host.
 
 **All environment variables:**
@@ -518,14 +518,14 @@ service name, or privileged identity from the host.
 | `HSERVER_PM2_ALLOWED_ROOTS` | — | No | Explicit comma-separated absolute roots accepted for PM2 deploy script and working-directory paths; empty keeps PM2 deployment `not_configured`, and `/` or relative entries fail closed |
 | `HSERVER_CERTBOT_BIN` | `certbot` | No | Certbot command name or absolute normalized path used for status, issuance, and renewal |
 | `HSERVER_CERTBOT_CONFIG_DIR` | `/etc/letsencrypt` | No | Absolute Certbot state root shared by certificate inventory and Project Domains |
-| `HSERVER_ACME_WEBROOT` | `/var/www/hserver-acme` | No | Absolute HTTP-01 challenge webroot served by HServer-owned project-domain Nginx configurations |
+| `HSERVER_ACME_WEBROOT` | `/var/www/hserver-acme` | No | Absolute HTTP-01 challenge webroot served by Heyserver-owned project-domain Nginx configurations |
 | `HSERVER_CERTBOT_CLOUDFLARE_CREDENTIALS` | — | No | Absolute path to a mode-`0600` Certbot Cloudflare INI file; required only for DNS-01 issuance and never returned by the API |
 | `HSERVER_GDRIVE_CLIENT_ID` | — | No | Optional Google OAuth client ID for the rclone-backed Drive destination |
 | `HSERVER_GDRIVE_CLIENT_SECRET` | — | No | Optional Google OAuth client secret; keep only in the protected environment file |
 | `HSERVER_GDRIVE_REDIRECT_URI` | derived | No | Explicit OAuth callback override when the public panel origin cannot be derived |
 | `HSERVER_RCLONE_BIN` | `rclone` | No | rclone command name or absolute binary path used by Google Drive operations |
 | `HSERVER_RESTIC_BIN` | `restic` | No | restic command name or absolute binary path used by encrypted snapshots |
-| `HSERVER_RESTIC_PASSWORD` | — | Snapshot only | Installation-owned restic repository password; keep a durable copy outside the HServer host |
+| `HSERVER_RESTIC_PASSWORD` | — | Snapshot only | Installation-owned restic repository password; keep a durable copy outside the Heyserver host |
 | `HSERVER_S3_ENDPOINT` | — | No | Optional absolute S3-compatible HTTPS endpoint; loopback HTTP is accepted for local MinIO only |
 | `HSERVER_S3_BUCKET` | — | No | Portable 3–63 character lowercase bucket name used by encrypted snapshots |
 | `HSERVER_S3_REGION` | — | No | Optional provider region passed to the S3 client |
@@ -536,7 +536,7 @@ service name, or privileged identity from the host.
 ### Protected notification channel configuration
 
 Email passwords, Telegram bot tokens, and Discord or Slack webhook URLs are
-write-only values in the panel API. HServer stores the complete channel config
+write-only values in the panel API. Heyserver stores the complete channel config
 under `${HSERVER_DATA_DIR}/notification-channel-secrets`: the directory is mode
 `0700`, each `channel-<id>.json` file is mode `0600`, and SQLite stores only a
 deterministic `file:channel-<id>.json` reference. List, detail, create, and update
@@ -549,19 +549,19 @@ channel JSON is moved in place to the protected directory before notification
 APIs become available. If the directory, reference, file type, permissions, or
 JSON is invalid, notification inventory and delivery remain unavailable while
 unrelated panel features continue to run. Repair the protected store and restart
-HServer; do not replace the failure with an empty channel inventory.
+Heyserver; do not replace the failure with an empty channel inventory.
 
 The packaged `backup-db.sh` workflow includes the SQLite database and every
 referenced protected notification config in one checksummed, mode-`0600`
 panel-state bundle. This bundle can move between self-hosted installations.
-The default `hserver-data` entry in an encrypted HServer snapshot remains the
+The default `hserver-data` entry in an encrypted Heyserver snapshot remains the
 broader full-data recovery path. A lifecycle upgrade keeps a pre-upgrade SQLite
 copy so its automatic rollback can restore the previous binary's compatible
 database representation.
 
 Domain creation uses the configured Nginx, vhost, Certbot, and ACME paths as one
 installation boundary. New domains without an existing certificate start with
-HTTP only. When certificate issuance is requested, HServer serves the HTTP-01
+HTTP only. When certificate issuance is requested, Heyserver serves the HTTP-01
 challenge from `HSERVER_ACME_WEBROOT` and enables HTTPS only after Certbot
 succeeds. When domain DNS creation and certificate issuance are requested
 together, the fixed order is local HTTP/runtime activation, Cloudflare address
@@ -574,7 +574,7 @@ The native release archive ships the complete `nginx-snippets/` set. Install
 and upgrade copy only the `hserver-*.conf` files into
 `HSERVER_NGINX_SNIPPETS_DIR`; unrelated operator snippets are not replaced.
 Upgrade snapshots include the managed snippet set, so automatic and manual
-rollback restore the exact previous HServer-owned files together with the
+rollback restore the exact previous Heyserver-owned files together with the
 binary and database snapshot.
 
 The domain wizard's runtime controls are applied during provisioning rather
@@ -598,7 +598,7 @@ Domain DNS provisioning remains disabled until both `HSERVER_CF_API_TOKEN` and
 `HSERVER_DOMAIN_DNS_ORIGIN` are set. The panel probes Cloudflare and reports the
 integration as **not configured**, **unavailable**, or **healthy**; it never
 falls back to a maintainer or detected public IP. Use a scoped token with Zone
-Read and DNS Edit permissions for the zones HServer may manage.
+Read and DNS Edit permissions for the zones Heyserver may manage.
 
 ---
 
@@ -679,7 +679,7 @@ The installed unit loads protected configuration from a separate file:
 
 ```ini
 [Unit]
-Description=HServer Panel - Server Management GUI
+Description=Heyserver Panel - Server Management GUI
 After=network-online.target
 Wants=network-online.target
 
@@ -719,7 +719,7 @@ journalctl -u hserver -f
 ## 7. Nginx Reverse Proxy (Optional)
 
 Nginx is not required for the core panel. Install it only when exposing
-HServer through a public hostname, terminating TLS, or managing Nginx-backed
+Heyserver through a public hostname, terminating TLS, or managing Nginx-backed
 domains:
 
 ```bash
@@ -729,7 +729,7 @@ nginx -v
 systemctl enable --now nginx
 ```
 
-HServer Panel listens on `127.0.0.1:3085`; the configuration below adds an
+Heyserver Panel listens on `127.0.0.1:3085`; the configuration below adds an
 Nginx reverse proxy with SSL termination.
 
 ```bash
@@ -804,7 +804,7 @@ The Nginx management page separately observes the executable and systemd unit:
 | systemd state unavailable | Reports **unavailable**; mutations stay disabled until service detection succeeds |
 | Unit active | Config test, guarded edits, enable/disable, and test-before-reload are available |
 
-The recovery action performs detection only. HServer does not install nginx,
+The recovery action performs detection only. Heyserver does not install nginx,
 start its unit, rewrite configuration, or reload the service without an
 explicit operator action.
 
@@ -831,7 +831,7 @@ ACME account, changes DNS, or issues a certificate.
 
 Compose **Project Domains** use Certbot's webroot authenticator instead of
 allowing Certbot to edit Nginx. Keep `HSERVER_CERTBOT_CONFIG_DIR` and
-`HSERVER_ACME_WEBROOT` on absolute installation-owned paths. HServer creates
+`HSERVER_ACME_WEBROOT` on absolute installation-owned paths. Heyserver creates
 the challenge root when an admin requests TLS, but public DNS must already
 resolve to this host and inbound port 80 must reach the generated virtual host.
 The built-in maintenance pass checks managed project certificates at startup
@@ -848,14 +848,14 @@ install -m 0600 /dev/null /etc/hserver/secrets/certbot-cloudflare.ini
 
 Populate that file locally using Certbot's `dns_cloudflare_api_token` format;
 do not print the token or place it in Git. Then set only its path in the
-protected HServer environment:
+protected Heyserver environment:
 
 ```dotenv
 HSERVER_CERTBOT_BIN=certbot
 HSERVER_CERTBOT_CLOUDFLARE_CREDENTIALS=/etc/hserver/secrets/certbot-cloudflare.ini
 ```
 
-Restart HServer explicitly after changing its protected environment and use
+Restart Heyserver explicitly after changing its protected environment and use
 **Retry detection**. The status API exposes only configured/readable booleans,
 not the path or credential value.
 
@@ -882,7 +882,7 @@ Verify the timer is active:
 systemctl status certbot.timer
 ```
 
-HServer renews one named certificate with non-interactive `certbot renew
+Heyserver renews one named certificate with non-interactive `certbot renew
 --cert-name DOMAIN`. Issuance accepts only `http-01` or `dns-01`; unknown
 challenge types are rejected before Certbot runs. DNS-01 always uses the
 installation-owned credential path and never accepts an arbitrary path from a
@@ -899,7 +899,7 @@ and `HSERVER_ADMIN_PASS`.
 1. Open `https://hserver.yourdomain.com` in your browser
 2. Log in with the email and password from the service environment
 3. Navigate to **Settings → Users** and change the admin password
-4. To carry non-secret preferences from another HServer installation, use
+4. To carry non-secret preferences from another Heyserver installation, use
    **Settings → Portable Configuration** and follow the
    [schema-v1 import workflow](portable-configuration.md). This is an
    allowlisted overlay, not a panel-state restore.
@@ -915,7 +915,7 @@ and `HSERVER_ADMIN_PASS`.
 
 ## 10. PM2 Setup for Node.js Apps (Optional)
 
-HServer Panel can manage Node.js processes through PM2. PM2 **must run
+Heyserver Panel can manage Node.js processes through PM2. PM2 **must run
 as a non-root user** — the panel communicates with it via `sudo`-wrapped
 commands or the `PM2_HOME` environment variable pointing to the user's
 PM2 daemon.
@@ -932,7 +932,7 @@ su - deploy -c "pm2 startup systemd -u deploy --hp /home/deploy"
 systemctl status pm2-deploy
 ```
 
-Configure HServer in `/etc/hserver/hserver.env` with the same unprivileged
+Configure Heyserver in `/etc/hserver/hserver.env` with the same unprivileged
 application user and an explicit path allowlist:
 
 ```dotenv
@@ -946,14 +946,14 @@ If PM2 was installed through NVM, set `HSERVER_PM2_BIN` to its absolute path,
 for example `/home/deploy/.nvm/versions/node/v22.14.0/bin/pm2`. Leave
 `HSERVER_PM2_HOME` empty only when PM2's normal home discovery is correct. When
 `HSERVER_PM2_USER` is empty, the PM2 API explicitly reports the integration as
-not configured; HServer never starts a root-owned PM2 daemon silently. Deploy
+not configured; Heyserver never starts a root-owned PM2 daemon silently. Deploy
 scripts and working directories must remain below one of the absolute
 `HSERVER_PM2_ALLOWED_ROOTS`. Leaving that variable empty keeps PM2 deployment
-`not_configured`; HServer never falls back to `HSERVER_VHOSTS_ROOT`, `/home`, or
+`not_configured`; Heyserver never falls back to `HSERVER_VHOSTS_ROOT`, `/home`, or
 `/opt`. Set the variable explicitly for every installation, including when a
 custom `HSERVER_VHOSTS_ROOT` such as `/srv/hserver/sites` is used.
 
-The default native unit runs HServer as root because host-management actions
+The default native unit runs Heyserver as root because host-management actions
 need elevated access; it can switch to `deploy` without a sudoers addition.
 If you deliberately run a custom unit as a dedicated `hserver` account, allow
 only the matching PM2 command with `visudo -f /etc/sudoers.d/hserver-pm2` and
@@ -970,7 +970,7 @@ and service recovery checks before offering read-only detection retry.
 
 ### PHP-FPM runtime management
 
-PHP-FPM is optional for the core panel and required only when HServer manages
+PHP-FPM is optional for the core panel and required only when Heyserver manages
 PHP sites and pools. Install each desired version from repositories supported
 by the target Ubuntu release. For the Ubuntu 24.04 default runtime:
 
@@ -982,18 +982,18 @@ test -d /etc/php/8.3/fpm
 systemctl status php8.3-fpm --no-pager
 ```
 
-HServer detects versioned configuration roots below
+Heyserver detects versioned configuration roots below
 `HSERVER_PHP_CONFIG_ROOT` (default `/etc/php`) and locates matching
 `php-fpm<VERSION>` binaries below `HSERVER_PHP_BINARY_ROOT` (default
 `/usr/sbin`) for PHP-FPM readiness and management. These are installation-local
 absolute paths, not provider-specific assumptions. An explicitly configured
-relative value fails closed: HServer does not reinterpret it relative to the
+relative value fails closed: Heyserver does not reinterpret it relative to the
 process directory or silently fall back to `/etc/php` or `/usr/sbin`; PHP
 readiness and management remain unavailable until an absolute local root is
 configured. If no version is detected, the PHP page reports **not configured**
 and keeps runtime controls hidden. If inventory detection fails, it reports
 **unavailable**, preserves the error, and offers a read-only retry after the
-operator checks the HServer logs, configuration access, binary, and matching
+operator checks the Heyserver logs, configuration access, binary, and matching
 systemd unit.
 
 PHP pool defaults, security-profile document roots, and Composer project access
@@ -1030,7 +1030,7 @@ named-checkconf -z
 systemctl status bind9 --no-pager
 ```
 
-HServer observes `/etc/bind/named.conf.local`, `named-checkconf`,
+Heyserver observes `/etc/bind/named.conf.local`, `named-checkconf`,
 `named-checkzone`, `rndc`, and the `named` or `bind9` unit. It does not install
 packages, create a default zone, start a unit, or replace existing BIND files
 during detection. The DNS page classifies readiness as `healthy`,
@@ -1052,17 +1052,17 @@ state; it never mutates the host.
 Zone create/delete transactions persist a protected recovery journal below
 `${HSERVER_DATA_DIR}/bind/`. It contains pre-change BIND file snapshots, so the
 data directory must remain private and backed up; do not copy the journal into
-public diagnostics. HServer checks it before starting the HTTP router. An
+public diagnostics. Heyserver checks it before starting the HTTP router. An
 interrupted pre-reload transaction is rolled back and BIND is reloaded, while a
 transaction already marked reloaded is finalized. If recovery cannot finish,
 the DNS page reports **BIND Recovery Required** and keeps all DNS mutations
-disabled. Repair BIND validation or `rndc reload`, then restart HServer; never
+disabled. Repair BIND validation or `rndc reload`, then restart Heyserver; never
 delete the pending journal to bypass the action gate.
 
 ### PostgreSQL and MariaDB management
 
 Database inventory and management use the host's local command-line clients;
-HServer does not download a client or collect an arbitrary database password.
+Heyserver does not download a client or collect an arbitrary database password.
 Install only the engines and clients that this host will manage:
 
 ```bash
@@ -1094,7 +1094,7 @@ service, or changes authentication.
 
 ### Local firewall management
 
-HServer's local firewall mutations use UFW. Install it from the target Ubuntu
+Heyserver's local firewall mutations use UFW. Install it from the target Ubuntu
 release before enabling firewall controls:
 
 ```bash
@@ -1105,7 +1105,7 @@ ufw status verbose
 ```
 
 Before enabling UFW on a remote host, add and verify the allow rule for the
-actual management port and source used by that installation. HServer does not
+actual management port and source used by that installation. Heyserver does not
 install or enable UFW during readiness detection.
 
 `GET /api/firewall/status` distinguishes a healthy UFW installation from
@@ -1144,7 +1144,7 @@ observed as healthy.
 Stalwart is not configured by default. Use this section only when Stalwart is
 explicitly installed and enabled on the target host. Set the API endpoint,
 credentials, service unit, configuration path, and binary path to values from
-that installation; HServer does not infer them. The `/opt/stalwart/...` values
+that installation; Heyserver does not infer them. The `/opt/stalwart/...` values
 below are an explicit opt-in example, not defaults:
 
 1. Obtain a Stalwart management API key from the Stalwart admin panel.
@@ -1180,7 +1180,7 @@ systemctl daemon-reload && systemctl restart hserver
    delivery statistics.
 
 Empty settings keep Mail `not_configured`; a supplied URL or local path alone
-does not prove `healthy`. HServer reports a failed configured endpoint or local
+does not prove `healthy`. Heyserver reports a failed configured endpoint or local
 discovery source as `unavailable`, preserves that state, and disables start,
 stop, and restart. The Mail overview lists the discovery keys, configured-unit
 check, and a read-only detection retry; it never guesses a service name or
@@ -1219,19 +1219,19 @@ recovery action only repeats detection; it never creates or broadens a token.
 
 ## Google Drive Integration (Optional)
 
-Google Drive offsite backups require `rclone` on the HServer host plus a Google
+Google Drive offsite backups require `rclone` on the Heyserver host plus a Google
 OAuth client owned by the installation:
 
 1. Install `rclone` from packages supported by the host distribution.
-2. Run `rclone version` as, or in the environment of, the HServer service
+2. Run `rclone version` as, or in the environment of, the Heyserver service
    identity.
 3. Set `HSERVER_GDRIVE_CLIENT_ID`, `HSERVER_GDRIVE_CLIENT_SECRET`, and, only
    when origin discovery is unsuitable, `HSERVER_GDRIVE_REDIRECT_URI` in
    `/etc/hserver/hserver.env`.
-4. Restart HServer, open **Backups → Google Drive**, and retry detection before
+4. Restart Heyserver, open **Backups → Google Drive**, and retry detection before
    starting OAuth.
 
-HServer never installs rclone automatically. When rclone is missing, the panel
+Heyserver never installs rclone automatically. When rclone is missing, the panel
 shows installation-owned recovery guidance and keeps the Google connection
 button disabled. OAuth credentials may still be prepared, but the provider
 flow cannot start until dependency detection succeeds.
@@ -1248,9 +1248,9 @@ HSERVER_RESTIC_PASSWORD=replace-with-a-unique-generated-secret
 ```
 
 Generate the password locally with `openssl rand -base64 32`, store it in a
-separate durable password vault, then place it in the protected HServer
+separate durable password vault, then place it in the protected Heyserver
 environment file. Losing this value makes the encrypted repository
-unrecoverable; HServer cannot display or recreate it.
+unrecoverable; Heyserver cannot display or recreate it.
 
 When restic is missing, the panel keeps snapshot and schedule actions disabled
 and explains the supported-package and `HSERVER_RESTIC_BIN` recovery path. When
@@ -1259,8 +1259,8 @@ retry remains read-only and never installs a package or generates a secret.
 
 ### S3-compatible encrypted snapshot destination
 
-HServer can use an installation-owned S3-compatible service or local MinIO
-instead of Google Drive. Restic encrypts repository content on the HServer host
+Heyserver can use an installation-owned S3-compatible service or local MinIO
+instead of Google Drive. Restic encrypts repository content on the Heyserver host
 before upload; the provider receives encrypted repository objects. Configure
 the provider without placing credential values in panel settings or SQLite:
 
@@ -1273,8 +1273,8 @@ HSERVER_S3_SECRET_KEY_FILE=/etc/hserver/secrets/s3-secret-key
 HSERVER_S3_BUCKET_LOOKUP=auto
 ```
 
-Create both credential files as absolute, regular files owned by the HServer
-service identity and set their mode to `0600`. HServer rejects symlinks,
+Create both credential files as absolute, regular files owned by the Heyserver
+service identity and set their mode to `0600`. Heyserver rejects symlinks,
 group/world-readable files, empty values, multiline values, and oversized
 files. Restart the service, then choose **Backups → Snapshot hedefi →
 S3-compatible / MinIO** or run:
@@ -1294,7 +1294,7 @@ healthy first-run state only when the remote endpoint accepted the repository
 request. Repository purge is deliberately unavailable for S3 in this release;
 snapshot creation, retention, listing, and restore remain supported.
 
-Restore always extracts into HServer's fixed local staging directory. It
+Restore always extracts into Heyserver's fixed local staging directory. It
 requires an observed 8–64 character hexadecimal snapshot identity and an
 explicit scope:
 
@@ -1315,7 +1315,7 @@ provider-neutral setup and recovery contract.
 ## Local Docker Compose Deployments
 
 Native installations can register an existing local Git checkout as a Docker
-Compose deployment target. HServer validates the target with a read-only
+Compose deployment target. Heyserver validates the target with a read-only
 preflight and executes fixed `docker compose config` and `docker compose up`
 arguments; Compose mode does not accept an arbitrary command. Docker Engine and
 the Compose v2 plugin are optional and are reported as unavailable when absent.
@@ -1332,7 +1332,7 @@ The native panel reads reusable target presets from the fixed
 seeds the provider-neutral Compose and Node.js starter templates when that
 directory does not exist. An existing directory—including an intentionally
 empty one—is never populated or overwritten, and upgrades never change its
-files. A failed initial installation removes the seeded directory when HServer
+files. A failed initial installation removes the seeded directory when Heyserver
 created it as part of that attempt.
 
 When the directory is absent or empty, the API and panel report
@@ -1364,9 +1364,9 @@ are listed for repair.
 
 ## 13. Enroll a Managed Server Agent
 
-Each additional server connects outbound to the HServer HTTPS origin. The hub
+Each additional server connects outbound to the Heyserver HTTPS origin. The hub
 does not need inbound SSH access to the managed server. Register a
-provider-neutral node ID through `POST /api/nodes` using an authenticated HServer
+provider-neutral node ID through `POST /api/nodes` using an authenticated Heyserver
 admin session; the response contains the enrollment token exactly once.
 
 On the managed server, extract the release archive for its CPU architecture.
@@ -1405,7 +1405,7 @@ The resulting environment supports:
 
 | Variable | Required | Purpose |
 |---|---|---|
-| `HSERVER_AGENT_HUB_URL` | Yes | Public or private HTTP(S) origin of this HServer installation |
+| `HSERVER_AGENT_HUB_URL` | Yes | Public or private HTTP(S) origin of this Heyserver installation |
 | `HSERVER_AGENT_NODE_ID` | Yes | Node ID used during registration |
 | `HSERVER_AGENT_TOKEN_FILE` | Yes* | Authoritative absolute destination of the root-readable one-time token file; default `/etc/hserver-agent.token` |
 | `HSERVER_AGENT_TOKEN` | Runtime only | Direct-launch fallback when no token-file setting is used; rejected by the lifecycle installer |
@@ -1446,7 +1446,7 @@ The resulting environment supports:
 | `HSERVER_AGENT_BACKUP_PLANS_FILE` | No | Absolute JSON plan file; default `/etc/hserver/backup-plans.json` |
 | `HSERVER_AGENT_ALLOW_DEPLOY_READ` | No | `true` exposes bounded metadata for locally configured deploy plans; default `false` |
 | `HSERVER_AGENT_ALLOW_DEPLOY_ACTIONS` | No | `true` runs only plan-declared `preflight`, `deploy`, `restart`, or `rollback` argv; requires deploy read |
-| `HSERVER_AGENT_ALLOW_DEPLOY_DOMAIN_READ` | No | `true` exposes only HServer-owned project-domain mappings, observed TLS state, and loopback health probes; requires deploy read |
+| `HSERVER_AGENT_ALLOW_DEPLOY_DOMAIN_READ` | No | `true` exposes only Heyserver-owned project-domain mappings, observed TLS state, and loopback health probes; requires deploy read |
 | `HSERVER_AGENT_ALLOW_DEPLOY_DOMAIN_ACTIONS` | No | `true` enables fixed create/delete/TLS operations using the local plan port; requires project-domain read |
 | `HSERVER_AGENT_DEPLOY_PLANS_FILE` | No | Absolute JSON plan file; default `/etc/hserver/deploy-plans.json` |
 | `HSERVER_AGENT_DEPLOY_ACME_WEBROOT` | No | Absolute HTTP-01 challenge root; default `/var/www/hserver-acme` |
@@ -1483,7 +1483,7 @@ The resulting environment supports:
 | `HSERVER_AGENT_CRON_SHELL` | No | Absolute shell for rendered/manual jobs; default `/bin/bash` |
 | `HSERVER_AGENT_CRON_SERVICE` | No | Local systemd cron unit; default `cron.service` |
 | `HSERVER_AGENT_ALLOW_FIREWALL_READ` | No | `true` enables bounded IPv4 INPUT and managed-chain inventory; default `false` |
-| `HSERVER_AGENT_ALLOW_FIREWALL_WRITE` | No | `true` enables revision-guarded HServer-chain mutations; requires firewall read |
+| `HSERVER_AGENT_ALLOW_FIREWALL_WRITE` | No | `true` enables revision-guarded Heyserver-chain mutations; requires firewall read |
 | `HSERVER_AGENT_IPTABLES_BINARY` | No | Absolute local iptables executable; default `/usr/sbin/iptables` |
 | `HSERVER_AGENT_FIREWALL_SAVE_BINARY` | No | Absolute persistence executable invoked with fixed `save`; default `/usr/sbin/netfilter-persistent` |
 | `HSERVER_AGENT_FIREWALL_LOCK_PATH` | No | Cross-process mutation lock; default `/run/lock/hserver-firewall.lock` |
@@ -1541,7 +1541,7 @@ Project-domain management is independently opt-in. Set `host_port` to the
 application port already published on `127.0.0.1`, then enable
 `HSERVER_AGENT_ALLOW_DEPLOY_DOMAIN_READ` and, when mutations are wanted,
 `HSERVER_AGENT_ALLOW_DEPLOY_DOMAIN_ACTIONS`. The central panel never supplies
-an upstream. The agent creates only HServer-owned Nginx files, validates the
+an upstream. The agent creates only Heyserver-owned Nginx files, validates the
 complete Nginx configuration before reload, restores the previous state after
 a failed mutation, and reads the actual X.509 certificate before reporting TLS
 as healthy. HTTP-01 issuance requires the domain's public A/AAAA records to
@@ -1782,7 +1782,7 @@ updates** as an admin:
 If discovery reports `checksum only`, `signature_status=not_configured`, or any
 other unverified status, the release card remains read-only: no panel stage,
 install, or lifecycle scheduling mutation is accepted. The same fail-closed
-gate applies to the managed-agent upgrade action. HServer has no automatic or
+gate applies to the managed-agent upgrade action. Heyserver has no automatic or
 unattended updater; updates occur only after an explicit action.
 
 The equivalent packaged-CLI path uses the same API, configured trust set, and
@@ -1797,10 +1797,10 @@ hserverctl updates stage-status
 
 The second action schedules `hserver-panel-upgrade` through a separate transient
 systemd unit after a short delay, so the HTTP response reaches the browser
-before HServer stops itself. The detached command receives only server-resolved,
+before Heyserver stops itself. The detached command receives only server-resolved,
 validated installed paths; the API request cannot supply a filesystem target.
 `HSERVER_UPDATE_PANEL_BINARY_PATH` and `HSERVER_UPDATE_CLI_BINARY_PATH` take
-precedence. Without them, HServer observes its own executable and uses a sibling
+precedence. Without them, Heyserver observes its own executable and uses a sibling
 `hserverctl`; a process that is not running as `hserver-panel` retains the
 native `/usr/local/bin` defaults. Both destinations must already be absolute,
 canonical, regular executables with the expected basename. Symlinks, symlinked
@@ -1840,7 +1840,7 @@ sudo sqlite3 /srv/hserver-custom/state/metrics.db \
 sudo sqlite3 /root/hserver-pre-update.db 'PRAGMA integrity_check;'
 ```
 
-The protected stage contains the complete fixed HServer Nginx snippet set as
+The protected stage contains the complete fixed Heyserver Nginx snippet set as
 well as the panel, CLI, installer, and doctor. Each selected asset is hashed
 when extracted and revalidated before scheduling, so the detached installer has
 the complete package without trusting a retained compressed archive.
@@ -1959,7 +1959,7 @@ sudo ./backup-db.sh
 # Source checkout: sudo ./scripts/backup-db.sh
 ```
 
-Validate a backup without stopping or changing HServer:
+Validate a backup without stopping or changing Heyserver:
 
 ```bash
 sudo ./restore-db.sh validate /var/lib/hserver/backups/db/hserver-TIMESTAMP-ID.panel-backup.tar.gz
@@ -1972,7 +1972,7 @@ sudo ./restore-db.sh restore /var/lib/hserver/backups/db/hserver-TIMESTAMP-ID.pa
 ```
 
 The restore command does not return merely because systemd reports the service
-as active. It waits for the local HServer health endpoint before declaring the
+as active. It waits for the local Heyserver health endpoint before declaring the
 restore successful. Custom ports are read from `HSERVER_PORT`; advanced layouts
 can override the probe with `HSERVER_RESTORE_HEALTH_URL`. If the health probe
 does not succeed within `HSERVER_RESTORE_ACTIVE_TIMEOUT` seconds (default 20),
@@ -2012,7 +2012,7 @@ the artifact as files-only, changes the source payload, restores it, and
 compares its original SHA-256. The gate requires the preflight to report
 `filesRollback=true`, then verifies that restore created a readable
 `pre-restore-...-files.tar.gz` recovery archive, exposed it as a completed local
-backup, and accepted it as a restorable files artifact. HServer automatically
+backup, and accepted it as a restorable files artifact. Heyserver automatically
 uses that archive to restore overwritten paths if extraction fails and removes
 paths created by the failed extraction. A successful restore keeps the recovery
 archive so an operator can manually reverse overwritten file content after
@@ -2029,13 +2029,13 @@ candidate installation's connection, OS-role, network, and protected
 credential-file checks.
 
 PostgreSQL database backups carry an encoded restore target inside the SQL
-stream. HServer rejects target metadata that disagrees with the artifact name,
+stream. Heyserver rejects target metadata that disagrees with the artifact name,
 passes the same configured role, host, port, and protected pgpass locator to
 both dump and restore clients, and restores a single-database dump only into its
 original database. Dumps include idempotent clean statements, so restore
 replaces the backed-up schema state instead of silently mixing it with newer
 tables. Before either a database-only or full-bundle restore mutates the target,
-HServer automatically writes a `pre-restore-...sql.gz` recovery point to the
+Heyserver automatically writes a `pre-restore-...sql.gz` recovery point to the
 backup directory. A failed database stage, or a later failed files stage in a
 full restore, triggers an automatic database rollback from that artifact. Keep
 the recovery point until application verification passes. If `HSERVER_PG_PASSFILE`
@@ -2045,8 +2045,8 @@ group- or world-readable.
 MariaDB and MySQL use the same recovery workflow. Set
 `HSERVER_MYSQL_DEFAULTS_FILE` to a client option file containing the connection
 settings needed by both `mariadb-dump`/`mysqldump` and `mariadb`/`mysql`.
-HServer passes only that file path as the first client option; credentials stay
-out of process arguments. The file should be owned by the HServer service
+Heyserver passes only that file path as the first client option; credentials stay
+out of process arguments. The file should be owned by the Heyserver service
 account and have mode `0600`.
 
 The Backups page runs `GET /api/backups/restore/{id}/validate` before enabling

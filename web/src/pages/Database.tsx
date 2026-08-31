@@ -725,7 +725,7 @@ function DatabaseSourceRemediation({ engine, source, retry, retrying }: Database
     return (
       <DependencyRemediation
         title={`${label} client is not installed`}
-        summary={`HServer cannot inspect or manage ${label} until its local command-line client is available.`}
+        summary={`Heyserver cannot inspect or manage ${label} until its local command-line client is available.`}
         state="not-configured"
         error={source.error}
         retry={retry}
@@ -769,7 +769,7 @@ function DatabaseSourceRemediation({ engine, source, retry, retrying }: Database
     return (
       <DependencyRemediation
         title={`${label} management authentication failed`}
-        summary={`HServer reached ${label}, but the installation-owned local management identity was rejected. No password is collected or displayed here.`}
+        summary={`Heyserver reached ${label}, but the installation-owned local management identity was rejected. No password is collected or displayed here.`}
         error={source.error}
         retry={retry}
         retrying={retrying}
@@ -789,13 +789,13 @@ function DatabaseSourceRemediation({ engine, source, retry, retrying }: Database
   return (
     <DependencyRemediation
       title={`${label} inventory is unavailable`}
-      summary={`HServer could not classify the local ${label} inventory failure. Mutating controls remain paused until detection succeeds.`}
+      summary={`Heyserver could not classify the local ${label} inventory failure. Mutating controls remain paused until detection succeeds.`}
       error={source.error}
       retry={retry}
       retrying={retrying}
       steps={[
-        'Run the packaged HServer doctor and inspect the reported database check.',
-        `Verify the local ${label} client, service, socket, and HServer logs.`,
+        'Run the packaged Heyserver doctor and inspect the reported database check.',
+        `Verify the local ${label} client, service, socket, and Heyserver logs.`,
         'Retry detection after correcting the reported error.',
       ]}
     />
@@ -896,12 +896,12 @@ export default function DatabasePage() {
       {databasesQuery.isError && (
         <DependencyRemediation
           title="Database API is unavailable"
-          summary="HServer could not load database inventory. Metrics and mutating controls remain paused until the API responds."
+          summary="Heyserver could not load database inventory. Metrics and mutating controls remain paused until the API responds."
           error={databasesQuery.error.message}
           retry={() => { void databasesQuery.refetch() }}
           retrying={databasesQuery.isFetching}
           steps={[
-            'Run the packaged HServer doctor and inspect HServer service logs.',
+            'Run the packaged Heyserver doctor and inspect Heyserver service logs.',
             `Verify the selected ${engine === 'postgresql' ? 'PostgreSQL' : 'MariaDB'} client locally.`,
             'Retry detection after the API and local client are ready.',
           ]}

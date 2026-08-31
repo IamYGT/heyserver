@@ -1162,7 +1162,7 @@
         "non_secret_keys": [],
         "secret_key_names": [],
         "secret_file_refs": [],
-        "boundary": "BIND binaries, configuration, zone files, validation tools, and reload client are observed on the local host; HServer stores no provider credential and has no managed-node substitute."
+        "boundary": "BIND binaries, configuration, zone files, validation tools, and reload client are observed on the local host; Heyserver stores no provider credential and has no managed-node substitute."
       },
       "status": {
         "canonical_states": [

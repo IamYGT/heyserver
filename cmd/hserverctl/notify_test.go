@@ -171,7 +171,7 @@ func TestBuildNotifyConfigKeepsWebhookOutOfArgumentsAndValidatesTypeFields(t *te
 	}
 	options := &notifyMutationOptions{
 		CredentialFile: credential,
-		Username:       "HServer",
+		Username:       "Heyserver",
 		Channel:        "#ops",
 		visited: map[string]bool{
 			"confirm": true, "name": true, "type": true, "credential-file": true,
@@ -187,7 +187,7 @@ func TestBuildNotifyConfigKeepsWebhookOutOfArgumentsAndValidatesTypeFields(t *te
 		t.Fatal(err)
 	}
 	if config["webhookUrl"] != "https://hooks.example.com/services/test" ||
-		config["username"] != "HServer" || config["channel"] != "#ops" {
+		config["username"] != "Heyserver" || config["channel"] != "#ops" {
 		t.Fatalf("config = %#v", config)
 	}
 	var completion bytes.Buffer

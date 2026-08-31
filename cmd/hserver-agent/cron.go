@@ -388,7 +388,7 @@ func cronRevision(jobs []cronJob) string {
 
 func renderCronJobs(jobs []cronJob, shell string) []byte {
 	var output strings.Builder
-	fmt.Fprintln(&output, "# Managed by HServer. Changes outside HServer will be replaced.")
+	fmt.Fprintln(&output, "# Managed by Heyserver. Changes outside Heyserver will be replaced.")
 	fmt.Fprintf(&output, "SHELL=%s\n", shell)
 	fmt.Fprintln(&output, "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
 	for _, job := range jobs {

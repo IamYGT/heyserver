@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// DefaultManifest returns the standard HServer server snapshot paths using the
+// DefaultManifest returns the standard Heyserver server snapshot paths using the
 // installation's configured data and virtual-host roots.
 func DefaultManifest(dataDir, vhostsRoot string) []ManifestEntry {
 	return []ManifestEntry{
@@ -16,7 +16,7 @@ func DefaultManifest(dataDir, vhostsRoot string) []ManifestEntry {
 		{ID: "postgresql-cfg", Path: "/etc/postgresql", Label: "PostgreSQL config", Enabled: true},
 		{ID: "mysql-cfg", Path: "/etc/mysql", Label: "MariaDB/MySQL config", Enabled: true},
 		{ID: "php", Path: "/etc/php", Label: "PHP-FPM ayarları", Enabled: true},
-		{ID: "hserver-data", Path: dataDir, Label: "HServer panel verisi", Enabled: true,
+		{ID: "hserver-data", Path: dataDir, Label: "Heyserver panel verisi", Enabled: true,
 			Exclude: []string{"backups", "snapshot-staging"}},
 		{ID: "cron-d", Path: "/etc/cron.d", Label: "Cron görevleri (/etc/cron.d)", Enabled: true},
 		{ID: "systemd", Path: "/etc/systemd/system", Label: "Systemd unit dosyaları", Enabled: true},

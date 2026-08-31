@@ -234,14 +234,14 @@ export default function Docker() {
       ) : statusQuery.isError ? (
         <DependencyRemediation
           title="Docker status is unavailable"
-          summary="HServer could not determine whether Docker is installed or running, so container mutations remain paused."
+          summary="Heyserver could not determine whether Docker is installed or running, so container mutations remain paused."
           error={statusQuery.error.message}
           retry={() => { void statusQuery.refetch() }}
           retrying={statusQuery.isFetching}
           steps={[
-            <>Run <code className="text-zinc-100">sudo ./doctor.sh installed</code> from the HServer release directory.</>,
+            <>Run <code className="text-zinc-100">sudo ./doctor.sh installed</code> from the Heyserver release directory.</>,
             <>Verify <code className="text-zinc-100">docker version</code> and <code className="text-zinc-100">systemctl status docker</code> on this host.</>,
-            'Correct the host service or socket access, then retry detection. HServer will not install packages automatically.',
+            'Correct the host service or socket access, then retry detection. Heyserver will not install packages automatically.',
           ]}
         />
       ) : status ? (
@@ -301,7 +301,7 @@ export default function Docker() {
         <DependencyRemediation
           state="not-configured"
           title="Docker is not installed"
-          summary="Container management is optional. HServer leaves host package installation under the operator's control."
+          summary="Container management is optional. Heyserver leaves host package installation under the operator's control."
           retry={() => { void statusQuery.refetch() }}
           retrying={statusQuery.isFetching}
           steps={[
@@ -322,7 +322,7 @@ export default function Docker() {
           steps={[
             <>Inspect the failure with <code className="text-zinc-100">systemctl status docker</code>.</>,
             <>After correcting the cause, run <code className="text-zinc-100">systemctl start docker</code>.</>,
-            'Retry detection. HServer will enable inventory and mutations only after the daemon reports running.',
+            'Retry detection. Heyserver will enable inventory and mutations only after the daemon reports running.',
           ]}
         />
       )}

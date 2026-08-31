@@ -18,7 +18,7 @@ describe('RemoteCron', () => {
     renderCron({ online: false, readAvailable: true, writeAvailable: true, runAvailable: true })
     expect(screen.getByText('Managed node is offline')).toBeInTheDocument()
     expect(screen.queryByText('Add scheduled job')).not.toBeInTheDocument()
-    expect(screen.queryByText('No HServer-managed jobs yet.')).not.toBeInTheDocument()
+    expect(screen.queryByText('No Heyserver-managed jobs yet.')).not.toBeInTheDocument()
     expect(api.get).not.toHaveBeenCalled()
   })
 
@@ -39,6 +39,6 @@ describe('RemoteCron', () => {
     expect(await screen.findByText(/Cron inventory is available/)).toBeInTheDocument()
     expect(screen.getByText('Cron service')).toBeInTheDocument()
     expect(screen.getByText('Add scheduled job')).toBeInTheDocument()
-    expect(screen.getByText('No HServer-managed jobs yet.')).toBeInTheDocument()
+    expect(screen.getByText('No Heyserver-managed jobs yet.')).toBeInTheDocument()
   })
 })

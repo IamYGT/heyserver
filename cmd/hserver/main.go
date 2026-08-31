@@ -207,7 +207,7 @@ func main() {
 	}
 
 	go func() {
-		slog.Info("HServer Panel starting", "port", cfg.Port, "version", config.Version)
+		slog.Info("Heyserver Panel starting", "port", cfg.Port, "version", config.Version)
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			slog.Error("server failed", "error", err)
 			os.Exit(1)

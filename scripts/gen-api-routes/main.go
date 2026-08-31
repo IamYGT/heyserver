@@ -98,7 +98,7 @@ func authLabel(value string) string {
 
 func renderMarkdown(routes []route) []byte {
 	var output bytes.Buffer
-	fmt.Fprintln(&output, "# HServer API Route Inventory")
+	fmt.Fprintln(&output, "# Heyserver API Route Inventory")
 	fmt.Fprintln(&output)
 	fmt.Fprintln(&output, "> Code generated from `internal/api/routes_manifest.go`; do not edit by hand.")
 	fmt.Fprintln(&output, "> Regenerate with `make gen-api-docs`.")
@@ -162,13 +162,13 @@ func renderOpenAPI(routes []route) []byte {
 	document := map[string]any{
 		"openapi": "3.1.0",
 		"info": map[string]any{
-			"title":       "HServer API",
+			"title":       "Heyserver API",
 			"version":     "0.1.0",
-			"description": "Generated provider-neutral route, path-parameter, and access-level contract for the self-hosted HServer API. Payload schemas are added incrementally from the curated API reference.",
+			"description": "Generated provider-neutral route, path-parameter, and access-level contract for the self-hosted Heyserver API. Payload schemas are added incrementally from the curated API reference.",
 		},
 		"servers": []map[string]any{{
 			"url":         "/",
-			"description": "Current self-hosted HServer installation",
+			"description": "Current self-hosted Heyserver installation",
 		}},
 		"paths": paths,
 		"components": map[string]any{
@@ -177,7 +177,7 @@ func renderOpenAPI(routes []route) []byte {
 					"type":         "http",
 					"scheme":       "bearer",
 					"bearerFormat": "JWT",
-					"description":  "HServer panel JWT supplied by an API client.",
+					"description":  "Heyserver panel JWT supplied by an API client.",
 				},
 				"panelSession": map[string]any{
 					"type":        "apiKey",
@@ -540,14 +540,14 @@ func promotePayloadContract(item route, operation map[string]any) {
 			"default": jsonResponseSchema("The artifact could not be validated.", "ErrorResponse"),
 		}
 	case "GET /api/backups/schedules":
-		operation["description"] = "List HServer-managed backup schedules observed in the panel service user's crontab. Retention values represent artifact counts, not elapsed days."
+		operation["description"] = "List Heyserver-managed backup schedules observed in the panel service user's crontab. Retention values represent artifact counts, not elapsed days."
 		operation["responses"] = map[string]any{
 			"200":     jsonResponseSchema("Observed managed backup schedules.", "BackupScheduleListResponse"),
 			"503":     jsonResponseSchema("The service user's crontab could not be observed safely.", "ErrorResponse"),
 			"default": jsonResponseSchema("Backup schedules could not be read.", "ErrorResponse"),
 		}
 	case "POST /api/backups/schedules":
-		operation["description"] = "Add or replace one HServer-managed backup schedule after validating an exact cron expression or a UI frequency/time pair."
+		operation["description"] = "Add or replace one Heyserver-managed backup schedule after validating an exact cron expression or a UI frequency/time pair."
 		operation["requestBody"] = jsonRequestSchema("Exact schedule source, backup scope, and retention count.", "BackupScheduleSetRequest", true)
 		operation["responses"] = map[string]any{
 			"200":     jsonResponseSchema("Backup schedule saved.", "BackupScheduleMutationResult"),
@@ -556,11 +556,11 @@ func promotePayloadContract(item route, operation map[string]any) {
 			"default": jsonResponseSchema("The backup schedule could not be saved.", "ErrorResponse"),
 		}
 	case "DELETE /api/backups/schedules":
-		operation["description"] = "Delete the exact HServer-managed schedule line previously observed by the client while preserving unrelated crontab entries."
+		operation["description"] = "Delete the exact Heyserver-managed schedule line previously observed by the client while preserving unrelated crontab entries."
 		operation["requestBody"] = jsonRequestSchema("Exact observed managed schedule identity.", "BackupScheduleDeleteRequest", true)
 		operation["responses"] = map[string]any{
 			"200":     jsonResponseSchema("Backup schedule deleted.", "BackupScheduleMutationResult"),
-			"400":     jsonResponseSchema("The body is invalid or rawLine is not an HServer-managed schedule target.", "ErrorResponse"),
+			"400":     jsonResponseSchema("The body is invalid or rawLine is not an Heyserver-managed schedule target.", "ErrorResponse"),
 			"404":     jsonResponseSchema("The previously observed schedule no longer exists.", "ErrorResponse"),
 			"503":     jsonResponseSchema("The service user's crontab could not be observed or updated safely.", "ErrorResponse"),
 			"default": jsonResponseSchema("The backup schedule could not be deleted.", "ErrorResponse"),
@@ -680,7 +680,7 @@ func promotePayloadContract(item route, operation map[string]any) {
 			"200":     jsonResponseSchema("Snapshot repository deleted.", "SnapshotSettingsMutationResult"),
 			"400":     jsonResponseSchema("The body, observed repository identity, or fixed confirmation is invalid or stale.", "ErrorResponse"),
 			"409":     jsonResponseSchema("Another snapshot operation is active.", "ErrorResponse"),
-			"422":     jsonResponseSchema("The selected destination does not support repository purge through HServer.", "ErrorResponse"),
+			"422":     jsonResponseSchema("The selected destination does not support repository purge through Heyserver.", "ErrorResponse"),
 			"503":     jsonResponseSchema("The persisted snapshot policy or selected optional destination is unavailable.", "ErrorResponse"),
 			"default": jsonResponseSchema("The snapshot repository could not be deleted.", "ErrorResponse"),
 		}
@@ -857,12 +857,12 @@ func promotePayloadContract(item route, operation map[string]any) {
 			"201":     jsonResponseSchema("Validated local Nginx site configuration.", "NginxConfigContent"),
 			"400":     jsonResponseSchema("The body, domain, type, or type-specific fields are invalid.", "ErrorResponse"),
 			"409":     jsonResponseSchema("A configuration for the selected domain already exists.", "ErrorResponse"),
-			"422":     jsonResponseSchema("Nginx rejected the generated candidate and HServer removed it.", "ErrorResponse"),
+			"422":     jsonResponseSchema("Nginx rejected the generated candidate and Heyserver removed it.", "ErrorResponse"),
 			"503":     jsonResponseSchema("The installation-owned Nginx paths or managed snippets are not configured.", "ErrorResponse"),
 			"default": jsonResponseSchema("The Nginx site could not be created safely.", "ErrorResponse"),
 		}
 	case "PUT /api/nginx/configs/{filename}/state", "POST /api/nginx/configs/{filename}/toggle":
-		operation["description"] = "Apply an explicit idempotent enabled state to one local Nginx site configuration. Retries preserve the requested state; HServer only creates or removes an exact managed symlink and refuses foreign entries."
+		operation["description"] = "Apply an explicit idempotent enabled state to one local Nginx site configuration. Retries preserve the requested state; Heyserver only creates or removes an exact managed symlink and refuses foreign entries."
 		if item.method == "POST" {
 			operation["description"] = "Deprecated backwards-compatible alias for PUT /api/nginx/configs/{filename}/state. The exact desired-state body is still required; this route never performs an implicit flip."
 			operation["deprecated"] = true
@@ -899,7 +899,7 @@ func promotePayloadContract(item route, operation map[string]any) {
 			"default": jsonResponseSchema("The Nginx configuration could not be replaced safely.", "ErrorResponse"),
 		}
 	case "DELETE /api/nginx/configs/{filename}":
-		operation["description"] = "Archive one disabled regular local Nginx site configuration under an exact observed SHA-256 lock. HServer creates a same-directory recovery copy before removing the config from inventory, validates the complete Nginx configuration, and restores the original on validation failure. The document root is never removed and reload remains explicit."
+		operation["description"] = "Archive one disabled regular local Nginx site configuration under an exact observed SHA-256 lock. Heyserver creates a same-directory recovery copy before removing the config from inventory, validates the complete Nginx configuration, and restores the original on validation failure. The document root is never removed and reload remains explicit."
 		operation["requestBody"] = jsonRequestSchema("Exact observed SHA-256 checksum for the disabled configuration.", "NginxConfigArchiveRequest", true)
 		operation["responses"] = map[string]any{
 			"200":     jsonResponseSchema("Validated Nginx configuration archive receipt.", "NginxConfigArchiveReceipt"),
@@ -912,7 +912,7 @@ func promotePayloadContract(item route, operation map[string]any) {
 			"default": jsonResponseSchema("The Nginx configuration could not be archived safely.", "ErrorResponse"),
 		}
 	case "GET /api/nginx/archives":
-		operation["description"] = "List validated HServer-owned local Nginx configuration recovery copies without exposing arbitrary files, archive content, or absolute host paths."
+		operation["description"] = "List validated Heyserver-owned local Nginx configuration recovery copies without exposing arbitrary files, archive content, or absolute host paths."
 		operation["responses"] = map[string]any{
 			"200":     jsonResponseSchema("Checksum-bound Nginx configuration archive inventory.", "NginxConfigArchiveList"),
 			"413":     jsonResponseSchema("A matching archive exceeds the bounded text size.", "ErrorResponse"),
@@ -920,7 +920,7 @@ func promotePayloadContract(item route, operation map[string]any) {
 			"default": jsonResponseSchema("The Nginx configuration archive inventory could not be read safely.", "ErrorResponse"),
 		}
 	case "POST /api/nginx/archives/{archive}/restore":
-		operation["description"] = "Restore one missing disabled local Nginx site configuration from an exact observed HServer archive and SHA-256 checksum. Existing configs are never overwritten, the archive remains retained, the complete configuration is validated, and a rejected candidate is removed. Reload remains explicit."
+		operation["description"] = "Restore one missing disabled local Nginx site configuration from an exact observed Heyserver archive and SHA-256 checksum. Existing configs are never overwritten, the archive remains retained, the complete configuration is validated, and a rejected candidate is removed. Reload remains explicit."
 		operation["requestBody"] = jsonRequestSchema("Exact observed SHA-256 checksum for the selected archive.", "NginxConfigArchiveRequest", true)
 		operation["responses"] = map[string]any{
 			"200":     jsonResponseSchema("Validated disabled Nginx configuration recovery receipt.", "NginxConfigArchiveRestoreReceipt"),
@@ -928,12 +928,12 @@ func promotePayloadContract(item route, operation map[string]any) {
 			"404":     jsonResponseSchema("The selected Nginx configuration archive does not exist.", "ErrorResponse"),
 			"409":     jsonResponseSchema("The target config already exists, is enabled, or the archive checksum changed after observation.", "ErrorResponse"),
 			"413":     jsonResponseSchema("The selected archive exceeds the bounded text size.", "ErrorResponse"),
-			"422":     jsonResponseSchema("Nginx rejected the restored candidate and HServer removed it.", "ErrorResponse"),
+			"422":     jsonResponseSchema("Nginx rejected the restored candidate and Heyserver removed it.", "ErrorResponse"),
 			"503":     jsonResponseSchema("The installation-owned Nginx configuration paths are not configured.", "ErrorResponse"),
 			"default": jsonResponseSchema("The Nginx configuration archive could not be restored safely.", "ErrorResponse"),
 		}
 	case "GET /api/nginx/backups":
-		operation["description"] = "List validated HServer-owned local Nginx pre-edit recovery copies without exposing arbitrary files, backup content, or absolute host paths."
+		operation["description"] = "List validated Heyserver-owned local Nginx pre-edit recovery copies without exposing arbitrary files, backup content, or absolute host paths."
 		operation["responses"] = map[string]any{
 			"200":     jsonResponseSchema("Checksum-bound Nginx configuration edit-backup inventory.", "NginxConfigBackupList"),
 			"413":     jsonResponseSchema("A matching backup exceeds the bounded text size.", "ErrorResponse"),
@@ -941,7 +941,7 @@ func promotePayloadContract(item route, operation map[string]any) {
 			"default": jsonResponseSchema("The Nginx configuration edit-backup inventory could not be read safely.", "ErrorResponse"),
 		}
 	case "POST /api/nginx/backups/{backup}/restore":
-		operation["description"] = "Roll one existing local Nginx configuration back from an exact observed pre-edit backup under separate backup and current-target SHA-256 locks. HServer retains a fresh pre-restore recovery, validates the complete configuration, restores the previous target on rejection, preserves enabled state, and leaves reload explicit."
+		operation["description"] = "Roll one existing local Nginx configuration back from an exact observed pre-edit backup under separate backup and current-target SHA-256 locks. Heyserver retains a fresh pre-restore recovery, validates the complete configuration, restores the previous target on rejection, preserves enabled state, and leaves reload explicit."
 		operation["requestBody"] = jsonRequestSchema("Exact observed SHA-256 checksums for the selected backup and current target.", "NginxConfigBackupRestoreRequest", true)
 		operation["responses"] = map[string]any{
 			"200":     jsonResponseSchema("Validated Nginx configuration rollback receipt.", "NginxConfigBackupRestoreReceipt"),
@@ -1544,7 +1544,7 @@ func promotePayloadContract(item route, operation map[string]any) {
 			"default": jsonResponseSchema("The node could not be enrolled.", "ErrorResponse"),
 		}
 	case "GET /api/deploy/templates":
-		operation["description"] = "Read installation-owned deployment templates from the fixed HServer data directory. The API cannot create templates, select another directory, or return repository credentials. Status distinguishes an absent or empty inventory from invalid or unreadable files."
+		operation["description"] = "Read installation-owned deployment templates from the fixed Heyserver data directory. The API cannot create templates, select another directory, or return repository credentials. Status distinguishes an absent or empty inventory from invalid or unreadable files."
 		operation["responses"] = map[string]any{
 			"200":     jsonResponseSchema("Observed deployment template inventory, including bounded per-file issues.", "DeployTemplateInventory"),
 			"default": jsonResponseSchema("The deployment service is not initialized.", "ErrorResponse"),
@@ -1658,7 +1658,7 @@ func promotePayloadContract(item route, operation map[string]any) {
 			"default": jsonResponseSchema("The deployment revision comparison could not be read.", "ErrorResponse"),
 		}
 	case "GET /api/deploy/targets/{id}/services":
-		operation["description"] = "Observe every container in one configured local Docker Compose project. An empty project is returned as an array rather than null; HServer never broadens the command outside the persisted project directory and Compose file."
+		operation["description"] = "Observe every container in one configured local Docker Compose project. An empty project is returned as an array rather than null; Heyserver never broadens the command outside the persisted project directory and Compose file."
 		operation["responses"] = map[string]any{
 			"200": jsonResponseSchema("Observed project-scoped Compose service inventory.", "ComposeServiceList"),
 			"400": jsonResponseSchema("The deployment target identity is invalid.", "ErrorResponse"),
@@ -3595,7 +3595,7 @@ func deployDomainInputSchema() map[string]any {
 	return map[string]any{
 		"type": "string", "minLength": 3, "maxLength": 254,
 		"pattern":     `^(?=.{1,254}$)(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.?$`,
-		"description": "ASCII hostname; HServer trims, lowercases, and removes one trailing dot before persistence.",
+		"description": "ASCII hostname; Heyserver trims, lowercases, and removes one trailing dot before persistence.",
 	}
 }
 

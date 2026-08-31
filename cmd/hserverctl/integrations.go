@@ -578,7 +578,7 @@ func writeIntegrationJSON(out io.Writer, value any) error {
 }
 
 func writeIntegrationListText(out io.Writer, catalog cliIntegrationCatalog) error {
-	fmt.Fprintf(out, "HServer integrations catalog (schema v%d)\n", catalog.SchemaVersion)
+	fmt.Fprintf(out, "Heyserver integrations catalog (schema v%d)\n", catalog.SchemaVersion)
 	fmt.Fprintln(out, "Catalog metadata only; it does not probe or report live integration health.")
 	fmt.Fprintln(out, "ID\tNAME\tREQUIREMENT\tTARGETS")
 	for _, entry := range catalog.Entries {
@@ -625,7 +625,7 @@ func writeIntegrationShowText(out io.Writer, entry cliIntegrationCatalogEntry) e
 }
 
 func writeIntegrationStatusText(out io.Writer, status cliIntegrationStatusReport) error {
-	fmt.Fprintf(out, "HServer integrations status (schema v%d)\n", status.SchemaVersion)
+	fmt.Fprintf(out, "Heyserver integrations status (schema v%d)\n", status.SchemaVersion)
 	fmt.Fprintf(out, "Observed at (observed_at): %s\n", integrationTextValue(status.ObservedAt))
 	fmt.Fprintf(out, "Target scope: %s\n", integrationTextValue(status.Target.Scope))
 	fmt.Fprintf(out, "Partial: %t\n", status.Partial)
@@ -649,7 +649,7 @@ func writeIntegrationStatusText(out io.Writer, status cliIntegrationStatusReport
 }
 
 func writeManagedIntegrationStatusText(out io.Writer, status managedintegrationstatus.ManagedIntegrationStatusResponse) error {
-	fmt.Fprintf(out, "HServer integrations status (schema v%d)\n", status.SchemaVersion)
+	fmt.Fprintf(out, "Heyserver integrations status (schema v%d)\n", status.SchemaVersion)
 	fmt.Fprintf(out, "Observed at (observed_at): %s\n", integrationTextValue(status.ObservedAt.Format(time.RFC3339Nano)))
 	fmt.Fprintf(out, "Target scope: %s\n", integrationTextValue(status.Target.Scope))
 	fmt.Fprintf(out, "Target node: %s\n", integrationTextValue(status.Target.NodeID))

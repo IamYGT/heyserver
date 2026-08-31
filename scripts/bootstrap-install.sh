@@ -7,10 +7,10 @@ Usage:
   sudo ./bootstrap-install.sh --manifest-url URL \
     (--public-key BASE64 | --public-key-file FILE) [--vhosts-root ABSOLUTE_PATH] [--agent-only]
 
-Downloads a stable HServer release through a signed schema-v1 manifest,
+Downloads a stable Heyserver release through a signed schema-v1 manifest,
 verifies the selected Linux archive, and runs the packaged native installer.
 With --agent-only, the same verified package is used only to upgrade an
-already-installed managed HServer agent; the panel lifecycle is never run.
+already-installed managed Heyserver agent; the panel lifecycle is never run.
 At least one Ed25519 public key is required. Comma-separated key rotation sets
 are accepted, up to eight unique keys.
 EOF
@@ -367,12 +367,12 @@ if (( agent_only )); then
 fi
 
 if (( agent_only )); then
-  printf 'Verified signed HServer agent release: %s (linux/%s)\n' "$version" "$arch"
+  printf 'Verified signed Heyserver agent release: %s (linux/%s)\n' "$version" "$arch"
   "$package_dir/agent-install.sh" upgrade --binary "$package_dir/hserver-agent"
-  printf 'HServer agent %s upgrade completed. Existing configuration and token destination were preserved.\n' "$version"
+  printf 'Heyserver agent %s upgrade completed. Existing configuration and token destination were preserved.\n' "$version"
   exit 0
 fi
-printf 'Verified signed HServer release: %s (linux/%s)\n' "$version" "$arch"
+printf 'Verified signed Heyserver release: %s (linux/%s)\n' "$version" "$arch"
 "$package_dir/doctor.sh" preflight
 install_args=(install)
 if (( vhosts_root_set )); then
@@ -383,5 +383,5 @@ HSERVER_INSTALL_UPDATE_MANIFEST_PUBLIC_KEYS="$(<"$metadata_dir/trust-set")" \
 HSERVER_INSTALL_DEFER_NEXT_STEPS=1 \
   "$package_dir/install.sh" "${install_args[@]}"
 "$package_dir/doctor.sh" installed
-printf 'HServer %s installation completed. Protected credentials remain in /etc/hserver/hserver.env.\n' "$version"
+printf 'Heyserver %s installation completed. Protected credentials remain in /etc/hserver/hserver.env.\n' "$version"
 "$package_dir/install.sh" next-steps

@@ -184,7 +184,7 @@ func runFilesSave(ctx context.Context, client *apiClient, args []string, out io.
 		return err
 	}
 	if dedicatedConfigFamily(targetPath) != "" {
-		return fmt.Errorf("%s configuration must be saved through its dedicated HServer management surface", dedicatedConfigFamily(targetPath))
+		return fmt.Errorf("%s configuration must be saved through its dedicated Heyserver management surface", dedicatedConfigFamily(targetPath))
 	}
 	content, err := readCLIManagedTextFile(*contentFile)
 	if err != nil {

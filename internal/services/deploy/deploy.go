@@ -736,7 +736,7 @@ func (s *Service) executeRun(run *models.DeployRun, target *models.DeployTarget)
 	s.setRunStatus(run.ID, models.DeployStatusRunning, logBuf.String())
 
 	// Step 1: use an existing checkout or provision an absent/empty target from
-	// its validated repository URL. Clone arguments are fixed by HServer.
+	// its validated repository URL. Clone arguments are fixed by Heyserver.
 	logf("==> Preparing Git checkout")
 	provisioned, checkoutOut, checkoutErr := ensureDeployCheckout(target)
 	logBuf.WriteString(checkoutOut)

@@ -509,7 +509,7 @@ func (s *Service) ScheduleReboot(ctx context.Context) (string, error) {
 }
 
 // RebootPending reports whether the panel-owned transient reboot timer is
-// currently waiting. It never considers timers created outside HServer.
+// currently waiting. It never considers timers created outside Heyserver.
 func (s *Service) RebootPending(ctx context.Context) (bool, error) {
 	actionCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()

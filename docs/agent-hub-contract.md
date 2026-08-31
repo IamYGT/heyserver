@@ -1,8 +1,8 @@
-# HServer Agent-Hub v1 Contract
+# Heyserver Agent-Hub v1 Contract
 
 ## Boundary
 
-HServer is the control plane. Managed nodes initiate every connection to the
+Heyserver is the control plane. Managed nodes initiate every connection to the
 hub. The hub never opens SSH to a managed node. Structured task endpoints never
 accept arbitrary command strings. A separately authenticated, explicitly
 enabled outbound WebSocket carries multiplexed PTY input and output for writable
@@ -217,18 +217,18 @@ map is not arbitrary shell access.
   item-level safe states and never include raw command output or diagnostics.
 - `cron.inventory`: return bounded managed jobs, cron sources, service state,
   and the current SHA-256 revision from locally configured paths.
-- `cron.create` / `cron.update` / `cron.delete`: mutate only the HServer-owned
+- `cron.create` / `cron.update` / `cron.delete`: mutate only the Heyserver-owned
   cron state and rendered cron file with compare-and-swap revision checks,
   syntax validation, atomic writes, backups, and a cross-process lock.
 - `cron.run`: execute only a previously stored managed job by validated ID;
   the hub cannot attach a new command to a run request.
-- `firewall.inventory`: return bounded IPv4 INPUT and HServer-owned chain state,
+- `firewall.inventory`: return bounded IPv4 INPUT and Heyserver-owned chain state,
   persistence state, revision, and the locally configured lockout policy. The
   packaged systemd sandbox permits `AF_NETLINK`, which `iptables-nft` needs to
   read kernel state; the capability remains disabled unless local agent
   configuration explicitly enables it.
 - `firewall.add` / `firewall.delete`: mutate only rules carrying an
-  HServer-generated ID inside `HSERVER-INPUT`, require a current revision,
+  Heyserver-generated ID inside `HSERVER-INPUT`, require a current revision,
   serialize mutations with a local file lock, persist through the configured
   fixed binary, and roll the live rule back when persistence fails.
 - `domain.inventory`: parse at most 512 regular files from the locally
@@ -324,7 +324,7 @@ advertising was added.
   `HSERVER_AGENT_ALLOW_CRON_RUN=true`.
 - `firewall.read`: bounded IPv4 iptables inventory enabled only by
   `HSERVER_AGENT_ALLOW_FIREWALL_READ=true`.
-- `firewall.write`: revision-guarded HServer-chain mutations enabled separately
+- `firewall.write`: revision-guarded Heyserver-chain mutations enabled separately
   by `HSERVER_AGENT_ALLOW_FIREWALL_WRITE=true`. Binary paths, persistence path,
   and optional protected sources/ports remain local settings.
 - `domain.read`: bounded Nginx-backed domain inventory enabled only by
@@ -356,7 +356,7 @@ advertising was added.
   action enabled by `HSERVER_AGENT_ALLOW_DEPLOY_ACTIONS=true`; this requires
   deploy read. The executable, argv, working directory, and timeout come only
   from the agent's local plan file and are never accepted from the hub.
-- `deploy.domain.read`: HServer-owned project-domain mappings, observed TLS
+- `deploy.domain.read`: Heyserver-owned project-domain mappings, observed TLS
   state, and fixed loopback health probes enabled by
   `HSERVER_AGENT_ALLOW_DEPLOY_DOMAIN_READ=true`; this requires deploy read.
 - `deploy.domain.action`: fixed `create`, `ensure`, `delete`, `tls-enable`,
@@ -446,12 +446,12 @@ and token destination.
 
 ## Acceptance
 
-1. HServer registers a provider-neutral node ID and persists only its token hash.
+1. Heyserver registers a provider-neutral node ID and persists only its token hash.
 2. The agent heartbeats over the operator-selected HTTPS path after service
    restart and reboot.
-3. HServer reports current OS, kernel, boot ID, disk, memory, and bounded service
+3. Heyserver reports current OS, kernel, boot ID, disk, memory, and bounded service
    states for the node.
-4. HServer returns the capability set advertised by the last accepted
+4. Heyserver returns the capability set advertised by the last accepted
    heartbeat.
 5. A `service.status` task is claimed once and its result is persisted.
 6. The hub refuses service, host, or process tasks when the node does not

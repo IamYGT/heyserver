@@ -480,7 +480,7 @@ function HostActions({ memory }: { memory?: SystemStats['memory'] }) {
   })
 
   const run = (action: typeof hostActions[number]) => {
-    const confirmation = hostActionConfirmation(action.id, 'HServer', controlMemory, swapRequired)
+    const confirmation = hostActionConfirmation(action.id, 'Heyserver', controlMemory, swapRequired)
     if (window.confirm(confirmation)) {
       mutation.mutate(action.id)
     }
@@ -882,9 +882,9 @@ function ServiceTimeline({ range, canManage, paused }: { range: MetricsRange; ca
 
   const controlService = (service: string, action: ServiceControlAction) => {
     const prompt = action === 'stop'
-      ? `Stop ${service} on HServer? Dependent sites or workers may become unavailable.`
+      ? `Stop ${service} on Heyserver? Dependent sites or workers may become unavailable.`
       : action === 'restart'
-        ? `Restart ${service} on HServer now? A short interruption may occur.`
+        ? `Restart ${service} on Heyserver now? A short interruption may occur.`
         : null
     if (!prompt || window.confirm(prompt)) serviceAction.mutate({ service, action })
   }

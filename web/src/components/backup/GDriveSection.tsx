@@ -258,11 +258,11 @@ export default function GDriveSection({ onWatchJob }: GDriveSectionProps) {
         <CardContent className="p-5">
           <DependencyRemediation
             title="Google Drive entegrasyon durumu alınamadı"
-            summary="HServer, uzak yedekleme bağımlılıklarını algılayamadı. Bağlantı ve yükleme işlemleri durum doğrulanana kadar duraklatıldı."
+            summary="Heyserver, uzak yedekleme bağımlılıklarını algılayamadı. Bağlantı ve yükleme işlemleri durum doğrulanana kadar duraklatıldı."
             state="unavailable"
             steps={[
-              <>HServer API sağlığını ve servis günlüklerini kontrol edin.</>,
-              <><code>rclone version</code> komutunun HServer servis ortamında çalıştığını doğrulayın.</>,
+              <>Heyserver API sağlığını ve servis günlüklerini kontrol edin.</>,
+              <><code>rclone version</code> komutunun Heyserver servis ortamında çalıştığını doğrulayın.</>,
               <>API veya ağ sorununu giderdikten sonra algılamayı yeniden deneyin.</>,
             ]}
             error={error instanceof Error ? error.message : undefined}
@@ -328,12 +328,12 @@ export default function GDriveSection({ onWatchJob }: GDriveSectionProps) {
         {!st.rcloneFound && (
           <DependencyRemediation
             title="rclone kurulumu gerekli"
-            summary="Google Drive yedekleme akışı rclone olmadan çalışamaz. HServer paketleri otomatik olarak kurmaz ve OAuth bağlantısını bağımlılık hazır olana kadar devre dışı bırakır."
+            summary="Google Drive yedekleme akışı rclone olmadan çalışamaz. Heyserver paketleri otomatik olarak kurmaz ve OAuth bağlantısını bağımlılık hazır olana kadar devre dışı bırakır."
             state={statusPresentation.state === 'healthy' ? 'unavailable' : statusPresentation.state}
             steps={[
               <>İşletim sisteminizin desteklenen paket kaynağından <code>rclone</code> kurun.</>,
-              <><code>rclone version</code> komutunu HServer servis kullanıcısının ortamında doğrulayın.</>,
-              <>HServer servisini yeniden başlatın ve algılamayı yeniden deneyin.</>,
+              <><code>rclone version</code> komutunu Heyserver servis kullanıcısının ortamında doğrulayın.</>,
+              <>Heyserver servisini yeniden başlatın ve algılamayı yeniden deneyin.</>,
             ]}
             retry={() => { void refetch() }}
             retrying={isFetching}

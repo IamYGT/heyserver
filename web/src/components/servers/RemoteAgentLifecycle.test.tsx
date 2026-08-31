@@ -14,7 +14,7 @@ vi.mock('@/lib/api', () => ({
 const status: RemoteAgentUpdateStatus = {
   release_status: 'healthy', signature_status: 'verified', current_version: 'v1.0.0', latest_version: 'v1.2.3', latest_version_state: 'ahead',
   update_available: true, platform: 'linux_amd64', release_notes_url: 'https://releases.example.com/v1.2.3',
-  release_message: 'A newer HServer release is available.', release_checked_at: '2026-08-26T23:00:00Z',
+  release_message: 'A newer Heyserver release is available.', release_checked_at: '2026-08-26T23:00:00Z',
   operation: '', operation_status: 'idle', operation_detail: 'No agent lifecycle operation has been scheduled.', rollback_available: true,
 }
 

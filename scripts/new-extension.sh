@@ -421,9 +421,9 @@ create_extension() {
   {
     printf '# %s\n\n' "$display_name"
     cat <<'EOF_README'
-This directory is a provider-neutral, in-tree HServer extension scaffold for
+This directory is a provider-neutral, in-tree Heyserver extension scaffold for
 EOF_README
-    printf '`%s`. It is source and review material only. HServer v1 compiles accepted\n' "$id"
+    printf '`%s`. It is source and review material only. Heyserver v1 compiles accepted\n' "$id"
     cat <<'EOF_README'
 extensions into the normal release; it does not load runtime plugins, evaluate
 source, run arbitrary hooks, or install an external binary from this directory.
@@ -456,7 +456,7 @@ code; do not treat a URL or installed binary as proof of health.
 
 - [ ] Link the accepted Integration proposal issue.
 - [ ] Keep provider-specific transport and credentials inside one package or
-      adapter; keep generic HServer code provider-neutral.
+      adapter; keep generic Heyserver code provider-neutral.
 - [ ] Add bounded API or fixed managed-agent task wiring only when needed.
 - [ ] Preserve `not_configured`, `unavailable`, and `healthy` as distinct
       observations, with mutations disabled until their preconditions pass.
