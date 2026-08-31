@@ -1,4 +1,4 @@
-# Heyserver Panel — Troubleshooting Guide
+# Heyserver — Troubleshooting Guide
 
 Provider-neutral recovery notes for common installation and runtime failures.
 

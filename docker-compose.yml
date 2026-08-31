@@ -1,5 +1,5 @@
 ---
-# Heyserver Panel — Docker Compose
+# Heyserver — Docker Compose
 # Usage:
 #   First run:        ./scripts/init-env.sh
 #   Local evaluation: docker compose up --build

@@ -445,7 +445,7 @@ write_service_unit() {
   unit_tmp=$(mktemp) || return 1
   if ! cat >"$unit_tmp" <<EOF
 [Unit]
-Description=Heyserver Panel - Server Management GUI
+Description=Heyserver - Server Management GUI
 After=network-online.target
 Wants=network-online.target
 

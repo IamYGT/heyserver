@@ -1,5 +1,5 @@
 [Unit]
-Description=Heyserver Panel - Server Management GUI
+Description=Heyserver - Server Management GUI
 After=network-online.target
 Wants=network-online.target
 

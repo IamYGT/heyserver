@@ -132,7 +132,7 @@ export default function Login() {
               <ShieldCheck className="w-7 h-7 text-white" />
             )}
           </div>
-          <h1 className="text-white text-2xl font-bold">Heyserver Panel</h1>
+          <h1 className="text-white text-2xl font-bold">Heyserver</h1>
           <p className="text-zinc-500 text-sm mt-1">
             {screen === 'password' && 'Sign in to your account'}
             {screen === 'totp' && 'Two-factor authentication'}
@@ -355,7 +355,7 @@ export default function Login() {
         )}
 
         <p className="text-center text-zinc-600 text-xs mt-6">
-          Heyserver Panel — Self-hosted server management
+          Heyserver — Self-hosted server management
         </p>
       </div>
     </div>

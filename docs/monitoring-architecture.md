@@ -1,7 +1,7 @@
 # Native Uptime Monitoring — Architecture Document
 
 ## Overview
-Replace external Uptime Kuma with native Go monitoring built into Heyserver Panel.
+Replace external Uptime Kuma with native Go monitoring built into Heyserver.
 Every check, alert, and status page runs inside the same 15MB binary — zero external dependencies.
 
 ## Implementation Phases
