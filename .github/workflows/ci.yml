@@ -557,7 +557,7 @@ jobs:
   # ─── Release: Real hub-to-systemd managed-agent lifecycle ──────────────────
   managed-agent-acceptance:
     name: Managed Agent Lifecycle (${{ matrix.arch }})
-    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch'
     needs: [release-build]
     permissions:
       actions: read
@@ -696,6 +696,36 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+  # ─── Release: Reuse the clean pre-tag managed lifecycle receipt ───────────
+  managed-agent-evidence:
+    name: Managed Agent Lifecycle Evidence
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      statuses: read
+    steps:
+      - name: Require successful managed lifecycle receipts for this commit
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const statuses = await github.paginate(
+              github.rest.repos.listCommitStatusesForRef,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: context.sha,
+                per_page: 100,
+              },
+            );
+            for (const arch of ['amd64', 'arm64']) {
+              const pattern = new RegExp(`^ci/managed-lifecycle-progress/${arch}/[0-9]+-[0-9]+$`);
+              const receipt = statuses.find((status) => pattern.test(status.context));
+              if (!receipt || receipt.state !== 'success' || receipt.description !== 'acceptance and cleanup complete') {
+                core.setFailed(`Missing successful managed lifecycle receipt for ${arch} on ${context.sha}.`);
+              }
+            }
+
   # ─── Release: Outbound-only managed-agent network boundary ────────────────
   network-isolation-acceptance:
     name: Managed Agent Network Isolation (${{ matrix.arch }})
@@ -826,7 +856,7 @@ jobs:
       - public-source-acceptance
       - release-build
       - native-acceptance
-      - managed-agent-acceptance
+      - managed-agent-evidence
       - network-isolation-acceptance
     permissions:
       contents: write

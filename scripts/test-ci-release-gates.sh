@@ -432,6 +432,20 @@ for required in (
     if required not in managed:
         raise SystemExit(f"managed-agent lifecycle gate is missing: {required}")
 
+managed_evidence = job_block("managed-agent-evidence")
+for required in (
+    "name: Managed Agent Lifecycle Evidence",
+    "startsWith(github.ref, 'refs/tags/v')",
+    "statuses: read",
+    "listCommitStatusesForRef",
+    "context.sha",
+    "ci/managed-lifecycle-progress/",
+    "acceptance and cleanup complete",
+    "Missing successful managed lifecycle receipt",
+):
+    if required not in managed_evidence:
+        raise SystemExit(f"managed-agent lifecycle evidence gate is missing: {required}")
+
 for terminal_state in ('"$status_state" == success', '"$status_state" == error'):
     terminal_handler = managed.split(terminal_state, 1)[1].split("fi", 1)[0]
     if "systemctl kill" in terminal_handler:
@@ -587,8 +601,8 @@ if "- public-source-acceptance" not in release:
     raise SystemExit("tagged release does not depend on public source acceptance")
 if "- native-acceptance" not in release:
     raise SystemExit("tagged release does not depend on native lifecycle acceptance")
-if "- managed-agent-acceptance" not in release:
-    raise SystemExit("tagged release does not depend on managed-agent acceptance")
+if "- managed-agent-evidence" not in release:
+    raise SystemExit("tagged release does not depend on managed-agent lifecycle evidence")
 if "- network-isolation-acceptance" not in release:
     raise SystemExit("tagged release does not depend on managed-agent network isolation acceptance")
 if "prerelease: false" not in release:
