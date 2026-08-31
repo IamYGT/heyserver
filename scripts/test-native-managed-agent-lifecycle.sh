@@ -61,6 +61,15 @@ PY
     "$HSERVER_ACCEPTANCE_STATUS_URL" >/dev/null 2>&1 || true
 }
 
+notify_supervisor() {
+  local signal=$1
+  local supervisor_pid=${HSERVER_ACCEPTANCE_SUPERVISOR_PID:-}
+  if [[ ! $supervisor_pid =~ ^[0-9]+$ ]] || (( supervisor_pid <= 1 )); then
+    return
+  fi
+  kill "-$signal" "$supervisor_pid" >/dev/null 2>&1 || true
+}
+
 progress() {
   message=$(printf '[managed-agent-lifecycle][%s] %s' "$arch" "$1")
   printf '%s\n' "$message"
@@ -175,11 +184,13 @@ cleanup() {
       printf '%s acceptance and cleanup complete\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >>"$HSERVER_ACCEPTANCE_DIAGNOSTIC_FILE"
     fi
     publish_progress "acceptance and cleanup complete" success
+    notify_supervisor USR1
   else
     if [[ -n ${HSERVER_ACCEPTANCE_DIAGNOSTIC_FILE:-} ]]; then
       printf '%s acceptance failed; cleanup complete\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >>"$HSERVER_ACCEPTANCE_DIAGNOSTIC_FILE"
     fi
     publish_progress "acceptance failed; cleanup complete" error
+    notify_supervisor USR2
   fi
 }
 trap cleanup EXIT
