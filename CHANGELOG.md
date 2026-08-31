@@ -6,19 +6,31 @@ is pre-1.0; public release acceptance remains in progress.
 
 ## [Unreleased]
 
-## [0.9.11] — pending acceptance
+## [0.9.12]
 
 ### Changed
 
-- The next immutable replacement candidate is `v0.9.11`. Managed-agent
-  acceptance now bounds cleanup and uninstall operations, leaves time for
+- Renamed the public product and user-facing interface from HServer to
+  **Heyserver** across the web application, CLI/TUI copy, documentation,
+  installers, notifications, generated API docs, and contributor surfaces.
+- Preserved the existing `hserver` service, `hserverctl`, `HSERVER_*`
+  configuration, filesystem paths, package names, and `X-HServer-*` protocol
+  headers so installed systems and integrations remain compatible.
+- Added the Heyserver repository banner, public Discussions surface, focused
+  discovery topics, and contributor-ready launch links.
+
+## [0.9.11] — 2026-08-31
+
+### Changed
+
+- Managed-agent acceptance now bounds cleanup and uninstall operations, leaves time for
   diagnostics, uploads systemd evidence on every outcome, and supports a
   non-release manual diagnostic run.
 - Tagged publication requires successful run-scoped amd64 and arm64 managed
   lifecycle receipts from the exact release commit before assets can be
   published.
-- No `v0.9.11` public tag, GitHub Release, clean-host acceptance, or live
-  rollout is claimed yet.
+- Published the first accepted signed public release with amd64 and arm64
+  packages at [`v0.9.11`](https://github.com/IamYGT/heyserver/releases/tag/v0.9.11).
 
 ## [0.9.10] — disqualified tagged candidate
 
