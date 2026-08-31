@@ -402,14 +402,15 @@ for required in (
     "github.event_name == 'workflow_dispatch'",
     "statuses: write",
     "HSERVER_ACCEPT_DISPOSABLE_HOST=1",
-    "sudo env",
-    'HSERVER_ACCEPTANCE_DIAGNOSTIC_FILE="$diagnostics/progress.log"',
+    "sudo systemd-run",
+    '--unit="$lifecycle_unit"',
+    "--property=RuntimeMaxSec=12min",
+    '--property="StandardOutput=append:$diagnostics/runner.log"',
+    '--setenv="HSERVER_ACCEPTANCE_DIAGNOSTIC_FILE=$diagnostics/progress.log"',
     ': >"$diagnostics/progress.log"',
-    'HSERVER_ACCEPTANCE_STATUS_AUTH_FILE="$status_auth_file"',
-    'HSERVER_ACCEPTANCE_STATUS_CONTEXT="$status_context"',
+    '--setenv="HSERVER_ACCEPTANCE_STATUS_AUTH_FILE=$status_auth_file"',
+    '--setenv="HSERVER_ACCEPTANCE_STATUS_CONTEXT=$status_context"',
     'GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}',
-    'lifecycle_pid=$!',
-    'disown "$lifecycle_pid"',
     "for _ in {1..360}; do",
     'commits/$GITHUB_SHA/statuses',
     'context=sys.argv[1]',
@@ -417,9 +418,9 @@ for required in (
     '"$status_state" == success',
     "acceptance and cleanup complete",
     "acceptance failed; cleanup complete",
-    'sudo kill -KILL "$lifecycle_pid"',
+    'systemctl kill --kill-who=all --signal=KILL "$lifecycle_unit"',
     "Managed lifecycle acceptance exceeded its 12-minute supervisor deadline.",
-    "./scripts/test-native-managed-agent-lifecycle.sh",
+    "scripts/test-native-managed-agent-lifecycle.sh",
     "Collect managed-agent lifecycle diagnostics",
     "Upload managed-agent lifecycle diagnostics",
     "managed-agent-lifecycle-diagnostics-${{ matrix.arch }}",
@@ -430,8 +431,8 @@ for required in (
 
 for terminal_state in ('"$status_state" == success', '"$status_state" == error'):
     terminal_handler = managed.split(terminal_state, 1)[1].split("fi", 1)[0]
-    if 'kill -TERM "$lifecycle_pid"' in terminal_handler or 'kill -KILL "$lifecycle_pid"' in terminal_handler:
-        raise SystemExit("managed-agent lifecycle terminal status must not signal a process that already completed cleanup")
+    if "systemctl kill" in terminal_handler:
+        raise SystemExit("managed-agent lifecycle terminal status must not signal a unit that already completed cleanup")
 
 for required in (
     "HSERVER_AGENT_ALLOW_TERMINAL=true",
