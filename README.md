@@ -18,16 +18,16 @@ accepted from browser input.
 
 ## Screenshots
 
-These captures use provider-neutral documentation data; no production
-inventory or credentials are embedded in the images.
+Host identifiers and operational values in these documentation captures are
+intentionally blurred. No production credentials or inventory are embedded.
 
 ### Local operations dashboard
 
-![HServer local operations dashboard with CPU, memory, swap, disk, and service controls](docs/images/hserver-dashboard.png)
+![HServer local operations dashboard with CPU, memory, swap, disk, and service controls](docs/images/hserver-dashboard.webp)
 
 | Managed server overview | Server quick controls |
 | --- | --- |
-| ![HServer managed server overview for an example edge node](docs/images/hserver-managed-server.png) | ![HServer quick controls for terminal, RAM, swap, temp cleanup, and reboot](docs/images/hserver-quick-controls.png) |
+| ![HServer managed server overview for an example edge node](docs/images/hserver-managed-server.webp) | ![HServer quick controls for terminal, RAM, swap, temp cleanup, and reboot](docs/images/hserver-quick-controls.webp) |
 
 Managed agents can also opt into release discovery and lifecycle actions. Each
 server owns its release-manifest URL and verifies the selected archive checksum
